@@ -1,5 +1,5 @@
-base_url = "https://vinidlidoo.github.io/blog"
-title = "My Blog"
+base_url = "https://vinidlidoo.github.io"
+title = "vinidlidoo"
 description = "A personal blog"
 default_language = "en"
 theme = "tabi"
@@ -11,9 +11,7 @@ feed_filenames = ["atom.xml"]
 
 build_search_index = false
 
-taxonomies = [
-    { name = "tags" },
-]
+taxonomies = [{ name = "tags" }]
 
 [markdown]
 highlight_code = true

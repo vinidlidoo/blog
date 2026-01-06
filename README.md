@@ -2,7 +2,7 @@
 
 Personal blog built with [Zola](https://www.getzola.org/) and the [tabi](https://github.com/welpo/tabi) theme.
 
-**Live site:** https://vinidlidoo.github.io/blog/
+**Live site:** https://vinidlidoo.github.io/
 
 ## File Structure
 
