@@ -15,7 +15,7 @@
 - [x] Create GitHub repo (`vinidlidoo/blog`)
 - [x] Add GitHub Actions workflow (`shalzz/zola-deploy-action`)
 - [x] Configure GitHub Pages (source: `gh-pages` branch)
-- [x] Verify deployment at https://vinidlidoo.github.io/blog/
+- [x] Verify deployment at <https://vinidlidoo.github.io/blog/>
 
 ## Optional / Future
 
