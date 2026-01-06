@@ -25,6 +25,7 @@
 ## Quick Reference
 
 ### Commands
+
 ```bash
 zola serve          # Dev server at http://127.0.0.1:1111
 zola build          # Build to public/
@@ -32,6 +33,7 @@ zola check          # Validate site
 ```
 
 ### New Post Template
+
 ```markdown
 +++
 title = "Post Title"
@@ -46,6 +48,7 @@ Content here...
 ```
 
 ### Git Submodules (tabi theme)
+
 ```bash
 # After cloning repo on new machine:
 git submodule update --init
@@ -57,6 +60,7 @@ git submodule update --remote themes/tabi
 ---
 
 ## Key Files
+
 - `config.toml` — Site configuration
 - `content/_index.md` — Homepage
 - `content/blog/_index.md` — Blog section settings
