@@ -10,15 +10,18 @@
 - [x] Create test post (`hello-world.md`)
 - [x] Verify site works locally with `zola serve`
 
-## Remaining
+## Completed (continued)
+
+- [x] Create GitHub repo (`vinidlidoo/blog`)
+- [x] Add GitHub Actions workflow (`shalzz/zola-deploy-action`)
+- [x] Configure GitHub Pages (source: `gh-pages` branch)
+- [x] Verify deployment at https://vinidlidoo.github.io/blog/
+
+## Optional / Future
 
 - [ ] Customize blog title/description in `config.toml`
 - [ ] Customize homepage content in `content/_index.md`
-- [ ] Create GitHub repo (`vinidlidoo.github.io`)
-- [ ] Add GitHub Actions workflow for deployment
-- [ ] Configure GitHub Pages (set source to `gh-pages` branch)
-- [ ] Test deployment
-- [ ] (Optional) Customize tabi theme settings
+- [ ] Customize tabi theme settings
 
 ---
 
