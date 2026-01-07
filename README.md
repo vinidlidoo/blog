@@ -2,7 +2,7 @@
 
 Personal blog built with [Zola](https://www.getzola.org/) and the [tabi](https://github.com/welpo/tabi) theme.
 
-**Live site:** https://vinidlidoo.github.io/
+**Live site:** <https://vinidlidoo.github.io/>
 
 ## File Structure
 
@@ -118,3 +118,7 @@ To update theme to latest version:
 ```bash
 git submodule update --remote themes/tabi
 ```
+
+## References
+
+- Tabi theme docs: <https://welpo.github.io/tabi/blog/mastering-tabi-settings/>

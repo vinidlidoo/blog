@@ -19,3 +19,16 @@ highlight_theme = "css"
 
 [extra]
 author = "Vincent"
+skin = "indigo_ingot"
+compact_tags = true
+tag_sorting = "frequency"
+favicon = "img/favicon.png"
+menu = [
+  { name = "blog", url = "blog", trailing_slash = true },
+  { name = "tags", url = "tags", trailing_slash = true },
+]
+socials = [
+  { name = "github", url = "https://github.com/vinidlidoo", icon = "github" },
+  { name = "x", url = "https://x.com/vinidlidoo", icon = "x" },
+]
+copyright = "© $CURRENT_YEAR Vincent Ethier"
