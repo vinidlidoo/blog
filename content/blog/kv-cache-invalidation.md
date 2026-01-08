@@ -47,7 +47,7 @@ Each block feeds into the next: $z_i^{(\ell)}$ becomes the input for computing $
 
 ## The KV Cache
 
-The masked multi-head attention in each block computes three vectors from each hidden state $z_i^{(\ell)}$—for every position $i$, every block $\ell$, and every attention head $H$ ([Llama 3.1 405B](https://huggingface.co/blog/llama31) has 126 blocks and 128 heads):
+The masked multi-head attention in each block computes three vectors from each hidden state $z_i^{(\ell)}$—for every position $i$, every block $\ell$, and every attention head $h$ ([Llama 3.1 405B](https://huggingface.co/blog/llama31) has 126 blocks and 128 heads):
 
 - **Query** $Q(z_i^{(\ell)})$: what is position $i$ looking for?
 - **Key** $K(z_j^{(\ell)})$: what does position $j$ contain?
@@ -55,7 +55,7 @@ The masked multi-head attention in each block computes three vectors from each h
 
 Position $i$ attends to all positions $j \leq i$ by comparing its query against their keys, then taking a weighted sum of their values. This means $z_i^{(\ell)}$, and Q, K, V, depend on *all preceding tokens*, not just $t_i$ alone.
 
-The **KV cache** exploits a key observation: when generating **new tokens** one by one, the K and V vectors for previous positions don't change. So we cache them. For each new token, we compute its Q, K, V, then reuse the cached K's and V's for attention. This turns $O(n^2)$ per-token work into $O(n)$.
+The KV cache exploits a key observation: when generating **new tokens**, the K and V vectors for previous positions don't change. So we cache them. For each new token, we compute its Q, K, V, then reuse the cached K's and V's for attention. This turns $O(n^2)$ per-token work into $O(n)$.
 
 ## Why Removing Tokens Breaks the Cache
 

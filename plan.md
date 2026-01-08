@@ -22,6 +22,7 @@
 - [ ] Customize blog title/description in `config.toml`
 - [ ] Customize homepage content in `content/_index.md`
 - [ ] Customize tabi theme settings
+- [ ] Active search
 
 ---
 
