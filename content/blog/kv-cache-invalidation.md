@@ -28,7 +28,7 @@ LLMs generate text one token at a time. Given a sequence of tokens $t_1, \ldots,
 $$P(t_{i+1} | t_1, \ldots, t_i)$$
 
 
-To generate a response, the model samples from this distribution, appends the new token to the context, and repeats. Each new token requires a **forward pass** through the entire model, processing the full context.
+To generate a response, the model samples from this distribution (likely *Paris* in the figure above), appends the new token to the context, and repeats. Each new token requires a **forward pass** through the entire model, processing the full context.
 
 ## The Transformer Forward Pass
 

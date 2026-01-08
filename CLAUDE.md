@@ -60,3 +60,41 @@ git submodule update --remote themes/tabi
 - `highlight_theme = "css"` is required (not a named theme)
 - Homepage uses `[extra] section_path = "blog/_index.md"` to show recent posts
 - Taxonomies must be declared in `config.toml` before use in posts
+
+## KaTeX (Math Rendering)
+
+Enable per-post with `katex = true` in `[extra]`. Limitations:
+- `\mathrm{}` doesn't render inside `<details>` blocks—use plain text instead
+- `\begin{cases}` can be flaky—use inline prose for piecewise definitions
+- Standard commands (`\frac`, `\sqrt`, `\sum`, `\left`, `\right`) work fine
+
+## Footnotes
+
+Standard markdown syntax:
+```markdown
+Text with footnote[^1].
+
+[^1]: Footnote content here.
+```
+
+Style footnotes via CSS: `.footnote-definition { font-size: 0.85rem; }`
+
+## Dates
+
+- `post_listing_date = "both"` in `content/blog/_index.md` shows both dates in **listing only**
+- For individual posts to show "Updated", add `updated = YYYY-MM-DD` to frontmatter
+
+## Images
+
+- Place in `static/img/`, reference as `/img/filename.ext`
+- **Case-sensitive on GitHub Pages** (Linux)—ensure filenames match exactly
+
+## Custom Stylesheets
+
+Add per-post CSS via frontmatter:
+```toml
+[extra]
+stylesheets = ["css/details.css"]
+```
+
+Files go in `static/css/`.
