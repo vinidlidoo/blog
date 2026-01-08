@@ -1,6 +1,7 @@
 +++
 title = "KV Cache Invalidation"
 date = 2026-01-07
+updated = 2026-01-08
 description = "Why removing context from an LLM conversation forces full recomputation"
 
 [taxonomies]
@@ -15,7 +16,7 @@ stylesheets = ["css/details.css"]
 
 Over the holiday break, I had a conversation with a friend about prompt caching. Everyone's intuition about context engineering is sensible: if you're chatting with ChatGPT or Claude and the conversation accumulates irrelevant context, removing it should help the model focus. Better accuracy, right?
 
-Yes, but there's a catch. Removing tokens from the middle of a conversation invalidates the **KV cache**—a key mechanism that speeds up LLM inference. You don't just lose a bit of cached work; you lose **everything after the edit**. This is why claude.ai, ChatGPT, and Claude Code don't frequently edit or delete earlier messages[^1]: the computational cost would wipe out the savings. As a Claude Code PM [put it](https://x.com/trq212/status/2004026126889320668): "*Coding agents would be cost prohibitive if they didn't maintain the prompt cache between turns.*" This post explains why.
+Yes, but there's a catch. Removing tokens from the middle of a conversation invalidates the **KV cache**—a key mechanism that speeds up LLM inference. You don't just lose a bit of cached work; you lose **everything after the edit**. This is why claude.ai, ChatGPT, or Claude Code don't frequently edit or delete earlier messages[^1]. As a Claude Code PM [put it](https://x.com/trq212/status/2004026126889320668): "*Coding agents would be cost prohibitive if they didn't maintain the prompt cache between turns.*" This post explains why.
 
 [^1]: Compaction does happen, but infrequently.
 
@@ -35,39 +36,37 @@ Modern LLMs use the transformer architecture. Here's the famous diagram from "At
 
 ![Transformer architecture](/img/transformer.png)
 
-The grey box marked "Nx" is a **decoder block**—it's repeated $L$ times ([Llama 3.1 405B](https://huggingface.co/blog/llama31) has 126). Each block contains multi-head attention and a feed-forward network.[^2]
+The grey box marked "Nx" to the right is a **decoder block**—it's repeated $L$ times. Each block contains a masked multi-head attention and a feed-forward network.[^2]
 
 
 Each token $t_i$ starts as an embedding vector $x_i$. As it passes through the blocks, this vector gets transformed. Call the vector for position $i$ after block $\ell$ the **hidden state** $z_i^{(\ell)}$.
 
-The critical operation is **masked self-attention**: to compute $z_i^{(\ell)}$, position $i$ attends to positions $1, \ldots, i$ (including itself). This means $z_i^{(\ell)}$ depends on *all preceding tokens*, not just $t_i$ alone.
-
 Each block feeds into the next: $z_i^{(\ell)}$ becomes the input for computing $z_i^{(\ell+1)}$. After $L$ blocks, the final hidden state $z_i^{(L)}$ is used to predict $P(t_{i+1} | t_1, \ldots, t_i)$, that is, the probability distribution we started with.
 
 [^2]: The diagram shows the original encoder-decoder architecture. Modern LLMs like GPT and Claude are *decoder-only*: they omit the left side (encoder) and the middle "Multi-Head Attention" that attends to encoder outputs.
+
 ## The KV Cache
 
-The attention part of the blocks mentioned above work by computing three vectors from each hidden state $z_i^{(\ell)}$:
+The masked multi-head attention in each block computes three vectors from each hidden state $z_i^{(\ell)}$—for every position $i$, every block $\ell$, and every attention head $H$ ([Llama 3.1 405B](https://huggingface.co/blog/llama31) has 126 blocks and 128 heads):
 
 - **Query** $Q(z_i^{(\ell)})$: what is position $i$ looking for?
 - **Key** $K(z_j^{(\ell)})$: what does position $j$ contain?
 - **Value** $V(z_j^{(\ell)})$: what information does position $j$ provide?
 
-Position $i$ attends to all positions $j \leq i$ by comparing its query against their keys, then taking a weighted sum of their values.
+Position $i$ attends to all positions $j \leq i$ by comparing its query against their keys, then taking a weighted sum of their values. This means $z_i^{(\ell)}$, and Q, K, V, depend on *all preceding tokens*, not just $t_i$ alone.
 
-The **KV cache** exploits a key observation: when generating token by token, the K and V vectors for previous positions don't change. So we cache them. For each new token, we only compute its Q, K, V, then reuse the cached K's and V's for attention. This turns $O(n^2)$ per-token work into $O(n)$.
+The **KV cache** exploits a key observation: when generating **new tokens** one by one, the K and V vectors for previous positions don't change. So we cache them. For each new token, we compute its Q, K, V, then reuse the cached K's and V's for attention. This turns $O(n^2)$ per-token work into $O(n)$.
 
-## Why Removing or Inserting Tokens Breaks the Cache
+## Why Removing Tokens Breaks the Cache
 
 Now consider removing a token from position $j$. What happens to the cached K and V vectors?
-
-K and V at position $i$ are computed from the hidden state $z_i^{(\ell)}$. And $z_i^{(\ell)}$ is computed by attending over positions $1, \ldots, i$—so it depends on every token before it.
-
-Remove token $j$, and every hidden state $z_{j+1}^{(\ell)}, z_{j+2}^{(\ell)}, \ldots$ changes—they all attended to position $j$ but no longer do. Changed hidden states mean changed K and V vectors. The entire cache from position $j$ onward is now stale.
+Remove token $j$, and every hidden state $z_{j+1}^{(\ell)}, z_{j+2}^{(\ell)}, \ldots$ changes—they all attended to position $j$ but no longer do. Per previous section, changed hidden states mean changed K and V vectors. The entire cache from position $j$ onward is now stale.
 
 ## Implications
 
 **Prompt caching requires exact prefix match.** API providers like Anthropic and OpenAI cache the KV state for prompts. If your new request shares an exact prefix with a previous one, they can reuse the cache. But if you modify anything—even a single token in the middle—the cache is useless from that point onward.
+
+**Cache invalidation is expensive.** Consider editing a token early in a 50,000-token conversation. Every position after the edit needs its K and V vectors recomputed—across all blocks and heads. That's over 800 million vector computations for Llama 3.1 405B. Anthropic's [prompt caching](https://docs.anthropic.com/en/docs/build-with-claude/prompt-caching) prices cache hits at 10% of base input token cost; a cache miss means paying the full price. Latency suffers too: cache hits can reduce time-to-first-token by [up to 85%](https://www.anthropic.com/news/prompt-caching) for long prompts.
 
 **You can append, but you can't edit.** Adding tokens to the end is cheap: just extend the cache. Inserting or deleting in the middle forces recomputation of everything downstream. This is why conversation history in chatbots tends to grow monotonically.
 
