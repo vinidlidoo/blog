@@ -12,7 +12,7 @@ katex = true
 
 Continuing down the rabbit hole from [Lex Fridman's podcast #488](https://youtu.be/14OPT6CcsH4?t=2967&si=_qnWStDudzUB_o_D), I want to explore **diagonalization**—a proof technique that keeps appearing in foundational mathematics.
 
-The core idea: construct an object that's guaranteed to differ from every object in a given list by changing the "diagonal" entries. We'll cover four variations of this technique, all sharing the same logical structure (each are also covered in the podcast).
+The core idea: construct an object that's guaranteed to differ from every object in a given list by changing the "diagonal" entries. We'll cover four variations of this technique, all sharing the same logical structure (each also covered in the podcast).
 
 ## 1. Cantor's Proof: The Reals Are Uncountable
 
