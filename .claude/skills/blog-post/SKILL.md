@@ -1,13 +1,6 @@
 ---
 name: blog-post
 description: Write blog posts for Vincent's Zola blog. Use when asked to write, draft, or create a new blog post, or when helping with blog content.
-hooks:
-  PreToolUse:
-    - matcher: "Read"
-      hooks:
-        - type: command
-          command: "ls -t content/blog/*.md | head -3"
-          once: true
 ---
 
 # Blog Post Skill
@@ -16,7 +9,7 @@ Write blog posts matching Vincent's established style, tone, and complexity.
 
 ## Before Writing
 
-The hook above auto-runs `ls -t content/blog/*.md | head -3` on first Read. Use that output to identify the most recent posts, then read them to absorb the current style—they are your ground truth.
+Run `ls -t content/blog/*.md | head -3` to find the most recent posts, then read them to absorb the current style—they are your ground truth.
 
 ## After Writing
 
