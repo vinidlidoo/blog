@@ -135,7 +135,7 @@ $$M = (Q, \Gamma, b, \Sigma, \delta, q_0, F)$$
 | Symbol | Meaning |
 |--------|---------|
 | $Q$ | Finite set of states |
-| $\Gamma$ | Tape alphabet (all symbols the machine can read/write) |
+| $\Gamma$ | Tape alphabet (finite set of symbols the machine can read/write) |
 | $b \in \Gamma$ | Blank symbol (fills the infinite tape beyond input) |
 | $\Sigma \subseteq \Gamma \setminus \lbrace b \rbrace$ | Input alphabet (valid input symbols) |
 | $q_0 \in Q$ | Initial state |
@@ -146,19 +146,17 @@ The transition function $\delta$ is the brain of the machine: "If I'm in state $
 
 A machine **accepts** input $w$ if it eventually reaches a state in $F$. The **language** it recognizes is the set of all strings it accepts: $L(M) = \lbrace w \in \Sigma^\* \mid M \text{ accepts } w \rbrace$, where $\Sigma^\*$ means all finite strings over the input alphabet, such as $\lbrace 0, 1 \rbrace^\* = \lbrace \epsilon, 0, 1, 00, 01, \ldots \rbrace$.
 
-Here's the key insight: **a Turing machine is a finite description of a potentially infinite set**.
+Look at $L(M)$ again. The machine $M$ is finite: finitely many states, finite tape alphabet, therefore finitely many transition rules. Yet the language $L(M)$ can contain infinitely many strings. **A Turing machine is a finite description of a potentially infinite set.**
 
-In mathematics, we often capture infinite sets with finite notation. [Set-builder notation](@/blog/russells-paradox.md) like $\lbrace x : x > 5 \rbrace$ describes infinitely many numbers in a few symbols. A Turing machine does something similar, but *computably*: it's a finite program that defines set membership via a procedure you can actually execute.
-
-Our even-1s machine has six transition rules. Yet it accepts infinitely many strings: $\epsilon$, `0`, `00`, `11`, `0000`, `1111`, `0110`, and so on forever. You could never list them all, but you can run the machine on any candidate and get an answer.
-
-The palindrome machine is similar: a handful of states and rules, but it recognizes an infinite set of strings.
-
-Notice the parallel structure:
+This parallels something I explored in [my post on Russell's Paradox](@/blog/russells-paradox.md). In set-builder notation, $\lbrace x : x > 5 \rbrace$ describes infinitely many numbers with a few symbols. A Turing machine does something similar:
 
 $$\lbrace x : x > 5 \rbrace \quad \text{vs} \quad \lbrace w : M \text{ accepts } w \rbrace$$
 
-In set-builder notation, the property after the colon defines membership. For a Turing machine, "M accepts w" *is* the property. The machine encodes the predicate; running it evaluates whether the predicate holds for a given input.
+Both define sets via a membership criterion. The difference: set-builder notation allows *any* property, including ones with no mechanical test ("$n$ will appear in next week's winning lottery numbers" defines a set, but good luck testing membership). A Turing machine, by construction, *is* a test.[^2] The definition and the procedure are the same thing: hand me a candidate $w$, and I run $M$ on it.
+
+Our even-1s machine has six transition rules, yet it accepts infinitely many strings: $\epsilon$, `0`, `00`, `11`, `0000`, `1111`, `0110`... You could never list them all, but hand me any string and I can run the machine to tell you if it's in the set.
+
+[^2]: With one caveat: the machine might run forever without halting. More on that in Part 2.
 
 ## What's Next
 

@@ -67,6 +67,8 @@ Create the post at `content/blog/slug-matching-title.md`.
 
 ## Learnings
 
+Keep learnings general and reusable; avoid examples specific to any single post.
+
 - Don't run `zola serve`; Vincent prefers to run it himself
 - For long/complex topics, propose splitting into multiple posts before writing
 - Minimize em dashes; prefer colons, semicolons, periods, or parentheses instead
@@ -78,3 +80,9 @@ Create the post at `content/blog/slug-matching-title.md`.
 - Use `\*` to escape Kleene star (`^*`) in KaTeX to avoid markdown parsing issues
 - Twitter/X embeds: need CSP config in `config.toml` for `platform.twitter.com` (both `script-src` and `frame-src`); use `data-theme="dark"` and `data-align="center"`
 - Anchor links: use standalone `<a id="..."></a>` elements for jump targets; `id` on embedded HTML elements doesn't work reliably in Zola
+- When introducing insights that seem disconnected, bridge explicitly to what was just discussed
+- When contrasting two concepts, explain WHY the distinction matters, not just what the difference is
+- Use intuitive examples over jargon; prefer everyday analogies readers don't need background for
+- For execution traces: show concrete input, visualizations, and reference state at every step
+- For tables, add an explanation of how to read them
+- When linking to other posts, name the post explicitly rather than just hyperlinking a term
