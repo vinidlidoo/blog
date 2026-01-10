@@ -77,3 +77,4 @@ Create the post at `content/blog/slug-matching-title.md`.
 - Don't make unsubstantiated claims; if something hasn't been proven in the post, don't assert it
 - Use `\*` to escape Kleene star (`^*`) in KaTeX to avoid markdown parsing issues
 - Twitter/X embeds: need CSP config in `config.toml` for `platform.twitter.com` (both `script-src` and `frame-src`); use `data-theme="dark"` and `data-align="center"`
+- Anchor links: use standalone `<a id="..."></a>` elements for jump targets; `id` on embedded HTML elements doesn't work reliably in Zola

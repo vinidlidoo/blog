@@ -14,10 +14,10 @@ Last month, DeepMind CEO Demis Hassabis [fired back](https://twitter.com/demisha
 
 > "The human brain (and AI foundation models) are approximate Turing Machines."[^1]
 
-
 I've heard the expressions "Turing machine" and "Turing complete" a hundred times over the years, but I have to admit I never truly understood what they meant. This is my attempt at a short, dense, yet accessible explanation. Part 1 covers what a Turing machine actually *is*. Part 2 will explain what "Turing complete" means and return to Demis's claim.
 
-[^1]: [Full tweet at the end of the post](#the-tweet)
+[^1]: [Full tweet at the end of the post](#tweet)
+
 ## Historical Context
 
 In the 1930s, mathematicians were trying to formalize what "computation" actually means. Before electronic computers existed, a "computer" was literally a human being performing calculations by hand, following rules and writing intermediate results on paper.
@@ -47,11 +47,17 @@ Let's see this in action.
 
 ## Example 1: Even Number of 1s
 
-Let's build a machine that accepts binary strings with an even number of 1s.
+Let's build a machine $M$ that accepts binary strings with an even number of 1s.
 
-This only requires tracking one bit of information: have I seen an even or odd number of 1s so far? Toggle on each 1, ignore 0s, accept at the end if even.
+Take the input $w = \texttt{1011}$. This has three 1s (odd), so $M$ should reject it. The input $w = \texttt{1100}$ has two 1s (even), so $M$ should accept it.
 
-**States**: $Q = \lbrace q_{\text{even}}, q_{\text{odd}}, q_{\text{accept}}, q_{\text{reject}} \rbrace$
+The tape starts with the input written on it, followed by blanks (written $b$) extending infinitely to the right:
+
+$$\texttt{1} \quad \texttt{0} \quad \texttt{1} \quad \texttt{1} \quad b \quad b \quad b \quad \cdots$$
+
+The machine's head starts at the leftmost cell, in some initial state $q_0$. Our strategy: scan right, toggling between "seen even" and "seen odd" on each 1, ignoring 0s, and accept or reject when we hit a blank.
+
+**States**: $Q = \lbrace q_{\text{even}}, q_{\text{odd}}, q_{\text{accept}}, q_{\text{reject}} \rbrace$, with $q_0 = q_{\text{even}}$ (zero 1s seen is even).
 
 **Transitions**:
 
@@ -64,13 +70,25 @@ This only requires tracking one bit of information: have I seen an even or odd n
 | $q_{\text{odd}}$ | 1 | 1 | R | $q_{\text{even}}$ |
 | $q_{\text{odd}}$ | $b$ | $b$ | — | $q_{\text{reject}}$ |
 
+Read each row as: "If in *State*, *Read* this symbol, then *Write* this symbol, then *Move* position in this direction (Left or Right); you're now in this *Next State*."
+
+Let's trace through $w = \texttt{1011}$:
+
+1. State $q_{\text{even}}$, read `1` → move right, switch to $q_{\text{odd}}$
+2. State $q_{\text{odd}}$, read `0` → move right, stay in $q_{\text{odd}}$
+3. State $q_{\text{odd}}$, read `1` → move right, switch to $q_{\text{even}}$
+4. State $q_{\text{even}}$, read `1` → move right, switch to $q_{\text{odd}}$
+5. State $q_{\text{odd}}$, read $b$ → halt in $q_{\text{reject}}$
+
+Rejected, as expected. Try $w = \texttt{1100}$ yourself: you should end in $q_{\text{accept}}$.
+
 Notice something? This machine never writes anything new, never moves left. It's just scanning right and toggling state. We're not using the full power of a Turing machine yet.
 
 ## Example 2: Palindrome Detection
 
 Now let's try something that *requires* writing and bidirectional movement: detecting palindromes.
 
-A string is a palindrome if it reads the same forwards and backwards: `101`, `1001`, `11011`.
+A string is a palindrome if it reads the same forwards and backwards. Take $w = \texttt{101}$: it's a palindrome, so $M$ should accept. The input $w = \texttt{100}$ is not, so $M$ should reject.
 
 **Algorithm**:
 
@@ -80,13 +98,33 @@ A string is a palindrome if it reads the same forwards and backwards: `101`, `10
 4. Mark it with $X$, scan left back to the first unmarked character
 5. Repeat until all characters are marked (accept) or we find a mismatch (reject)
 
-This requires:
+Let's trace through $w = \texttt{101}$. The tape starts as:
+
+$$\texttt{1} \quad \texttt{0} \quad \texttt{1} \quad b \quad \cdots$$
+
+**Iteration 1**: In state $q_0$, read `1` at the left. Transition to $q_{\text{seek1}}$ ("looking for 1"), write $X$:
+
+$$X \quad \texttt{0} \quad \texttt{1} \quad b \quad \cdots$$
+
+In $q_{\text{seek1}}$, scan right to the rightmost unmarked character (`1`). It matches! Write $X$, transition to $q_{\text{return}}$:
+
+$$X \quad \texttt{0} \quad X \quad b \quad \cdots$$
+
+In $q_{\text{return}}$, scan left back to the first unmarked character (`0`), transition to $q_0$.
+
+**Iteration 2**: In $q_0$, read `0`. Transition to $q_{\text{seek0}}$, write $X$:
+
+$$X \quad X \quad X \quad b \quad \cdots$$
+
+In $q_{\text{seek0}}$, scan right for the rightmost unmarked character... there isn't one. Everything is marked, so transition to $q_{\text{accept}}$.
+
+This example shows what Example 1 didn't need:
 
 - **Writing**: We mark characters with $X$ to track progress
 - **Bidirectional movement**: We scan left and right repeatedly
 - **State as memory**: We remember "looking for 0" vs "looking for 1"
 
-Notice that $X$ isn't part of the input; it's scratch notation the machine uses internally. The machine can read and write symbols beyond just the input characters.
+Notice that $X$ isn't part of the input. The **input alphabet** is $\Sigma = \lbrace \texttt{0}, \texttt{1} \rbrace$, but the **tape alphabet** is $\Gamma = \lbrace \texttt{0}, \texttt{1}, X, b \rbrace$. The machine can read and write symbols beyond what appears in valid inputs.
 
 ## Formal Definition
 
@@ -130,8 +168,7 @@ But why should such a simple machine matter? Part 2 tackles what "Turing complet
 
 ---
 
-## The Tweet
-
+<a id="tweet"></a>
 <blockquote class="twitter-tweet" data-theme="dark" data-align="center"><p lang="en" dir="ltr">Yann is just plain incorrect here, he's confusing general intelligence with universal intelligence.<br><br>Brains are the most exquisite and complex phenomena we know of in the universe (so far), and they are in fact extremely general.<br><br>Obviously one can't circumvent the no free lunch… <a href="https://t.co/RjeqlaP7GO">https://t.co/RjeqlaP7GO</a></p>&mdash; Demis Hassabis (@demishassabis) <a href="https://twitter.com/demishassabis/status/2003097405026193809?ref_src=twsrc%5Etfw">December 22, 2025</a></blockquote>
 <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 
