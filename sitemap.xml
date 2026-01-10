@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="https://vinidlidoo.github.io/sitemap_style.xsl" type="text/xsl"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+        <loc>https://vinidlidoo.github.io/</loc>
+    </url>
+    <url>
+        <loc>https://vinidlidoo.github.io/blog/</loc>
+    </url>
+    <url>
+        <loc>https://vinidlidoo.github.io/blog/four-proofs-by-diagonalization/</loc>
+        <lastmod>2026-01-08</lastmod>
+    </url>
+    <url>
+        <loc>https://vinidlidoo.github.io/blog/kv-cache-invalidation/</loc>
+        <lastmod>2026-01-08</lastmod>
+    </url>
+    <url>
+        <loc>https://vinidlidoo.github.io/blog/page/1/</loc>
+    </url>
+    <url>
+        <loc>https://vinidlidoo.github.io/blog/russells-paradox/</loc>
+        <lastmod>2026-01-06</lastmod>
+    </url>
+    <url>
+        <loc>https://vinidlidoo.github.io/blog/turing-machines/</loc>
+        <lastmod>2026-01-09</lastmod>
+    </url>
+    <url>
+        <loc>https://vinidlidoo.github.io/tags/</loc>
+    </url>
+    <url>
+        <loc>https://vinidlidoo.github.io/tags/ai/</loc>
+    </url>
+    <url>
+        <loc>https://vinidlidoo.github.io/tags/computer-science/</loc>
+    </url>
+    <url>
+        <loc>https://vinidlidoo.github.io/tags/math/</loc>
+    </url>
+</urlset>
