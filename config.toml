@@ -19,6 +19,7 @@ highlight_theme = "css"
 
 [extra]
 author = "Vincent"
+stylesheets = ["css/details.css"]
 skin = "indigo_ingot"
 compact_tags = true
 tag_sorting = "frequency"
@@ -32,11 +33,11 @@ socials = [
   { name = "x", url = "https://x.com/vinidlidoo", icon = "x" },
 ]
 copyright = "© $CURRENT_YEAR Vincent Ethier"
-
-[[extra.allowed_domains]]
-directive = "script-src"
-domains = ["platform.twitter.com"]
-
-[[extra.allowed_domains]]
-directive = "frame-src"
-domains = ["platform.twitter.com"]
+allowed_domains = [
+  { directive = "script-src", domains = [
+    "platform.twitter.com",
+  ] },
+  { directive = "frame-src", domains = [
+    "platform.twitter.com",
+  ] },
+]

@@ -9,7 +9,6 @@ tags = ["ai"]
 
 [extra]
 katex = true
-stylesheets = ["css/details.css"]
 +++
 
 ![Next token prediction](/img/next_token_prediction.webp)
