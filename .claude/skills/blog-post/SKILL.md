@@ -9,7 +9,7 @@ Write blog posts matching Vincent's established style, tone, and complexity.
 
 ## Before Writing
 
-Run `ls -t content/blog/*.md | head -3` to find the most recent posts, then read them to absorb the current style—they are your ground truth.
+Run `/bin/ls -t content/blog/*.md | head -3` to find the most recent posts (use `/bin/ls` since `ls` may be aliased to `eza`), then read them to absorb the current style—they are your ground truth.
 
 ## After Writing
 
@@ -67,4 +67,13 @@ Create the post at `content/blog/slug-matching-title.md`.
 
 ## Learnings
 
-<!-- Style learnings from past sessions go here -->
+- Don't run `zola serve`; Vincent prefers to run it himself
+- For long/complex topics, propose splitting into multiple posts before writing
+- Minimize em dashes; prefer colons, semicolons, periods, or parentheses instead
+- Put examples before formal definitions for accessibility; let readers build intuition first
+- Remove tangential comparisons that don't serve the main point (keep focus tight)
+- Connect abstract insights back to concrete examples from the post
+- Link to related posts when introducing concepts (e.g., set-builder notation → Russell's Paradox post)
+- Don't make unsubstantiated claims; if something hasn't been proven in the post, don't assert it
+- Use `\*` to escape Kleene star (`^*`) in KaTeX to avoid markdown parsing issues
+- Twitter/X embeds: need CSP config in `config.toml` for `platform.twitter.com` (both `script-src` and `frame-src`); use `data-theme="dark"` and `data-align="center"`

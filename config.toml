@@ -32,3 +32,11 @@ socials = [
   { name = "x", url = "https://x.com/vinidlidoo", icon = "x" },
 ]
 copyright = "© $CURRENT_YEAR Vincent Ethier"
+
+[[extra.allowed_domains]]
+directive = "script-src"
+domains = ["platform.twitter.com"]
+
+[[extra.allowed_domains]]
+directive = "frame-src"
+domains = ["platform.twitter.com"]
