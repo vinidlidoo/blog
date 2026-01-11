@@ -86,3 +86,12 @@ Keep learnings general and reusable; avoid examples specific to any single post.
 - For execution traces: show concrete input, visualizations, and reference state at every step
 - For tables, add an explanation of how to read them
 - When linking to other posts, name the post explicitly rather than just hyperlinking a term
+- Every section needs motivation before content; answer "why am I reading this?" before diving in
+- When changing notation mid-post, explain the change explicitly
+- Don't claim something is "expected" or "obvious" when it's actually surprising to readers
+- When illustrating a generalization, use different examples than the base case
+- Undecidability: clarify that specific cases can be easy, but no single algorithm works for all cases
+- When constructing something in a proof, justify why the construction is valid
+- Don't mix categories carelessly when giving parallel examples
+- Historical context motivates abstract concepts
+- Self-reference concepts need unpacking; explain that an encoding is "just a string"
