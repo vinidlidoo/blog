@@ -36,7 +36,7 @@ What does it take to be Turing complete? Three things:
 
 1. **Unbounded memory**: Storage that can grow without limit (like the TM's infinite tape)
 2. **Conditional branching**: Different behavior based on what it reads (like the transition function: "if in state $q$ reading $s$, then...")
-3. **Looping**: The ability to repeat operations indefinitely (a TM can cycle through states as many times as needed)
+3. **Recursion**: The ability to repeat operations indefinitely (a TM can cycle through states as many times as needed)
 
 That's enough. Python has these. So do JavaScript, C, Excel (yes, really), and even PowerPoint. The encoding might be absurd, but it will work.
 
