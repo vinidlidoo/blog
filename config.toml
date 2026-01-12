@@ -40,4 +40,8 @@ allowed_domains = [
   { directive = "frame-src", domains = [
     "platform.twitter.com",
   ] },
+  { directive = "img-src", domains = [
+    "'self'",
+    "data:",
+  ] },
 ]
