@@ -34,9 +34,9 @@ Turing didn't physically build the UTM; he specified it precisely enough that it
 
 What does it take to be Turing complete? Three things:
 
-1. **Unbounded memory**: Storage that can grow without limit (like the TM's infinite tape)
-2. **Conditional branching**: Different behavior based on what it reads (like the transition function: "if in state $q$ reading $s$, then...")
-3. **Recursion**: The ability to repeat operations indefinitely (a TM can cycle through states as many times as needed)
+1. **Unbounded read/write memory**: Storage that can grow without limit, with the ability to both read from and write to arbitrary locations (like the TM's infinite tape and read/write head)
+2. **Conditional branching**: Different behavior based on data values (like the transition function: "if in state $q$ reading $s$, then...")
+3. **Unbounded iteration**: The ability to repeat operations indefinitely, via loops, recursion, or equivalent (a TM can cycle through states as many times as needed)
 
 That's enough. Python has these. So do JavaScript, C, Excel (yes, really), and even PowerPoint. The encoding might be absurd, but it will work.
 
