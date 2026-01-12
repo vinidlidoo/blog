@@ -2,7 +2,6 @@
 title = "The Limits of Computation"
 date = 2026-01-11
 description = "What Turing machines can't do, and why it matters"
-draft = true
 
 [taxonomies]
 tags = ["math", "computer-science"]
@@ -13,90 +12,96 @@ katex = true
 
 In [Part 2](@/blog/turing-completeness.md), we established that Turing completeness is the ceiling of computational power. Every reasonable formalism for "computation" turns out to be equivalent. You can't build something stronger than a Turing machine.
 
-But that raises a question: can Turing machines solve *everything*?
+But can Turing machines solve *everything*?
 
-No. And the proof is surprisingly elegant.
+No. And the proof is surprisingly elegant. It will also lead us, almost immediately, to one of the most famous results in mathematics: Gödel's Incompleteness Theorem.
 
 ## The Halting Problem
 
 Here's a simple question: given a program, will it ever finish running?
+In our formalism from [Part 1](@/blog/turing-machines.md), a "program" is an encoding $\langle M, w \rangle$: a Turing machine $M$ together with its input $w$, written as data on a tape. So the halting question is: does $M$ halt on $w$?
 
-This seems like something we should be able to answer. You'd feed your code to an analyzer, and it would tell you "this terminates" or "this loops forever." Incredibly useful. You could catch infinite loops before running code, verify that critical software terminates, prove programs correct without exhaustive testing.
+Imagine a **Halt Decider**: feed your code to an analyzer $H$, and it tells you "this terminates" or "this loops forever." You could catch infinite loops before deployment, verify that critical software always returns an answer, guarantee your recursive function won't recurse forever. Incredibly useful.
 
-The **Halting Problem** asks: can we build such an analyzer? Given an encoding of a Turing machine $M$ and an input $w$, written $\langle M, w \rangle$, does $M$ halt on $w$?
+The **Halting Problem** asks: can we build such an analyzer? Not for one specific program, but a general procedure that correctly answers for *all* $\langle M, w \rangle$.
 
-Turing proved no such analyzer can exist. The proof uses a **diagonal argument**, the same technique Cantor used to prove the reals are uncountable (which I explored in [Four Proofs by Diagonalization](@/blog/four-proofs-by-diagonalization.md)). And it hinges on self-reference: what happens when a machine analyzes *itself*?
+Turing proved no such procedure can exist.
+
+## The Yes/No Asymmetry
+
+The "yes" and "no" answers to the problem are fundamentally different.
+
+For "yes" answers, you don't need to understand the program at all. Just run it. If it halts after a week, you say "yes, it halted." Getting the yes answers is almost trivial.
+
+But "no" answers are different. Suppose you've been running a program for a thousand years and it still hasn't halted. Can you say "no, it won't ever halt"? You can't. Maybe it'll halt in a thousand and one years. At no point does running the program entitle you to say "no."
+
+To say "no, this program will never halt," you would need *deep insight* into what this particular program is doing. You need to understand its structure well enough to see that it can never finish. That's a fundamentally harder task than just running it and waiting.
+
+This asymmetry hints at the impossibility. Let's prove it.
 
 ## The Diagonal Argument
 
-Suppose a halting-decider $H$ exists. Given any $\langle M, w \rangle$, it tells us whether $M$ halts on $w$.
+Suppose, toward contradiction, that we have a procedure $H$ that solves the halting problem. Given any program $P$ and input, $H$ correctly tells us whether $P$ halts.
 
-Here's the key trick. An encoding $\langle M \rangle$ is just a string of symbols (say, 0s and 1s). And a Turing machine will run on *any* string you put on its tape. It might reject strange inputs, or loop forever, or do something unexpected, but it will do *something*. So we can feed a machine its own encoding as input: run $M$ on the string $\langle M \rangle$. In our $\langle M, w \rangle$ notation, this is $\langle M, \langle M \rangle \rangle$: machine $M$, input $\langle M \rangle$.
+Now I'll use $H$ as a subroutine to build a new program. Call it $Q$. Program $Q$ takes another program $P$ as input and does the following:
 
-If $H$ exists, we could build a table answering this for every machine. Let $M_1, M_2, M_3, \ldots$ be all Turing machines. Each cell shows what $H$ says about machine $M_i$ running on input $\langle M_j \rangle$:
+1. Ask $H$: "Would $P$ halt if we ran it on $P$ itself?"
+2. If $H$ says "yes, $P$ halts on $P$" → $Q$ loops forever
+3. If $H$ says "no, $P$ doesn't halt on $P$" → $Q$ halts immediately
 
-| Machine | Input $\langle M_1 \rangle$ | Input $\langle M_2 \rangle$ | Input $\langle M_3 \rangle$ | ... |
-|---|:---:|:---:|:---:|:---:|
-| $M_1$ | **H** | L | H | |
-| $M_2$ | L | **L** | H | |
-| $M_3$ | H | H | **L** | |
-| ... | | | | |
+That's it. $Q$ asks whether $P$ halts on itself, then does the *opposite*.
 
-Read this table row by row: each row is a machine, each column is an input. The cell at row $M_i$, column $\langle M_j \rangle$ shows whether $M_i$ halts (H) or loops (L) on input $\langle M_j \rangle$.
+Step 1 is the diagonal part: we're feeding $P$ its own description as input. This is the same self-referential trick behind Russell's paradox and Cantor's diagonal argument. (I explored these in [Four Proofs by Diagonalization](@/blog/four-proofs-by-diagonalization.md).)
 
-The diagonal (bolded) answers a special question: does $M_i$ halt on $\langle M_i \rangle$? Does each machine halt when fed its own description?
+Now comes the punch line. $Q$ is a program. What happens when we run $Q$ on *itself*?
 
-Now construct a machine $D$ that does the *opposite* of the diagonal:
+- If $Q$ halts on $Q$, then $H$ must have said "$Q$ halts on $Q$," so by step 2, $Q$ loops forever. Contradiction.
+- If $Q$ doesn't halt on $Q$, then $H$ must have said "$Q$ doesn't halt on $Q$," so by step 3, $Q$ halts. Contradiction.
 
-1. Take input $\langle M \rangle$
-2. Use $H$ to check: does $M$ halt on input $\langle M \rangle$?
-3. If $H$ says "halts," loop forever
-4. If $H$ says "loops," halt immediately
+$Q$ halts on $Q$ if and only if $Q$ doesn't halt on $Q$. That's impossible. So $H$ cannot exist.
 
-$D$ is a Turing machine. We've built it from computable pieces: run $H$, check the result, branch accordingly. It inverts the diagonal: where $M_1$ halts on itself, $D$ loops; where $M_2$ loops on itself, $D$ halts.
-
-But $D$ is in our list of all machines. What does $D$ do on input $\langle D \rangle$?
-
-- If $D$ halts → $H$ said "$D$ halts on $\langle D \rangle$" → but then $D$ loops. Contradiction.
-- If $D$ loops → $H$ said "$D$ loops on $\langle D \rangle$" → but then $D$ halts. Contradiction.
-
-There's no consistent answer. $D$ can't behave consistently, which means $H$ can't exist. $\blacksquare$
+The halting problem is **undecidable**. $\blacksquare$
 
 ## Why This Matters
 
-The halting problem might seem like a contrived edge case. Who cares about machines analyzing themselves? But it has real consequences.
+What does "undecidable" mean? A problem is **decidable** if there's an algorithm that always halts and always gives the correct yes/no answer. The halting problem is undecidable: no such algorithm exists. For any would-be halt decider, there's some program it gets wrong (or runs forever on).
 
-**Rice's Theorem** generalizes the halting problem: *any* non-trivial property of what a program computes is undecidable. "Non-trivial" means some programs have the property and some don't. If you want to know whether a program ever outputs a specific value, or ever accesses the network, or ever enters an infinite loop, no analyzer can tell you in general.
+The halting problem might seem like a contrived edge case. But it is only the tip of the iceberg. [Rice's Theorem](https://en.wikipedia.org/wiki/Rice%27s_theorem) generalizes it: *any* non-trivial property of what a program computes is undecidable. Want to know if a program ever outputs a specific value? Undecidable. Ever accesses the network? Undecidable. Contains a security vulnerability? Undecidable.
 
-Take a concrete example: does this program ever write to disk? For a *specific* program, you might be able to tell by inspection. But undecidability means something stronger: there is no single analyzer that correctly answers this for *all* possible programs. No matter how clever the tool, some program will defeat it.
+This explains why static analysis tools produce false positives, why compilers can't always eliminate dead code, and why antivirus software can't catch all malware. Perfect program analysis is mathematically impossible.
 
-This explains phenomena programmers encounter daily:
+## Gödel's Incompleteness Theorem
 
-- **Static analysis tools produce false positives.** They must sometimes say "might be a bug" when there isn't one, because perfect accuracy is impossible. If a tool claims zero false positives, it's missing real bugs.
+The halting problem immediately proves one of the most famous results in mathematics.
 
-- **Compilers can't always eliminate dead code.** Whether code is reachable depends on runtime behavior, which can't be determined statically in general.
+In the early 20th century, David Hilbert proposed an ambitious goal: write down a finite set of axioms from which every true statement about numbers could be mechanically derived. Start with basic axioms like "$0$ is a number" and "$x + 0 = x$," add rules of inference, and in principle you could prove any true arithmetic statement: that there are infinitely many primes, that every even number greater than 2 is the sum of two primes (if true), anything.
 
-- **Formal verification works only for restricted domains.** Full correctness proofs are possible when you limit what programs can do. General-purpose verification hits undecidability walls.
+This was **Hilbert's program**. If it succeeded, mathematics would have a solid, computable foundation. You could build a theorem-enumeration machine: start from the axioms, apply inference rules in every possible way, and output each theorem as you derive it. $1 + 1 = 2$. Every prime has a larger prime. One by one, every true statement about numbers.
 
-- **Antivirus can't catch all malware.** If virus detection were decidable, malware authors could test their code against the detector until it passed.
+Here's the key insight: **such a machine would solve the halting problem**. Whether a program halts is a question about finite computation: does this sequence of state transitions eventually reach a halt state? That's a statement about numbers and their relationships, exactly the kind of thing arithmetic can express. But we already proved the halting problem is undecidable. Contradiction. Hilbert's program cannot succeed.
 
-## The Boundary
+> **Gödel's First Incompleteness Theorem**: Any consistent, computable axiom system capable of expressing basic arithmetic is incomplete.[^1] There exist true statements that the system cannot prove.
 
-Here's the deeper insight: we've precisely mapped the boundary between what's computable and what isn't.
 
-Inside the boundary: sorting, searching, arithmetic, chess, protein folding, training neural networks. Any well-defined problem with a finite description.
+Two definitions to unpack this:
+- **Consistent**: The system never proves contradictions, i.e., can't prove both $P$ and $\neg P$
+- **Complete**: Every true statement can be proven
 
-Outside the boundary: determining program behavior in general. Not because we haven't found a clever enough algorithm; because no algorithm can exist. It's a mathematical impossibility, as certain as $\sqrt{2}$ being irrational.
+Why must such systems be incomplete? The proof via the halting problem shows us. An axiom system can enumerate its theorems[^2]: start from axioms, apply inference rules, output each proof as you find it. If a statement is provable, you'll eventually find the proof. But if it's not provable? You'll wait forever, never knowing whether the statement is actually unprovable or whether you just haven't searched long enough. Sound familiar? It's the same asymmetry we saw with the halting problem: you can confirm "yes" but never confirm "no."
 
-This boundary doesn't depend on technology. Faster computers, quantum computers, whatever comes next: none of it changes what's computable. The halting problem will still be undecidable.
+[^1]: "Capable of expressing basic arithmetic" is the minimum bar. The theorem applies to any system at least that powerful, including all of mainstream mathematics.
+
+[^2]: Why can we enumerate theorems? A proof is a finite sequence of steps, each following mechanically from axioms or previous steps. Enumerate all finite sequences, check each for validity, and output the conclusion of each valid proof. Every theorem will eventually appear.
 
 ## Takeaway
 
-Turing completeness is powerful; it captures all of computation. But "all of computation" has limits.
+We've traced a boundary between what's computable and what isn't. In Part 2, we saw that Turing completeness is the ceiling: you can't compute more than a Turing machine can. But now we've seen that this ceiling has holes. Some problems have no algorithm that always halts with the correct answer.
 
-Some problems are provably unsolvable by *any* Turing machine, and therefore by any computer, any brain, any AI. The halting problem is just the simplest example. Rice's theorem tells us the pattern generalizes: determining what programs *do* is fundamentally harder than running them.
+**Inside**: any yes/no problem for which we can write a terminating algorithm. Is this number prime? Trial division will tell you. What's 347 × 892? Long multiplication gives the answer. Sort this list? Mergesort terminates with the correct ordering. These are decidable: we have procedures that always halt with correct answers.
 
-This isn't a failure of engineering. It's a deep fact about the nature of computation itself.
+**Outside**: the halting problem is just the beginning. Rice's theorem tells us that *any* interesting question about program behavior is undecidable. Does this code have a bug? Will it ever access the network? Is it equivalent to this other program? No single general algorithm can answer these for **all programs**. And Gödel tells us the problem runs deeper: some true statements about numbers can never be proven from any finite set of axioms.
+
+This boundary doesn't depend on technology. Faster computers, quantum computers, whatever comes next: the halting problem will still be undecidable, and arithmetic will still be incomplete. There are truths that no mechanical procedure can discover. That's a deep fact about the nature of computation itself.
 
 ---
 
