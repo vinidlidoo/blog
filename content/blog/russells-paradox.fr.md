@@ -11,7 +11,7 @@ katex = true
 stylesheets = ["css/details.css"]
 +++
 
-En écoutant [le podcast #488 de Lex Fridman](https://youtu.be/14OPT6CcsH4?t=2967&si=_qnWStDudzUB_o_D) sur l'infini et les théorèmes d'incomplétude de Gödel, je me suis retrouvé à explorer le paradoxe de Russell — une contradiction d'apparence simple qui a brisé la théorie naïve des ensembles en 1901.
+Le [podcast #488 de Lex Fridman](https://youtu.be/14OPT6CcsH4?t=2967&si=_qnWStDudzUB_o_D) sur l'infini et l'incomplétude de Gödel m'a fait plonger dans le paradoxe de Russell — une contradiction d'apparence simple qui a brisé la théorie naïve des ensembles en 1901.
 
 ## Le paradoxe
 
@@ -19,7 +19,7 @@ Définissons un ensemble $R$ contenant tous les ensembles qui ne se contiennent 
 
 $$R = \lbrace x : x \notin x\rbrace$$
 
-C'est la **notation ensembliste**. Décomposons-la :
+C'est la **notation en compréhension**. Décomposons-la :
 
 - $\lbrace \ \rbrace$ — « l'ensemble de »
 - $x$ — une variable représentant n'importe quel ensemble
@@ -36,13 +36,13 @@ Si $R$ est membre de lui-même, alors $R$ doit satisfaire le critère d'apparten
 
 **Cas 2 : Supposons que $R \notin R$ (R ne se contient pas lui-même)**
 
-Si $R$ n'est pas membre de lui-même, alors $R$ satisfait exactement la propriété que nous avons utilisée pour définir $R$ — c'est un ensemble qui ne se contient pas lui-même. Donc $R$ est éligible à l'appartenance à $R$, ce qui signifie que $R \in R$. Contradiction.
+Si $R$ n'est pas membre de lui-même, alors $R$ satisfait exactement la propriété que nous avons utilisée pour définir $R$ — c'est un ensemble qui ne se contient pas lui-même. Donc $R$ devrait appartenir à $R$, ce qui signifie que $R \in R$. Contradiction.
 
 Les deux cas mènent à une contradiction.
 
 ## Ce qui a mal tourné
 
-Le problème est la **compréhension non restreinte** — l'hypothèse que toute propriété définit un ensemble valide. « L'ensemble de tous les $x$ tels que... » semble devoir toujours fonctionner, mais Russell a montré que ce n'est pas le cas.
+Le problème est la **compréhension naïve** — l'hypothèse que toute propriété définit un ensemble valide. « L'ensemble de tous les $x$ tels que... » semble devoir toujours fonctionner, mais Russell a montré que ce n'est pas le cas.
 
 La théorie des ensembles moderne (ZFC) corrige cela en **construisant les ensembles par étapes**. On ne peut pas faire apparaître un ensemble de nulle part — il faut le construire à partir d'ensembles qui existent déjà. C'est ce qu'on appelle la **hiérarchie cumulative** :
 
@@ -104,7 +104,7 @@ $V_2$ a deux éléments. Inclure ou exclure chacun :
 
 Donc $V_3 = \lbrace \emptyset, \lbrace \emptyset \rbrace, \lbrace \lbrace \emptyset \rbrace \rbrace, \lbrace \emptyset, \lbrace \emptyset \rbrace \rbrace \rbrace$ — quatre éléments, puisque $2^2 = 4$.
 
-Nous progressons maintenant. Nous avons des ensembles contenant d'autres ensembles, des ensembles à plusieurs éléments et des structures imbriquées. $V_4$ a $2^4 = 16$ éléments, $V_5$ en a $2^{16} = 65536$, et la croissance explose à partir de là.
+Les choses deviennent intéressantes. On a maintenant des ensembles contenant d'autres ensembles, des ensembles à plusieurs éléments et des structures imbriquées. $V_4$ a $2^4 = 16$ éléments, $V_5$ en a $2^{16} = 65536$, et la croissance explose à partir de là.
 
 **Pourquoi est-ce important ?** Ces « boîtes vides » ne sont pas des curiosités abstraites — elles *encodent* les mathématiques concrètes. La définition standard des nombres naturels en théorie des ensembles :
 
@@ -119,13 +119,13 @@ Chaque nombre $n$ est l'ensemble contenant tous les nombres plus petits. À part
 
 $V_\lambda = \bigcup_{\alpha < \lambda} V_\alpha$
 
-Après $V_0, V_1, V_2, \ldots$ nous avons construit une infinité d'étapes. Mais nous n'avons pas terminé — la règle 2 dit « prendre l'ensemble des parties de l'étape précédente », et l'infini n'a pas de prédécesseur immédiat. Il n'existe pas de $V_{n}$ tel que $n+1 = \infty$.
+Après $V_0, V_1, V_2, \ldots$ on a construit une infinité d'étapes. Mais on n'a pas terminé — la règle 2 dit « prendre l'ensemble des parties de l'étape précédente », et l'infini n'a pas de prédécesseur immédiat. Il n'y a pas de $V_n$ où $n+1 = \infty$.
 
-Donc à l'infini, nous rassemblons tout ce qui a été construit jusqu'ici :
+Une fois arrivé à l'infini, on rassemble tout ce qui a été construit jusqu'ici :
 
 $$V_\omega = V_0 \cup V_1 \cup V_2 \cup \ldots$$
 
-Ici $\omega$ est le premier ordinal infini — le nom pour « après toutes les étapes finies ». Maintenant la règle 2 fonctionne à nouveau : $V_{\omega+1} = \mathcal{P}(V_\omega)$, $V_{\omega+2} = \mathcal{P}(V_{\omega+1})$, et ainsi de suite.
+Ici $\omega$ est le premier ordinal infini — autrement dit « après toutes les étapes finies ». Maintenant la règle 2 fonctionne à nouveau : $V_{\omega+1} = \mathcal{P}(V_\omega)$, $V_{\omega+2} = \mathcal{P}(V_{\omega+1})$, et ainsi de suite.
 
 La hiérarchie s'étend indéfiniment, avec d'autres étapes de rassemblement aux infinis supérieurs. Les détails techniques n'importent pas ici — ce qui compte, c'est que **la hiérarchie ne s'arrête jamais**.
 
