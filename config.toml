@@ -18,6 +18,11 @@ title = "vinidlidoo"
 description = "Un blog personnel"
 taxonomies = [{ name = "tags" }]
 
+[languages.ja]
+title = "vinidlidoo"
+description = "個人ブログ"
+taxonomies = [{ name = "tags" }]
+
 [markdown]
 highlight_code = true
 highlight_theme = "css"
