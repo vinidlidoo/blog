@@ -1,5 +1,5 @@
 +++
-title = "The Limits of Computation"
+title = "The Limits of Computation (Part 3/3)"
 date = 2026-01-11
 description = "What Turing machines can't do, and why it matters"
 

@@ -1,5 +1,5 @@
 +++
-title = "What is a Turing Machine?"
+title = "What is a Turing Machine? (Part 1/3)"
 date = 2026-01-09
 description = "The elegant abstraction that defines what it means to compute"
 
@@ -14,7 +14,7 @@ Last month, DeepMind CEO Demis Hassabis [fired back](https://twitter.com/demisha
 
 > "The human brain (and AI foundation models) are approximate Turing Machines."[^1]
 
-I've heard the expressions "Turing machine" and "Turing complete" a hundred times over the years, but I have to admit I never truly understood what they meant. This is my attempt at a short, dense, yet accessible explanation. Part 1 covers what a Turing machine actually *is*. Part 2 will explain what "Turing complete" means and return to Demis's claim.
+I've heard the expressions "Turing machine" and "Turing complete" a hundred times over the years, but I have to admit I never truly understood what they meant. This is my attempt at a short, dense, yet accessible explanation. Part 1 covers what a Turing machine actually *is*. [Part 2](@/blog/turing-completeness.md) will explain what "Turing complete" means and return to Demis's claim.
 
 [^1]: [Full tweet at the end of the post](#tweet)
 
@@ -162,7 +162,7 @@ Our even-1s machine has six transition rules, yet it accepts infinitely many str
 
 We've seen what a Turing machine is: a minimal abstraction for mechanical computation. Read, write, move, change state.
 
-But why should such a simple machine matter? Part 2 tackles what "Turing complete" means, why this primitive machine turns out to be maximally powerful, and what Demis meant by "approximate Turing machines."
+But why should such a simple machine matter? [Part 2](@/blog/turing-completeness.md) tackles what "Turing complete" means, why this primitive machine turns out to be maximally powerful, and what Demis meant by "approximate Turing machines."
 
 ---
 

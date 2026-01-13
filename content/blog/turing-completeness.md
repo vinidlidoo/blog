@@ -1,5 +1,5 @@
 +++
-title = "What It Means to Be Turing Complete"
+title = "What It Means to Be Turing Complete (Part 2/3)"
 date = 2026-01-10
 description = "Why brains and AI are 'approximate Turing machines'"
 
@@ -16,7 +16,7 @@ The quote that started this series was Demis Hassabis [claiming](https://x.com/d
 
 ## The Universal Turing Machine
 
-In Part 1, we built individual machines for each problem: one for palindromes, one for even-counting. Each was a fixed device, hardwired for one task. Want to check primes? Build a new machine. Want to sort numbers? Build another.
+In [Part 1](@/blog/turing-machines.md), we built individual machines for each problem: one for palindromes, one for even-counting. Each was a fixed device, hardwired for one task. Want to check primes? Build a new machine. Want to sort numbers? Build another.
 
 Turing asked: could we build *one* machine that does the job of all of them?
 
@@ -68,7 +68,7 @@ What we don't yet know is the fastest path to get there: better data, more compu
 
 Turing completeness tells us what's *possible*. But it doesn't tell us what's *impossible*.
 
-In Part 3, we'll open the ceiling and take a look above. Some problems are provably unsolvable: not just hard, but impossible for any Turing machine, any computer, any brain, any AI.
+In [Part 3](@/blog/limits-of-computation.md), we'll open the ceiling and take a look above. Some problems are provably unsolvable: not just hard, but impossible for any Turing machine, any computer, any brain, any AI.
 
 ---
 
