@@ -66,6 +66,21 @@ The file goes in the same directory as the source.
 
 ## After Translating
 
+### Required: Editor Review
+
+After completing the initial translation, you MUST invoke the `translation-editor` subagent to review and refine the translation:
+
+```
+Use the translation-editor subagent to review <source-file> and <translated-file>
+```
+
+The translation is NOT complete until the editor subagent has:
+1. Reviewed the translation
+2. Made any necessary refinements
+3. Reported its findings
+
+### Validation
+
 1. Run `zola check` to validate
 2. If Vincent made corrections, add learnings below
 

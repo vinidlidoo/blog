@@ -24,7 +24,7 @@ highlight_theme = "css"
 
 [extra]
 author = "Vincent"
-# stylesheets = ["css/details.css"]
+stylesheets = ["css/details.css"]
 skin = "indigo_ingot"
 compact_tags = true
 tag_sorting = "frequency"
