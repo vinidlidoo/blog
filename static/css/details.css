@@ -1,4 +1,5 @@
-details {
+/* Style details blocks in post content only, not header dropdowns */
+article details {
     border-left: 4px solid var(--primary-color);
     background-color: var(--bg-1);
     padding: 0.75rem 1rem;
@@ -6,12 +7,12 @@ details {
     border-radius: 4px;
 }
 
-details summary {
+article details summary {
     cursor: pointer;
     font-weight: 500;
 }
 
-details[open] summary {
+article details[open] summary {
     margin-bottom: 0.5rem;
 }
 

@@ -13,13 +13,18 @@ build_search_index = false
 
 taxonomies = [{ name = "tags" }]
 
+[languages.fr]
+title = "vinidlidoo"
+description = "Un blog personnel"
+taxonomies = [{ name = "tags" }]
+
 [markdown]
 highlight_code = true
 highlight_theme = "css"
 
 [extra]
 author = "Vincent"
-stylesheets = ["css/details.css"]
+# stylesheets = ["css/details.css"]
 skin = "indigo_ingot"
 compact_tags = true
 tag_sorting = "frequency"

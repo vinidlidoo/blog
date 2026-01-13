@@ -20,9 +20,12 @@ zola check          # Validate site without building
 content/
 ├── _index.md           # Homepage (pulls recent posts from blog/)
 └── blog/
-    ├── _index.md       # Blog section config (sort_by, paginate_by)
-    └── *.md            # Blog posts
-config.toml             # Site config (base_url, theme, taxonomies)
+    ├── _index.md       # Blog section config (English)
+    ├── _index.fr.md    # Blog section config (French)
+    ├── *.md            # Blog posts (English)
+    └── *.fr.md         # Blog posts (French)
+config.toml             # Site config (base_url, theme, taxonomies, languages)
+i18n/                   # UI string overrides (language_name, tags, etc.)
 themes/tabi/            # Theme (git submodule)
 ```
 
@@ -42,6 +45,12 @@ tags = ["tag1", "tag2"]
 
 Content here...
 ```
+
+## Multilingual Support
+
+English (default) and French. Translations use Zola's file naming: `post-name.fr.md` alongside `post-name.md`.
+
+URLs: English at `/blog/...`, French at `/fr/blog/...`
 
 ## Theme (Git Submodule)
 
