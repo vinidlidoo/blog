@@ -21,23 +21,21 @@ No. And the proof is surprisingly elegant. It will also lead us, almost immediat
 Here's a simple question: given a program, will it ever finish running?
 In our formalism from [Part 1](@/blog/turing-machines.md), a "program" is an encoding $\langle M, w \rangle$: a Turing machine $M$ together with its input $w$, written as data on a tape. So the halting question is: does $M$ halt on $w$?
 
-Imagine a **Halt Decider**: feed your code to an analyzer $H$, and it tells you "this terminates" or "this loops forever." You could catch infinite loops before deployment, verify that critical software always returns an answer, guarantee your recursive function won't recurse forever. Incredibly useful.
+Imagine a *Halt Decider*, $H$. Feed it your code and it tells you "this terminates (halts)" or "this loops forever." If it existed, you could use it on any program to catch infinite loops before deployment, verify that critical software always returns an answer, guarantee any recursive function won't recurse forever. Incredibly useful.
 
-The **Halting Problem** asks: can we build such an analyzer? Not for one specific program, but a general procedure that correctly answers for *all* $\langle M, w \rangle$.
+The **Halting Problem** asks: can we build such $H$? Not for one specific program, but a general procedure that correctly answers for *all* $\langle M, w \rangle$.
 
 Turing proved no such procedure can exist.
 
-## The Yes/No Asymmetry
+## Intuition
 
-The "yes" and "no" answers to the problem are fundamentally different.
+It's useful to notice that "yes" and "no" answers to the halting question are fundamentally different.
 
-For "yes" answers, you don't need to understand the program at all. Just run it. If it halts after a week, you say "yes, it halted." Getting the yes answers is almost trivial.
+For "yes" answers, just run the program long enough. If it halts after a week, you can say confidently "yes, it halts." 
 
-But "no" answers are different. Suppose you've been running a program for a thousand years and it still hasn't halted. Can you say "no, it won't ever halt"? You can't. Maybe it'll halt in a thousand and one years. At no point does running the program entitle you to say "no."
+"no" answers are different. Suppose you've been running a program for a thousand years and it still hasn't halted. Can you say "no, it won't ever halt"? You can't. Maybe it'll halt in a thousand and one years. At no point does running the program entitle you to say "no."
 
-To say "no, this program will never halt," you would need *deep insight* into what this particular program is doing. You need to understand its structure well enough to see that it can never finish. That's a fundamentally harder task than just running it and waiting.
-
-This asymmetry hints at the impossibility. Let's prove it.
+This asymmetry hints at the impossibility. Let's now prove it.
 
 ## The Diagonal Argument
 
@@ -51,7 +49,7 @@ Now I'll use $H$ as a subroutine to build a new program. Call it $Q$. Program $Q
 
 That's it. $Q$ asks whether $P$ halts on itself, then does the *opposite*.
 
-Step 1 is the diagonal part: we're feeding $P$ its own description as input. This is the same self-referential trick behind Russell's paradox and Cantor's diagonal argument. (I explored these in [Four Proofs by Diagonalization](@/blog/four-proofs-by-diagonalization.md).)
+Step 1 is the diagonal part: we're feeding $P$ its own description as input. This is the same self-referential trick behind Russell's paradox and Cantor's diagonal argument we explored in [Four Proofs by Diagonalization](@/blog/four-proofs-by-diagonalization.md).
 
 Now comes the punch line. $Q$ is a program. What happens when we run $Q$ on *itself*?
 
@@ -64,40 +62,44 @@ The halting problem is **undecidable**. $\blacksquare$
 
 ## Why This Matters
 
-What does "undecidable" mean? A problem is **decidable** if there's an algorithm that always halts and always gives the correct yes/no answer. The halting problem is undecidable: no such algorithm exists. For any would-be halt decider, there's some program it gets wrong (or runs forever on).
+What does "undecidable" mean? **A problem is decidable if there exists a procedure that always halts and always gives the correct yes/no answer.** The halting problem is undecidable: no such procedure exists. For any would-be halt decider, there's some program it gets wrong (or runs forever on).
 
-The halting problem might seem like a contrived edge case. But it is only the tip of the iceberg. [Rice's Theorem](https://en.wikipedia.org/wiki/Rice%27s_theorem) generalizes it: *any* non-trivial property of what a program computes is undecidable. Want to know if a program ever outputs a specific value? Undecidable. Ever accesses the network? Undecidable. Contains a security vulnerability? Undecidable.
+The halting problem might seem like a contrived edge case. But it is only the tip of the iceberg. [Rice's Theorem](https://en.wikipedia.org/wiki/Rice%27s_theorem), proved in 1953 by Henry Gordon Rice, generalized it: *any* non-trivial property of what a program computes is undecidable. Want to know if a program ever outputs a specific value? Undecidable. Ever accesses the network? Undecidable. Contains a security vulnerability? Undecidable.
 
-This explains why static analysis tools produce false positives, why compilers can't always eliminate dead code, and why antivirus software can't catch all malware. Perfect program analysis is mathematically impossible.
+This explains why static analysis tools sometimes produce false positives, why compilers can't always eliminate dead code, and why antivirus software can't catch all malware. Perfect program analysis is mathematically impossible.
 
 ## Gödel's Incompleteness Theorem
 
 The halting problem immediately proves one of the most famous results in mathematics.
 
-In the early 20th century, David Hilbert proposed an ambitious goal: write down a finite set of axioms from which every true statement about numbers could be mechanically derived. Start with basic axioms like "$0$ is a number" and "$x + 0 = x$," add rules of inference, and in principle you could prove any true arithmetic statement: that there are infinitely many primes, that every even number greater than 2 is the sum of two primes (if true), anything.
+In the early 20th century, David Hilbert proposed an ambitious goal: find a finite set of axioms from which every true statement about numbers could be mechanically derived. Start with basic axioms like "$0$ is a number" and "$x + 0 = x$," add rules of inference, and in principle you could prove any true arithmetic statement.
 
-This was **Hilbert's program**. If it succeeded, mathematics would have a solid, computable foundation. You could build a theorem-enumeration machine: start from the axioms, apply inference rules in every possible way, and output each theorem as you derive it. $1 + 1 = 2$. Every prime has a larger prime. One by one, every true statement about numbers.
+Here we need to distinguish two concepts:
+- A statement is **true** if it accurately describes actual numbers (e.g., "there is no largest prime")
+- A statement is **provable** if it can be derived from axioms via inference rules
 
-Here's the key insight: **such a machine would solve the halting problem**. Whether a program halts is a question about finite computation: does this sequence of state transitions eventually reach a halt state? That's a statement about numbers and their relationships, exactly the kind of thing arithmetic can express. But we already proved the halting problem is undecidable. Contradiction. Hilbert's program cannot succeed.
+These aren't obviously the same thing. Truth is about what's actually the case; provability is about what follows from your starting assumptions. Hilbert's dream, called **Hilbert's program**, was to make them coincide for arithmetic: every true statement should be provable, and every provable statement should be true.[^1]
 
-> **Gödel's First Incompleteness Theorem**: Any consistent, computable axiom system capable of expressing basic arithmetic is incomplete.[^1] There exist true statements that the system cannot prove.
+If such a system existed, you could build a theorem-proving machine: start from the axioms, apply inference rules in every possible way, and output each theorem as you derive it.[^2] $1 + 1 = 2$. Every prime has a larger prime. One by one, every true statement about numbers.
 
+Here's the key insight: **such a machine would solve the halting problem.** Whether a program halts is a question about finite sequences of state transitions—exactly the kind of thing arithmetic can express. If the axiom system were complete, then for any program $M$ and input $w$, either "$M$ halts on $w$" or "$M$ doesn't halt on $w$" would be provable. The enumeration machine would eventually find whichever proof exists, and we'd have our answer.
 
-Two definitions to unpack this:
-- **Consistent**: The system never proves contradictions, i.e., can't prove both $P$ and $\neg P$
-- **Complete**: Every true statement can be proven
+But we already proved the halting problem is undecidable. So the system cannot be complete.
 
-Why must such systems be incomplete? The proof via the halting problem shows us. An axiom system can enumerate its theorems[^2]: start from axioms, apply inference rules, output each proof as you find it. If a statement is provable, you'll eventually find the proof. But if it's not provable? You'll wait forever, never knowing whether the statement is actually unprovable or whether you just haven't searched long enough. Sound familiar? It's the same asymmetry we saw with the halting problem: you can confirm "yes" but never confirm "no."
+> **Gödel's First Incompleteness Theorem**: Any computable axiom system[^3] capable of expressing basic arithmetic is incomplete. There exist true statements that the system cannot prove.
 
-[^1]: "Capable of expressing basic arithmetic" is the minimum bar. The theorem applies to any system at least that powerful, including all of mainstream mathematics.
+This is the punchline: **truth outruns provability.** No matter what axioms you choose, some statements will be *independent*—neither provable nor refutable within the system.
 
-[^2]: Why can we enumerate theorems? A proof is a finite sequence of steps, each following mechanically from axioms or previous steps. Enumerate all finite sequences, check each for validity, and output the conclusion of each valid proof. Every theorem will eventually appear.
+[^1]: The second half—every provable statement is true—is called *soundness*, and we definitely want it. An unsound system proves false things, which is useless. The first half—every true statement is provable—is called *completeness*. Gödel showed completeness is impossible.
+
+[^2]: Why can we enumerate theorems? A proof is a finite sequence of steps, each following mechanically from axioms or previous steps. Enumerate all finite sequences, check each for validity, output the conclusion of valid proofs. Every provable statement eventually appears.
+[^3]: The system must also be *consistent*: it never proves both $P$ and $\neg P$. An inconsistent system can prove anything (including contradictions), making "completeness" trivially achievable but meaningless.
 
 ## Takeaway
 
-We've traced a boundary between what's computable and what isn't. In Part 2, we saw that Turing completeness is the ceiling: you can't compute more than a Turing machine can. But now we've seen that this ceiling has holes. Some problems have no algorithm that always halts with the correct answer.
+We've traced a boundary between what's computable and what isn't. In Part 2, we saw that Turing completeness is the ceiling: you can't compute more than a Turing machine can. But now we've seen that this ceiling has holes. Some problems have no procedure that always halts with the correct answer.
 
-**Inside**: any yes/no problem for which we can write a terminating algorithm. Is this number prime? Trial division will tell you. What's 347 × 892? Long multiplication gives the answer. Sort this list? Mergesort terminates with the correct ordering. These are decidable: we have procedures that always halt with correct answers.
+**Inside**: any yes/no problem for which we can write a terminating procedure. Is this number prime? Trial division will tell you. What's 347 × 892? Long multiplication gives the answer. Sort this list? Mergesort terminates with the correct ordering. These are decidable: we have procedures that always halt with correct answers.
 
 **Outside**: the halting problem is just the beginning. Rice's theorem tells us that *any* interesting question about program behavior is undecidable. Does this code have a bug? Will it ever access the network? Is it equivalent to this other program? No single general algorithm can answer these for **all programs**. And Gödel tells us the problem runs deeper: some true statements about numbers can never be proven from any finite set of axioms.
 
