@@ -14,9 +14,46 @@ Terminology and conventions discovered through editing. The translation-editor a
 | set-builder notation | notation en compréhension | Not "notation ensembliste" |
 | unrestricted comprehension | compréhension naïve | Standard term in French math literature |
 
+## Machine Learning / AI Terms
+
+| English | French | Notes |
+|---------|--------|-------|
+| attends to (attention mechanism) | prête attention à | Not "assiste à" (which means "attends an event") |
+| cache hit | succès de cache | "hit de cache" acceptable but less native |
+| cache miss | échec de cache | "miss de cache" acceptable but less native |
+| forward pass | passe forward | Keep "forward" as technical term |
+| hidden state | état caché | |
+| sleep-time agents | sleep-time agents | Keep English; do not translate literally |
+
+## Computer Science Terms
+
+| English | French | Notes |
+|---------|--------|-------|
+| tape (Turing machine) | ruban | Not "bande" |
+| head (Turing machine) | tête de lecture | |
+| transition function | fonction de transition | |
+| tape alphabet | alphabet du ruban | |
+| input alphabet | alphabet d'entrée | |
+| accepting states | états acceptants | |
+| mismatch | discordance | Not "non-correspondance" |
+| soundness (logic) | correction | Not "cohérence" (which means consistency) |
+| consistency (logic) | consistance | "cohérent/incohérent" acceptable but "consistant" is more precise |
+| actual numbers (vs real numbers) | les nombres tels qu'ils sont | "nombres réels" means real numbers (mathematical term) |
+| Turing complete | Turing-complet | Hyphenated in French |
+| Universal Turing Machine | machine de Turing universelle (MTU) | |
+| provably (unsolvable) | *démontrablement* (with emphasis) | "prouvablement" is not standard French |
+| the evidence behind | le fondement empirique de | Not "la preuve qui sous-tend" |
+
 ## Style Conventions
 
 - Use "on" for impersonal/general statements, "nous" sparingly for rhetorical emphasis
 - Avoid "qui...qui" chains — use present participles to break repetition
 - "illustration" works better than "anthropomorphisation" for pedagogical examples
 - "autrement dit" for "in other words" / "the name for"
+- Keep well-known English technical terms (e.g., "forward pass", "sleep-time agents") rather than creating awkward literal translations
+- "avec un bémol" for "with one caveat" (conversational tone)
+- "finit par atteindre" rather than "atteint finalement" (more natural word order)
+- "passez-moi" over "donnez-moi" when mimicking casual speech ("hand me")
+- "pourvu que" vs "si" — use "si" for simple conditions; "pourvu que" for provisions/provisos
+- "a posé la question" flows better than "s'est demandé" for "X asked"
+- Use verb forms when possible: "ils branchent, bouclent" not "ils font du branchement, des boucles"
