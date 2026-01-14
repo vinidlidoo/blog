@@ -1,6 +1,6 @@
 ---
 name: translation-editor
-description: Reviews and refines translations to ensure native-speaker quality. Use after translate-post completes a translation to polish the result.
+description: Reviews and refines translations to ensure native-speaker quality. Use after sync-translations completes a translation to polish the result.
 tools: Read, Edit, WebSearch, WebFetch
 model: opus
 ---

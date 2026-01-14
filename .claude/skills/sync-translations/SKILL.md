@@ -1,11 +1,13 @@
 ---
 name: sync-translations
-description: Sync edits from English posts to existing translations. Use when you've updated an English post and want to propagate changes to FR/JA versions.
+description: Manage blog post translations. Creates new translations for posts that don't have them, and syncs existing translations when English sources change.
 ---
 
 # Sync Translations Skill
 
-Update existing translations after English sources have been edited.
+Create new translations and update existing ones. This skill handles both:
+- **Creating** translations for posts that don't have them
+- **Syncing** existing translations when the English source has changed
 
 ## Invocation
 
@@ -13,95 +15,137 @@ Update existing translations after English sources have been edited.
 /sync-translations [post-name]
 ```
 
-**Without argument:** Auto-detects all changed English posts in `content/blog/` and syncs those with existing translations.
+**Without argument:** Auto-detects all posts needing work (missing translations OR outdated ones).
 
-**With argument:** Syncs only the specified post.
+**With argument:** Works on the specified post only.
 - `/sync-translations kv-cache`
 - `/sync-translations content/blog/turing-machines.md`
 
 ## Prerequisites
 
-English source changes MUST be committed to git. This provides a clean diff baseline.
+For **sync mode**: English source changes MUST be committed to git (provides clean diff baseline).
+
+For **create mode**: No prerequisites.
 
 ## Helper Script
 
-Run `check-sync.sh` to see which translations need syncing:
+Run `check-sync.sh` to see translation status:
 
 ```bash
 .claude/skills/sync-translations/check-sync.sh
 ```
 
+Reports three statuses:
+- `[NEEDS TRANSLATION]` - No translation exists for this language
+- `[NEEDS SYNC]` - Translation exists but English has changed
+- `[UP TO DATE]` - Translation is current
+
+Languages are auto-detected from `config.toml`.
+
+## Preservation Rules
+
+**Never translate these elements:**
+
+| Element | Example | Reason |
+|---------|---------|--------|
+| KaTeX inline | `$x \notin x$` | Math notation is universal |
+| KaTeX block | `$$R = \lbrace x : x \notin x\rbrace$$` | Math notation is universal |
+| Code blocks | ``` `code` ``` | Code is language-agnostic |
+| URLs | `https://...` | Links must remain functional |
+| Frontmatter keys | `title`, `date`, `tags` | TOML structure |
+| Tag values | `["math", "cs"]` | Keep tags in English for consistency |
+| HTML tags | `<details>`, `<summary>` | Structure markers |
+| Footnote markers | `[^1]`, `[^2]` | Syntax elements |
+
+**Always translate:**
+
+- `title` value in frontmatter
+- `description` value in frontmatter
+- All prose paragraphs
+- Text inside `<summary>` tags
+- Content inside `<details>` blocks (excluding math/code)
+- Link display text (the `[text]` part of `[text](url)`)
+- Footnote content
+
+## Internal Links
+
+For internal links (`@/blog/post-name.md`), check if a translation exists for the target language:
+
+1. If `post-name.<lang>.md` exists → link to `@/blog/post-name.<lang>.md`
+2. If no translation exists → keep the English link `@/blog/post-name.md`
+
+Example for French translation:
+- `[Three Proofs](@/blog/three-proofs.md)` → `[Trois preuves](@/blog/three-proofs.fr.md)` (if `.fr.md` exists)
+
+## Translation Style
+
+- **Match Vincent's tone**: conversational, precise, first-person ("Je veux explorer...")
+- **Adapt idioms**: translate meaning, not words ("sent me down a rabbit hole" → "m'a entraîné dans une exploration")
+- **Technical terms**: use accepted translations where they exist; keep English terms in italics if no good translation exists
+- **Mathematical terms**: use standard target-language mathematical vocabulary
+
 ## Workflow
 
-### 1. Detect Posts Needing Sync
+### 1. Detect Work Needed
 
-**Key insight:** Find when each translation's CONTENT was last updated (not just touched—renames don't count), then check if English changed since.
+Run `check-sync.sh` (or inline logic) to categorize posts:
+- `NEEDS_TRANSLATION` → create mode
+- `NEEDS_SYNC` → sync mode
 
-**For each English post in `content/blog/` (or the specified post):**
+**Abort if:** No work needed, or uncommitted changes exist in content/blog/.
 
-1. Find translations (`.fr.md`, `.ja.md`, etc.)
-2. For each translation, find its last content-change commit (skip renames):
-   ```bash
-   # Find commit where translation had actual content changes (>4 diff lines)
-   git log --format="%H" --follow -- <trans-file> | while read commit; do
-       changes=$(git show "$commit" -- "$trans-file" | grep -c "^[-+]")
-       [[ "$changes" -gt 4 ]] && echo "$commit" && break
-   done
-   ```
-3. Check if English source changed since that commit:
-   ```bash
-   git diff <baseline-commit>..HEAD -- <english-file>
-   ```
-4. If diff is non-empty, this translation needs syncing
+### 2. Process Posts
 
-**If no argument provided:** Check all English posts, collect those needing sync.
+**For posts needing NEW translation (create mode):**
 
-**If argument provided:** Check only the specified post.
+1. Read the learnings file (`.claude/translation-learnings/<lang>.md`) if it exists
+2. Read the source post completely
+3. Translate following preservation rules and style guidelines
+4. Write to `<source-basename>.<lang>.md` in the same directory
+5. Invoke `translation-editor` subagent in **fresh mode** (full review)
 
-**Abort if:** No posts need syncing, or uncommitted changes exist.
+**For posts needing SYNC (update mode):**
 
-### 2. For Each Post: Analyze and Update
+1. Get git diff from translation's baseline commit
+2. Read the current translation and learnings file
+3. Apply targeted edits—preserve unchanged sections, translate only changed/added content
+4. Invoke `translation-editor` subagent in **update mode** (focused review on changed sections)
 
-For each post to sync:
+### 3. Editor Review (Required)
 
-1. Get git diff from translation's baseline:
-   ```bash
-   git diff <translation-last-commit>..HEAD -- <english-file>
-   ```
-2. Summarize what changed (sections, paragraphs)
-3. For each translation needing update:
-   - Read the current translation
-   - Read the learnings file (`.claude/translation-learnings/<lang>.md`)
-   - Apply targeted edits—preserve unchanged sections, translate only changed/added content
+After translations are written/updated, invoke `translation-editor` subagents:
 
-### 3. Editor Review (Required, Parallel)
+- **Fresh mode** (new translations): Full review of entire translation
+- **Update mode** (syncs): Focus on changed sections, light touch elsewhere
 
-After ALL posts are updated, invoke `translation-editor` subagents **in parallel**—one per translation file. When invoking each editor:
+For syncs, run editors **in parallel** (one per translation file).
 
-1. Provide the English source and translated file paths
-2. Tell the editor this is **update mode** and describe what sections changed
-3. Instruct the editor to **only edit the specific file passed to it**
-
-Example invocation context:
-> "This is an update sync for `three-proofs-by-diagonalization.fr.md`. The English source changed: [summary]. Focus review on those sections. Only edit this file."
+Example invocation context for update mode:
+> "This is an update sync for `three-proofs.fr.md`. The English source changed: [summary]. Focus review on those sections. Only edit this file."
 
 ### 4. Report Summary
 
-After editors complete:
-- Which posts were synced
-- Which translations were updated per post
+- Which posts were processed
+- Mode used (create vs sync)
 - Summary of changes
-- Any posts skipped (no translations)
+- Any posts skipped
 
 ## Abort Conditions
 
 | Condition | Message |
 |-----------|---------|
 | Uncommitted changes | "Uncommitted changes in content/blog/. Please commit first." |
-| No sync needed | "All translations are up to date with their English sources." |
-| No translations exist | "No translations found for `<post-name>`. Use `/translate-post` to create them." |
+| No work needed | "All translations are up to date." |
 | Post not found (with arg) | "Could not find post: `<post-name>`" |
 
 ## Validation
 
-Run `zola check` after all translations are updated.
+Run `zola check` after all translations are created/updated.
+
+---
+
+## Learnings
+
+- Keep tag values in English across all translations for consistent taxonomy
+- The collaboration footer should be translated: "Ce billet a été écrit en collaboration avec..."
+- When adding a new language for the first time, create `content/blog/_index.<lang>.md` (the section index) or the build will fail

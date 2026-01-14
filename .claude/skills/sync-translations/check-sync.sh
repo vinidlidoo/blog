@@ -1,6 +1,9 @@
 #!/bin/bash
 # check-sync.sh
-# Identifies which translations are out of sync with their English sources.
+# Identifies translation status for all blog posts:
+# - NEEDS TRANSLATION: English post has no translation for this language
+# - NEEDS SYNC: Translation exists but is outdated
+# - UP TO DATE: Translation exists and is current
 #
 # The key insight: we need to find when the translation CONTENT was last updated,
 # not just when the file was touched (renames don't count).
@@ -8,12 +11,19 @@
 set -e
 
 BLOG_DIR="content/blog"
-LANGUAGES="fr ja"
+
+# Parse languages from config.toml (looks for [languages.XX] sections)
+LANGUAGES=$(grep -E '^\[languages\.' config.toml 2>/dev/null | sed 's/\[languages\.\(.*\)\]/\1/' | tr '\n' ' ')
+if [[ -z "$LANGUAGES" ]]; then
+    echo "Error: No languages found in config.toml"
+    exit 1
+fi
 
 # Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[0;33m'
+BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # Find the commit where translation content was last meaningfully changed
@@ -49,19 +59,28 @@ get_translation_baseline() {
     fi
 }
 
-echo "Checking translation sync status..."
+echo "Checking translation status..."
+echo "Languages: $LANGUAGES"
 echo "=================================="
 echo ""
 
+needs_translation=0
 needs_sync=0
 up_to_date=0
+
+# Build a pattern to skip translation files based on configured languages
+is_translation_file() {
+    local file="$1"
+    for lang in $LANGUAGES; do
+        [[ "$file" == *".${lang}.md" ]] && return 0
+    done
+    return 1
+}
 
 # Find all English posts (exclude translations and index files)
 for en_file in "$BLOG_DIR"/*.md; do
     # Skip translation files and index files
-    [[ "$en_file" == *.fr.md ]] && continue
-    [[ "$en_file" == *.ja.md ]] && continue
-    [[ "$en_file" == *.es.md ]] && continue
+    is_translation_file "$en_file" && continue
     [[ "$en_file" == *_index*.md ]] && continue
 
     basename=$(basename "$en_file" .md)
@@ -69,8 +88,12 @@ for en_file in "$BLOG_DIR"/*.md; do
     for lang in $LANGUAGES; do
         trans_file="$BLOG_DIR/${basename}.${lang}.md"
 
-        # Skip if translation doesn't exist
-        [[ ! -f "$trans_file" ]] && continue
+        # Report if translation doesn't exist
+        if [[ ! -f "$trans_file" ]]; then
+            echo -e "${BLUE}[NEEDS TRANSLATION]${NC} $en_file → $lang"
+            ((needs_translation++))
+            continue
+        fi
 
         # Find when translation content was last updated
         baseline_commit=$(get_translation_baseline "$en_file" "$trans_file")
@@ -99,11 +122,11 @@ done
 
 echo ""
 echo "=================================="
-echo "Summary: $up_to_date up to date, $needs_sync need sync"
+echo "Summary: $up_to_date up to date, $needs_sync need sync, $needs_translation need translation"
 
-if [[ "$needs_sync" -gt 0 ]]; then
+if [[ "$needs_sync" -gt 0 ]] || [[ "$needs_translation" -gt 0 ]]; then
     echo ""
-    echo "Run '/sync-translations' to update out-of-sync translations."
+    echo "Run '/sync-translations' to create missing translations and sync outdated ones."
     exit 1
 fi
 
