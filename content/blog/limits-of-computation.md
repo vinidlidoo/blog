@@ -49,7 +49,7 @@ Now I'll use $H$ as a subroutine to build a new program. Call it $Q$. Program $Q
 
 That's it. $Q$ asks whether $P$ halts on itself, then does the *opposite*.
 
-Step 1 is the diagonal part: we're feeding $P$ its own description as input. This is the same self-referential trick behind Russell's paradox and Cantor's diagonal argument we explored in [Three Proofs by Diagonalization](@/blog/three-proofs-by-diagonalization.md).
+Step 1 is the diagonal part: we're feeding $P$ its own description as input. This is the same self-referential trick behind [Russell's paradox](@/blog/russells-paradox.md) and Cantor's diagonal argument we explored in [Three Proofs by Diagonalization](@/blog/three-proofs-by-diagonalization.md).
 
 Now comes the punch line. $Q$ is a program. What happens when we run $Q$ on *itself*?
 
