@@ -147,4 +147,4 @@ $$V_\omega = V_0 \cup V_1 \cup V_2 \cup \ldots$$
 
 ---
 
-*この記事は[Claude](https://claude.ai)（Opus 4.5）との協力で書かれました。*
+*この記事は[Claude](https://claude.ai)（Opus 4.5）と協力して書きました。*

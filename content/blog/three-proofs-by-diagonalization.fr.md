@@ -1,5 +1,5 @@
 +++
-title = "Quatre preuves par diagonalisation"
+title = "Trois preuves par diagonalisation"
 date = 2026-01-08
 description = "Une famille de preuves qui construisent des objets qui diffèrent nécessairement de chaque élément d'une liste"
 
@@ -12,7 +12,7 @@ katex = true
 
 En poursuivant l'exploration entamée avec le [podcast #488 de Lex Fridman](https://youtu.be/14OPT6CcsH4?t=2967&si=_qnWStDudzUB_o_D), je veux m'intéresser à la **diagonalisation** — une technique de preuve qui revient sans cesse dans les fondements des mathématiques.
 
-L'idée centrale : construire un objet qui diffère nécessairement de chaque élément d'une liste donnée en modifiant les entrées « diagonales ». Nous verrons quatre variations de cette technique, toutes partageant la même structure logique (chacune est également abordée dans le podcast).
+L'idée centrale : construire un objet qui diffère nécessairement de chaque élément d'une liste donnée en modifiant les entrées « diagonales ». Nous verrons trois variations de cette technique, toutes partageant la même structure logique (chacune est également abordée dans le podcast).
 
 ## 1. La preuve de Cantor : les réels sont indénombrables
 
@@ -107,7 +107,7 @@ Contradiction. Plus de salades que de fruits.
 
 ## 3. Le paradoxe de Russell : pas d'ensemble universel
 
-Dans un [billet précédent](@/blog/russells-paradox.md), j'ai exploré le paradoxe de Russell et comment il a brisé la théorie naïve des ensembles. Ce que je n'avais pas souligné alors, c'est que l'argument de Russell est **la même technique diagonale**.
+Dans un [billet précédent](@/blog/russells-paradox.fr.md), j'ai exploré le paradoxe de Russell et comment il a brisé la théorie naïve des ensembles. Ce que je n'avais pas souligné alors, c'est que l'argument de Russell est **la même technique diagonale**.
 
 Voici la structure parallèle :
 
@@ -130,7 +130,7 @@ Ce que Russell a prouvé, pour reprendre la formulation de Hamkins : « Il n'exi
 
 ## Le fil conducteur
 
-Les quatre preuves partagent le même squelette :
+Les trois preuves partagent le même squelette :
 
 1. Supposer qu'une collection peut être mise en correspondance avec ses « parties » (chiffres, sous-ensembles, comités, salades ou ensembles)
 2. Construire l'objet diagonal : celui qui diffère de chaque élément à sa propre position

@@ -49,7 +49,7 @@ Je vais maintenant utiliser $H$ comme sous-routine pour construire un nouveau pr
 
 C'est tout. $Q$ demande si $P$ s'arrête sur lui-même, puis fait le *contraire*.
 
-L'étape 1 est la partie diagonale : on donne à $P$ sa propre description en entrée. C'est la même astuce autoréférentielle derrière le paradoxe de Russell et l'argument diagonal de Cantor que nous avons explorés dans [Quatre preuves par diagonalisation](@/blog/three-proofs-by-diagonalization.md).
+L'étape 1 est la partie diagonale : on donne à $P$ sa propre description en entrée. C'est la même astuce autoréférentielle derrière le paradoxe de Russell et l'argument diagonal de Cantor que nous avons explorés dans [Trois preuves par diagonalisation](@/blog/three-proofs-by-diagonalization.fr.md).
 
 Vient maintenant le coup de grâce. $Q$ est un programme. Que se passe-t-il si on exécute $Q$ sur *lui-même* ?
 

@@ -130,7 +130,7 @@ What Russell proved, as Hamkins puts it: "There's no universal set." The assumpt
 
 ## The Common Thread
 
-All four proofs share the same skeleton:
+All three proofs share the same skeleton:
 
 1. Assume some collection can be put in correspondence with its "parts" (digits, subsets, committees, salads, or sets)
 2. Construct the diagonal object: the one that differs from each item at its own position
