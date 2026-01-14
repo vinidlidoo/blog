@@ -23,22 +23,34 @@ Update existing translations after English sources have been edited.
 
 English source changes MUST be committed to git. This provides a clean diff baseline.
 
+## Helper Script
+
+Run `check-sync.sh` to see which translations need syncing:
+
+```bash
+.claude/skills/sync-translations/check-sync.sh
+```
+
 ## Workflow
 
 ### 1. Detect Posts Needing Sync
 
-**Key insight:** Compare when each English file was last modified vs when its translations were last modified. If English is newer, sync is needed.
+**Key insight:** Find when each translation's CONTENT was last updated (not just touched—renames don't count), then check if English changed since.
 
 **For each English post in `content/blog/` (or the specified post):**
 
 1. Find translations (`.fr.md`, `.ja.md`, etc.)
-2. For each translation, get its last-modified commit:
+2. For each translation, find its last content-change commit (skip renames):
    ```bash
-   git log -1 --format="%H" -- <translation-file>
+   # Find commit where translation had actual content changes (>4 diff lines)
+   git log --format="%H" --follow -- <trans-file> | while read commit; do
+       changes=$(git show "$commit" -- "$trans-file" | grep -c "^[-+]")
+       [[ "$changes" -gt 4 ]] && echo "$commit" && break
+   done
    ```
 3. Check if English source changed since that commit:
    ```bash
-   git diff <translation-commit>..HEAD -- <english-file>
+   git diff <baseline-commit>..HEAD -- <english-file>
    ```
 4. If diff is non-empty, this translation needs syncing
 
