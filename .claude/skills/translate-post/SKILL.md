@@ -19,9 +19,10 @@ Examples:
 
 ## Before Translating
 
-1. Read the source post completely
-2. Identify elements that must NOT be translated (see Preservation Rules below)
-3. Read 1-2 existing posts to absorb Vincent's tone
+1. Read the learnings file for the target language (`.claude/translation-learnings/<lang>.md`) if it exists
+2. Read the source post completely
+3. Identify elements that must NOT be translated (see Preservation Rules below)
+4. Optionally read 1-2 existing translations to absorb Vincent's tone in that language
 
 ## Preservation Rules
 
@@ -33,7 +34,6 @@ Examples:
 | KaTeX block | `$$R = \lbrace x : x \notin x\rbrace$$` | Math notation is universal |
 | Code blocks | ``` `code` ``` | Code is language-agnostic |
 | URLs | `https://...` | Links must remain functional |
-| Internal links | `@/blog/filename.md` | Zola path references |
 | Frontmatter keys | `title`, `date`, `tags` | TOML structure |
 | Tag values | `["math", "cs"]` | Keep tags in English for consistency |
 | HTML tags | `<details>`, `<summary>` | Structure markers |
@@ -48,6 +48,16 @@ Examples:
 - Content inside `<details>` blocks (excluding math/code)
 - Link display text (the `[text]` part of `[text](url)`)
 - Footnote content
+
+## Internal Links
+
+For internal links (`@/blog/post-name.md`), check if a translation exists for the target language:
+
+1. If `post-name.<lang>.md` exists → link to `@/blog/post-name.<lang>.md`
+2. If no translation exists → keep the English link `@/blog/post-name.md`
+
+Example for French translation:
+- `[Three Proofs](@/blog/three-proofs.md)` → `[Trois preuves](@/blog/three-proofs.fr.md)` (if `.fr.md` exists)
 
 ## Translation Style
 
