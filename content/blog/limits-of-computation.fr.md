@@ -10,7 +10,7 @@ tags = ["math", "computer-science"]
 katex = true
 +++
 
-Dans la [Partie 2](@/blog/turing-completeness.md), nous avons établi que la Turing-complétude est le plafond de la puissance de calcul. Tout formalisme raisonnable pour le « calcul » s'avère équivalent. On ne peut pas construire quelque chose de plus puissant qu'une machine de Turing.
+Dans la [Partie 2](@/blog/turing-completeness.fr.md), nous avons établi que la Turing-complétude est le plafond de la puissance de calcul. Tout formalisme raisonnable pour le « calcul » s'avère équivalent. On ne peut pas construire quelque chose de plus puissant qu'une machine de Turing.
 
 Mais les machines de Turing peuvent-elles résoudre *tout* ?
 
@@ -19,7 +19,7 @@ Non. Et la preuve est d'une élégance surprenante. Elle nous conduira aussi, pr
 ## Le problème de l'arrêt
 
 Voici une question simple : étant donné un programme, finira-t-il un jour son exécution ?
-Dans notre formalisme de la [Partie 1](@/blog/turing-machines.md), un « programme » est un encodage $\langle M, w \rangle$ : une machine de Turing $M$ accompagnée de son entrée $w$, écrite comme donnée sur un ruban. La question de l'arrêt est donc : $M$ s'arrête-t-elle sur $w$ ?
+Dans notre formalisme de la [Partie 1](@/blog/turing-machines.fr.md), un « programme » est un encodage $\langle M, w \rangle$ : une machine de Turing $M$ accompagnée de son entrée $w$, écrite comme donnée sur un ruban. La question de l'arrêt est donc : $M$ s'arrête-t-elle sur $w$ ?
 
 Imaginons un *Décideur d'arrêt*, $H$. On lui soumet notre code et il nous dit « ceci termine (s'arrête) » ou « ceci boucle indéfiniment ». S'il existait, on pourrait l'utiliser sur n'importe quel programme pour détecter les boucles infinies avant déploiement, vérifier qu'un logiciel critique retourne toujours une réponse, garantir qu'une fonction récursive ne récursera pas éternellement. Incroyablement utile.
 
@@ -49,7 +49,7 @@ Je vais maintenant utiliser $H$ comme sous-routine pour construire un nouveau pr
 
 C'est tout. $Q$ demande si $P$ s'arrête sur lui-même, puis fait le *contraire*.
 
-L'étape 1 est la partie diagonale : on donne à $P$ sa propre description en entrée. C'est la même astuce autoréférentielle derrière le paradoxe de Russell et l'argument diagonal de Cantor que nous avons explorés dans [Trois preuves par diagonalisation](@/blog/three-proofs-by-diagonalization.fr.md).
+L'étape 1 est la partie diagonale : on donne à $P$ sa propre description en entrée. C'est la même astuce autoréférentielle derrière [le paradoxe de Russell](@/blog/russells-paradox.fr.md) et l'argument diagonal de Cantor que nous avons explorés dans [Trois preuves par diagonalisation](@/blog/three-proofs-by-diagonalization.fr.md).
 
 Vient maintenant le coup de grâce. $Q$ est un programme. Que se passe-t-il si on exécute $Q$ sur *lui-même* ?
 
