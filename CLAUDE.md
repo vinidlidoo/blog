@@ -107,3 +107,15 @@ stylesheets = ["css/details.css"]
 ```
 
 Files go in `static/css/`.
+
+## Mermaid Diagrams
+
+Generate diagrams as static SVGs (avoid mermaid shortcode - has rendering issues).
+
+```bash
+mmdc -i static/mmdc/diagram-name.mmd -o static/img/diagram-name.svg -b white
+```
+
+- Source files in `static/mmdc/` with YAML frontmatter for theme config
+- See `static/mmdc/translation-workflow.mmd` for example with classDef styling
+- Use simple `<img>` tag in markdown (no special classes needed with white background)
