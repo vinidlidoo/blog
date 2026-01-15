@@ -41,19 +41,19 @@ content/blog/
 ├── kv-cache-invalidation.md     # original en anglais
 ├── kv-cache-invalidation.fr.md  # traduction française
 ├── kv-cache-invalidation.ja.md  # traduction japonaise
-├── blog-translation-with-claude-code.md  # cet article (pas encore traduit)
+├── translation-with-claude-code.md       # cet article (pas encore traduit)
 └── ...
 ```
 
-L'agent principal orchestre tout en utilisant le **skill** [sync-translations](https://github.com/vinidlidoo/vinidlidoo.github.io/blob/main/.claude/skills/sync-translations/SKILL.md). Il exécute le script shell `check-sync.sh` pour détecter ce qui nécessite du travail, lit les fichiers d'apprentissage `{fr.md, ja.md}` pour les conseils terminologiques, rédige les traductions, puis lance deux **sous-agents** [translation-editor](https://github.com/vinidlidoo/vinidlidoo.github.io/blob/main/.claude/agents/translation-editor.md) (un pour chaque langue) pour les réviser avec un regard neuf. Les éditeurs renvoient leurs découvertes dans les fichiers d'apprentissage, de sorte que le système s'améliore avec le temps :
+L'agent principal orchestre tout en utilisant le **skill** [sync-translations](https://github.com/vinidlidoo/vinidlidoo.github.io/blob/main/.claude/skills/sync-translations/SKILL.md). Il exécute le script shell `check-sync.sh` pour détecter ce qui nécessite du travail, lit `{fr.md, ja.md}` dans le répertoire [translation-learnings](https://github.com/vinidlidoo/vinidlidoo.github.io/tree/main/.claude/translation-learnings) pour les conseils terminologiques, rédige les traductions, puis lance deux **sous-agents** [translation-editor](https://github.com/vinidlidoo/vinidlidoo.github.io/blob/main/.claude/agents/translation-editor.md) (un pour chaque langue) pour les réviser avec un regard neuf. Les éditeurs renvoient leurs découvertes dans les fichiers d'apprentissage, de sorte que le système s'améliore avec le temps :
 
 <img src="/img/translation-workflow.svg" alt="Diagramme du workflow de traduction" />
 
 ## Détecter ce qui nécessite du travail
 
-La première étape est le script shell.[^1] Pour chaque article en anglais et langue cible, il produit l'un des trois états : **NEW** (aucun fichier de traduction n'existe), **SYNC** (la traduction existe mais l'anglais a changé) ou **ABORT** (la traduction est à jour).
+La première étape pour l'agent principal est d'exécuter le [`check-sync.sh`](https://github.com/vinidlidoo/vinidlidoo.github.io/blob/main/.claude/skills/sync-translations/check-sync.sh).[^1] Pour chaque article en anglais et langue cible, il produit l'un des trois états : **NEW** (aucun fichier de traduction n'existe), **SYNC** (la traduction existe mais l'anglais a changé) ou **ABORT** (la traduction est à jour).
 
-NEW et ABORT sont de simples vérifications de fichiers. SYNC est plus délicat. On a besoin de l'historique git — pas seulement des dates de modification des fichiers — parce que l'agent doit savoir *ce qui* a changé, pas seulement que quelque chose a changé. Sans le diff exact, il retraduirait l'article entier, rendant les traductions instables car des sections précédemment peaufinées seraient réécrites inutilement.
+NEW et ABORT sont de simples vérifications de fichiers. SYNC est plus délicat. On a besoin de l'historique git — pas seulement des dates de modification des fichiers — parce que l'agent doit savoir *ce qui* a changé, pas seulement que quelque chose a changé. Sans le diff exact, il retraduirait l'article entier. Les changements mineurs se perdent dans la masse, et des sections peaufinées sont réécrites inutilement.
 
 Le script trouve quand le *contenu* de la traduction a été mis à jour pour la dernière fois, puis extrait le diff anglais depuis. Pour un article comme `kv-cache-invalidation.md` avec la traduction française `kv-cache-invalidation.fr.md` :
 
@@ -76,11 +76,9 @@ Toute sortie de diff signifie que la source anglaise a divergé et que la traduc
 
 ## Rédacteur et éditeur
 
-L'agent principal rédige les traductions, mais il ne révise pas son propre travail. Un [sous-agent éditeur](https://github.com/vinidlidoo/vinidlidoo.github.io/blob/main/.claude/agents/translation-editor.md) séparé s'en charge — et cette séparation compte.
+L'agent principal rédige les traductions, les écrit sur le disque, puis lance un [sous-agent éditeur](https://github.com/vinidlidoo/vinidlidoo.github.io/blob/main/.claude/agents/translation-editor.md) séparé pour les réviser. L'éditeur démarre avec un contexte vierge — il ne voit que la source anglaise, la traduction brouillon et un fichier d'apprentissage partagé (on en reparle plus loin). Il vérifie le naturel (a-t-on l'impression d'une traduction ou d'un texte original ?), l'adaptation des idiomes (les expressions anglaises ont-elles été traduites par le sens, pas littéralement ?), la terminologie technique (termes standards dans la langue cible ?) et la voix (est-ce que ça me ressemble toujours ?).
 
-Quand on vient d'écrire quelque chose, on est biaisé en sa faveur. La formulation semble correcte parce qu'on vient de la choisir. Les constructions maladroites passent inaperçues. Un lecteur avec un regard neuf repère ce que l'auteur manque. C'est vrai pour les humains ; c'est vrai aussi pour les LLM.
-
-L'éditeur démarre avec un contexte vierge. Il ne voit que la source anglaise, la traduction à réviser et un fichier d'apprentissage partagé (on en reparle plus loin). Il vérifie le naturel (a-t-on l'impression d'une traduction ou d'un texte original ?), l'adaptation des idiomes (les expressions anglaises ont-elles été traduites par le sens, pas littéralement ?), la terminologie technique (termes standards dans la langue cible ?) et la voix (est-ce que ça me ressemble toujours ?).
+Pourquoi ne pas laisser l'agent principal réviser son propre travail ? Le biais. Quand on vient d'écrire quelque chose, la formulation semble correcte parce qu'on vient de la choisir. Les constructions maladroites passent inaperçues. Un lecteur avec un regard neuf repère ce que l'auteur manque. C'est vrai pour les humains ; c'est vrai aussi pour les LLM.
 
 Le passage de relais dépend du contexte. Pour les nouvelles traductions, l'éditeur fait une révision complète. Pour les synchronisations, il se concentre sur les sections modifiées — le reste a déjà été révisé. Et comme chaque langue a son propre éditeur travaillant sur un fichier indépendant, ils s'exécutent en parallèle.
 
@@ -98,7 +96,7 @@ Ce ne sont pas des règles que j'ai écrites à l'avance. Elles ont émergé des
 
 Je suis francophone de naissance et j'ai passé une décennie à vivre et travailler au Japon. Écrire ce blog en anglais avait du sens pour toucher un public plus large, mais cela signifiait laisser des lecteurs (amis et famille) de côté.
 
-Les alternatives n'étaient pas géniales. La traduction manuelle prendrait 3-4 heures par article par langue, et la qualité serait médiocre : j'ai appris mon vocabulaire technique en anglais, mes mathématiques en français, et bien que je parle couramment japonais, écrire une prose soignée est une compétence que je n'ai pas beaucoup pratiquée. La traduction professionnelle coûte cher. Et quiconque a lu du Google Translate pour du contenu technique connaît la gêne : formulations maladroites, terminologie incorrecte, prose qui hurle « je suis un robot ».
+Les alternatives n'étaient pas géniales. La traduction manuelle prendrait 3-4 heures par article par langue, et la qualité serait difficile à maîtriser : j'ai appris à rédiger en contexte professionnel et technique en anglais, mes mathématiques en français, et bien que je parle couramment japonais, écrire une prose soignée est une compétence que je n'ai pas beaucoup pratiquée. La traduction professionnelle coûte cher. Et quiconque a lu du Google Translate pour du contenu technique connaît la gêne : formulations maladroites, terminologie incorrecte, prose qui hurle « je suis un robot ».
 
 Cela change la donne. Les traductions ne sont pas parfaites, mais pas loin. Elles ne me coûtent rien qu'une minute d'attente. Je n'aurais pas pris la peine de traduire ce blog sans cette option à ma disposition. Je soupçonne qu'on verra beaucoup plus de contenu multilingue en ligne dans les mois à venir.
 
