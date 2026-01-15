@@ -51,6 +51,9 @@ Terminology and conventions discovered through editing. The translation-editor a
 - "anthropomorphization" (making abstract concepts relatable through human examples) -> 「身近なたとえ話」 or 「たとえ話」, not 「擬人化」 (which means personification)
 - Keep proper nouns like "Diana", "Daniella" in katakana (ダイアナ、ダニエラ) rather than substituting unrelated Japanese names, especially when they serve a mnemonic purpose (e.g., names starting with D for set D)
 - Em dash alternatives also include conjunctive form 「〜で、」 to connect related clauses
+- "cringe" (describing embarrassingly bad output) -> 「痛々しさ」 (more impactful than 「違和感」 which is too mild)
+- "voice" (authorial voice/writing style) -> 「トーン」 is clearer than literal 「声」 in writing context
+- "native speaker" -> 「〜語ネイティブ」 more natural than 「生まれながらの〜話者」
 
 ## Turing Machine / Computer Science Terms
 

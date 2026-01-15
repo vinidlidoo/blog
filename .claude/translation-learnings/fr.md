@@ -57,3 +57,8 @@ Terminology and conventions discovered through editing. The translation-editor a
 - "pourvu que" vs "si" — use "si" for simple conditions; "pourvu que" for provisions/provisos
 - "a posé la question" flows better than "s'est demandé" for "X asked"
 - Use verb forms when possible: "ils branchent, bouclent" not "ils font du branchement, des boucles"
+- "slip through" (mistakes) = "passent inaperçues" not "passent à travers" (literal)
+- "fluent in X" = "parle couramment X" not "fluent en X" (anglicism)
+- "cringe" (noun, describing awkward content) = "la gêne" rather than "le malaise"
+- "does it sound translated or native?" = "a-t-on l'impression d'une traduction ou d'un texte original ?" not "ça sonne traduit" (anglicism)
+- "for reach" (audience) = "pour toucher un public plus large" not "pour la portée" (too abstract)
