@@ -41,19 +41,19 @@ content/blog/
 ├── kv-cache-invalidation.md     # English original
 ├── kv-cache-invalidation.fr.md  # French translation
 ├── kv-cache-invalidation.ja.md  # Japanese translation
-├── blog-translation-with-claude-code.md  # this post (no translations yet)
+├── translation-with-claude-code.md       # this post (no translations yet)
 └── ...
 ```
 
-The main agent orchestrates everything using the [sync-translations](https://github.com/vinidlidoo/vinidlidoo.github.io/blob/main/.claude/skills/sync-translations/SKILL.md) **skill**. It runs the `check-sync.sh` shell script to detect what needs work, reads the `{fr.md, ja.md}` learnings files for terminology guidance, drafts translations, then spawns two [translation-editor](https://github.com/vinidlidoo/vinidlidoo.github.io/blob/main/.claude/agents/translation-editor.md) **subagents** (one for each language) to review them with fresh eyes. The editors feed discoveries back into the learnings files, so the system improves over time:
+The main agent orchestrates everything using the [sync-translations](https://github.com/vinidlidoo/vinidlidoo.github.io/blob/main/.claude/skills/sync-translations/SKILL.md) **skill**. It runs the `check-sync.sh` shell script to detect what needs work, reads `{fr.md, ja.md}` in the [translation-learnings](https://github.com/vinidlidoo/vinidlidoo.github.io/tree/main/.claude/translation-learnings) directory for terminology guidance, drafts translations, then spawns two [translation-editor](https://github.com/vinidlidoo/vinidlidoo.github.io/blob/main/.claude/agents/translation-editor.md) **subagents** (one for each language) to review them with fresh eyes. The editors feed discoveries back into the learnings files, so the system improves over time:
 
 <img src="/img/translation-workflow.svg" alt="Translation workflow diagram" />
 
 ## Detecting What Needs Work
 
-The first step is the shell script.[^1] For each English post and target language, it outputs one of three states: **NEW** (no translation file exists), **SYNC** (translation exists but English changed), or **ABORT** (translation is current).
+The first step for the main agent is to run the [`check-sync.sh`](https://github.com/vinidlidoo/vinidlidoo.github.io/blob/main/.claude/skills/sync-translations/check-sync.sh).[^1] For each English post and target language, it outputs one of three states: **NEW** (no translation file exists), **SYNC** (translation exists but English changed), or **ABORT** (translation is current).
 
-NEW and ABORT are straightforward file checks. SYNC is trickier. We need git history—not just file modification times—because the agent needs to know *what* changed, not just *that* something changed. Without the exact diff, it would re-translate the entire post, making translations unstable as previously-polished sections get unnecessarily rewritten.
+NEW and ABORT are straightforward file checks. SYNC is trickier. We need git history—not just file modification times—because the agent needs to know *what* changed, not just *that* something changed. Without the exact diff, it would re-translate the entire post. Minor changes get lost in the shuffle, and polished sections get unnecessarily rewritten.
 
 The script finds when the translation *content* was last updated, then extracts the English diff since. For a post like `kv-cache-invalidation.md` with French translation `kv-cache-invalidation.fr.md`:
 
@@ -76,11 +76,9 @@ Any diff output means the English source diverged and the translation needs sync
 
 ## Drafter and Editor
 
-The main agent drafts translations, but it doesn't review its own work. A separate [editor subagent](https://github.com/vinidlidoo/vinidlidoo.github.io/blob/main/.claude/agents/translation-editor.md) handles that—and the separation matters.
+The main agent drafts translations, writes them to disk, then spawns a separate [editor subagent](https://github.com/vinidlidoo/vinidlidoo.github.io/blob/main/.claude/agents/translation-editor.md) to review them. The editor starts with a clean context—it sees only the English source, the draft translation, and a shared learnings file (more on that below). It checks for naturalness (does this sound translated or native?), idiom adaptation (were English expressions translated by meaning, not literally?), technical terminology (standard terms in the target language?), and voice (does it still sound like me?).
 
-When you've just written something, you're biased toward it. The phrasing looks fine because you just chose it. Awkward constructions slip through. A fresh reader catches what the writer misses. This is true for humans; it's true for LLMs too.
-
-The editor starts with a clean context. It sees only the English source, the translation to review, and a shared learnings file (more on that below). It checks for naturalness (does this sound translated or native?), idiom adaptation (were English expressions translated by meaning, not literally?), technical terminology (standard terms in the target language?), and voice (does it still sound like me?).
+Why not have the main agent review its own work? Bias. When you've just written something, the phrasing looks fine because you just chose it. Awkward constructions slip through. A fresh reader catches what the writer misses. This is true for humans; it's true for LLMs too.
 
 The handoff depends on context. For new translations, the editor does a full review. For syncs, it focuses on changed sections—the rest was already reviewed. And since each language gets its own editor working on an independent file, they run in parallel.
 
@@ -98,7 +96,7 @@ These aren't rules I wrote upfront. They emerged from editing sessions and compo
 
 I'm a native French speaker who spent a decade living and working in Japan. Writing this blog in English made sense for reach, but it meant leaving readers (friends and family) behind.
 
-The alternatives weren't great. Manual translation would take 3-4 hours per post per language, and the quality would be mediocre: I learned my technical vocabulary in English, my math in French, and while I'm fluent in Japanese, writing polished prose is a skill I haven't practiced much. Professional translation is expensive. And anyone who's read Google Translate output for technical content knows the cringe: awkward phrasing, wrong terminology, prose that screams "I am a robot."
+The alternatives weren't great. Manual translation would take 3-4 hours per post per language, and the quality would be hard to get right: I learned my business and technical writing in English, my math in French, and while I'm fluent in Japanese, writing polished prose is a skill I haven't practiced much. Professional translation is expensive. And anyone who's read Google Translate output for technical content knows the cringe: awkward phrasing, wrong terminology, prose that screams "I am a robot."
 
 This changes the game. The translations aren't perfect, but darn close. They cost me nothing but a minute of waiting. I wouldn't have bothered translating this blog without that option available to me. I suspect we'll see a lot more multilingual content online in the months to come.
 
