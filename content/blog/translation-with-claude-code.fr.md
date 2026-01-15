@@ -51,7 +51,7 @@ L'agent principal orchestre tout en utilisant le **skill** [sync-translations](h
 
 ## Détecter ce qui nécessite du travail
 
-La première étape pour l'agent principal est d'exécuter le [`check-sync.sh`](https://github.com/vinidlidoo/vinidlidoo.github.io/blob/main/.claude/skills/sync-translations/check-sync.sh).[^1] Pour chaque article en anglais et langue cible, il produit l'un des trois états : **NEW** (aucun fichier de traduction n'existe), **SYNC** (la traduction existe mais l'anglais a changé) ou **ABORT** (la traduction est à jour).
+La première étape pour l'agent principal est d'exécuter [`check-sync.sh`](https://github.com/vinidlidoo/vinidlidoo.github.io/blob/main/.claude/skills/sync-translations/check-sync.sh).[^1] Pour chaque article en anglais et langue cible, il produit l'un des trois états : **NEW** (aucun fichier de traduction n'existe), **SYNC** (la traduction existe mais l'anglais a changé) ou **ABORT** (la traduction est à jour).
 
 NEW et ABORT sont de simples vérifications de fichiers. SYNC est plus délicat. On a besoin de l'historique git — pas seulement des dates de modification des fichiers — parce que l'agent doit savoir *ce qui* a changé, pas seulement que quelque chose a changé. Sans le diff exact, il retraduirait l'article entier. Les changements mineurs se perdent dans la masse, et des sections peaufinées sont réécrites inutilement.
 

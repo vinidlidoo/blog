@@ -51,7 +51,7 @@ The main agent orchestrates everything using the [sync-translations](https://git
 
 ## Detecting What Needs Work
 
-The first step for the main agent is to run the [`check-sync.sh`](https://github.com/vinidlidoo/vinidlidoo.github.io/blob/main/.claude/skills/sync-translations/check-sync.sh).[^1] For each English post and target language, it outputs one of three states: **NEW** (no translation file exists), **SYNC** (translation exists but English changed), or **ABORT** (translation is current).
+The first step for the main agent is to run [`check-sync.sh`](https://github.com/vinidlidoo/vinidlidoo.github.io/blob/main/.claude/skills/sync-translations/check-sync.sh).[^1] For each English post and target language, it outputs one of three states: **NEW** (no translation file exists), **SYNC** (translation exists but English changed), or **ABORT** (translation is current).
 
 NEW and ABORT are straightforward file checks. SYNC is trickier. We need git history—not just file modification times—because the agent needs to know *what* changed, not just *that* something changed. Without the exact diff, it would re-translate the entire post. Minor changes get lost in the shuffle, and polished sections get unnecessarily rewritten.
 
