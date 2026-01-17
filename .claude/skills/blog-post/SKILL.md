@@ -9,53 +9,63 @@ Write blog posts matching Vincent's established style, tone, and complexity.
 
 ## Before Writing
 
-Run `/bin/ls -t content/blog/*.md | head -3` to find the most recent posts (use `/bin/ls` since `ls` may be aliased to `eza`), then read them to absorb the current style—they are your ground truth.
+Find the most recent English posts (exclude translations like `.fr.md`, `.ja.md`):
+```bash
+/bin/ls -t content/blog/*.md | grep -v '\.\(fr\|ja\)\.md$' | grep -v '_index' | head -3
+```
+Read them to absorb the current style—they are your ground truth.
 
 ## After Writing
 
 If Vincent made style corrections or expressed preferences during the session, append them to the "Learnings" section at the bottom of this file. Keep entries concise (1-2 lines each).
 
-## Style Principles
+## Style
 
-### Tone
-- **Conversational but precise**—write like explaining to a curious friend, not lecturing
+### Voice
+- **Conversational but precise**—explaining to a curious friend, not lecturing
 - **First person**—"I want to explore", "Let's see what this means"
-- **No fluff**—get to the point, respect the reader's time
 - **Humble curiosity**—share the learning journey, not just conclusions
+- **Dense, no fluff**—respect the reader's time
 
 ### Structure
-- Open with a hook: what sparked this exploration (podcast, problem, question)
-- Use `##` headers to break into clear sections
-- Build concepts progressively—don't assume, but don't over-explain
-- End with a "Takeaway" section that crystallizes the insight
-- Footer: `*This post was written in collaboration with [Claude](https://claude.ai) (Opus 4.5).*`
+- **Hook**: Open with what sparked the exploration (a tweet, podcast, conversation, problem)
+- **Short sections**: 2-4 paragraphs per `##` section; use questions as section transitions ("But can X do Y?")
+- **Examples before definitions**: Build intuition first, then formalize
+- **Footnotes for asides**: Keep tangents out of the main flow
+- **Closing section**: "Takeaway", "Bottom Line", or "What's Next" (for series)
+- **Footer**: `*This post was written in collaboration with [Claude](https://claude.ai) (Opus 4.5).*`
 
-### Complexity
-- Assume basic literacy but explain domain-specific notation
-- Introduce notation piece by piece (e.g., "Reading it piece by piece: $\lbrace \rbrace$ means...")
-- Use concrete examples and anthropomorphizations to ground abstract concepts
-- Rigorous but not overly formal—proofs should be followable, not intimidating
+### Technical Content
+- Explain domain-specific notation piece by piece
+- Use concrete examples and anthropomorphizations
+- Proofs: rigorous but followable; use "Suppose, toward contradiction" phrasing
+- Link to related posts with explicit names: `[my post on Russell's Paradox](@/blog/russells-paradox.md)`
 
 ### Formatting
-- **Bold** for key terms on first use
-- KaTeX for math: `$...$` inline, `$$...$$` block
-- Use `\lbrace` and `\rbrace` for set braces in KaTeX
+- **Bold** key terms on first use
+- KaTeX: `$...$` inline, `$$...$$` block; use `\lbrace`/`\rbrace` for set braces, `\*` for Kleene star
 - `<details><summary>...</summary>...</details>` for optional deep-dives
-- No emojis unless explicitly requested
+- Tables: include a line explaining how to read them
+- No emojis
 
-## Frontmatter Template
+### Series Posts
+- Title format: "Title (Part N/M)"
+- Link to previous/next parts at top and bottom
+- Each part should stand alone while building on prior context
+
+## Frontmatter
 
 ```toml
 +++
 title = "Post Title"
 date = YYYY-MM-DD
-description = "One-sentence hook for the post"
+description = "One sentence hook"
 
 [taxonomies]
-tags = ["tag1", "tag2"]
+tags = ["lowercase-tag"]  # typically 1-2 tags
 
 [extra]
-katex = true  # if using math
+katex = true  # only if using math
 +++
 ```
 
@@ -67,31 +77,12 @@ Create the post at `content/blog/slug-matching-title.md`.
 
 ## Learnings
 
-Keep learnings general and reusable; avoid examples specific to any single post.
-
 - Don't run `zola serve`; Vincent prefers to run it himself
 - For long/complex topics, propose splitting into multiple posts before writing
-- Minimize em dashes; prefer colons, semicolons, periods, or parentheses instead
-- Put examples before formal definitions for accessibility; let readers build intuition first
-- Remove tangential comparisons that don't serve the main point (keep focus tight)
-- Connect abstract insights back to concrete examples from the post
-- Link to related posts when introducing concepts (e.g., set-builder notation → Russell's Paradox post)
+- Minimize em dashes; prefer colons, semicolons, periods, or parentheses
 - Don't make unsubstantiated claims; if something hasn't been proven in the post, don't assert it
-- Use `\*` to escape Kleene star (`^*`) in KaTeX to avoid markdown parsing issues
-- Twitter/X embeds: need CSP config in `config.toml` for `platform.twitter.com` (both `script-src` and `frame-src`); use `data-theme="dark"` and `data-align="center"`
-- Anchor links: use standalone `<a id="..."></a>` elements for jump targets; `id` on embedded HTML elements doesn't work reliably in Zola
-- When introducing insights that seem disconnected, bridge explicitly to what was just discussed
-- When contrasting two concepts, explain WHY the distinction matters, not just what the difference is
-- Use intuitive examples over jargon; prefer everyday analogies readers don't need background for
-- For execution traces: show concrete input, visualizations, and reference state at every step
-- For tables, add an explanation of how to read them
-- When linking to other posts, name the post explicitly rather than just hyperlinking a term
-- Every section needs motivation before content; answer "why am I reading this?" before diving in
-- When changing notation mid-post, explain the change explicitly
-- Don't claim something is "expected" or "obvious" when it's actually surprising to readers
-- When illustrating a generalization, use different examples than the base case
-- Undecidability: clarify that specific cases can be easy, but no single algorithm works for all cases
-- When constructing something in a proof, justify why the construction is valid
-- Don't mix categories carelessly when giving parallel examples
-- Historical context motivates abstract concepts
-- Self-reference concepts need unpacking; explain that an encoding is "just a string"
+- Don't claim something is "expected" or "obvious" when it's actually surprising
+- When contrasting concepts, explain WHY the distinction matters
+- Every section needs motivation; answer "why am I reading this?" before diving in
+- Twitter/X embeds: use `data-theme="dark"` and `data-align="center"`; needs CSP config for `platform.twitter.com`
+- Anchor links: use standalone `<a id="..."></a>` elements; `id` on other elements doesn't work reliably in Zola
