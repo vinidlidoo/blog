@@ -78,6 +78,7 @@ Create the post at `content/blog/slug-matching-title.md`.
 ## Learnings
 
 - Don't run `zola serve`; Vincent prefers to run it himself
+- Don't run `zola check` after every small edit; batch validation at the end
 - For long/complex topics, propose splitting into multiple posts before writing
 - Minimize em dashes; prefer colons, semicolons, periods, or parentheses
 - Don't make unsubstantiated claims; if something hasn't been proven in the post, don't assert it
@@ -86,3 +87,12 @@ Create the post at `content/blog/slug-matching-title.md`.
 - Every section needs motivation; answer "why am I reading this?" before diving in
 - Twitter/X embeds: use `data-theme="dark"` and `data-align="center"`; needs CSP config for `platform.twitter.com`
 - Anchor links: use standalone `<a id="..."></a>` elements; `id` on other elements doesn't work reliably in Zola
+- Math-heavy posts: use display math liberally; equations should be easy to spot, not buried in prose
+- Use bullet points for lists of examples, axioms, verification steps; less prose for technical content
+- Announce structure upfront when introducing multi-part concepts
+- Define terms that seem obvious but aren't; geometric or informal language may need algebraic clarification
+- List edge cases explicitly; don't leave them implicit or assume the reader will infer them
+- Explain concepts before naming them; show the technique first, then give it a name
+- Use consistent notation throughout; don't introduce new variable names mid-post without explanation
+- Qualify claims about real-world applications; distinguish the mathematical foundation from implementation details
+- Intro should promise a concrete reward: "by the end you'll understand X"
