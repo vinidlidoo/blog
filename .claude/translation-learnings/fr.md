@@ -63,3 +63,11 @@ Terminology and conventions discovered through editing. The translation-editor a
 - "does it sound translated or native?" = "a-t-on l'impression d'une traduction ou d'un texte original ?" not "ça sonne traduit" (anglicism)
 - "for reach" (audience) = "pour toucher un public plus large" not "pour la portée" (too abstract)
 - "business/technical writing" (skill) = "rédiger en contexte professionnel/technique" not "vocabulaire" (writing is broader than vocabulary)
+- "adding X to itself" (repeated operation) = "ajouter X à lui-même" not "additionner X à lui-même" (ajouter is more natural)
+- "forward direction" (crypto) = "calcul direct" not "direction avant" (literal)
+- "the hard direction" = "le sens difficile" not "la direction difficile"
+- "the reverse direction" = "le sens inverse" not "la direction inverse"
+- "Here's the algebra" = "Voici le raisonnement" not "Voici l'algèbre" (more natural)
+- "secrecy" (as goal/property) = "confidentialité" not "le secret" (more precise in crypto context)
+- "solves X" (protocol purpose) = "assure X" not "résout X" when X is a property like secrecy/authenticity
+- **Series/part numbering:** Use "Partie N/M" format (e.g., "Partie 1/2") not "1re partie/2" or "Nème partie"

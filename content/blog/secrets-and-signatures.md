@@ -95,7 +95,7 @@ The x-coordinate of $P$ equals $r$ precisely when the signer knew $d$.
 
 ### The Nonce
 
-The random value $k$ must be truly random and **never reused**. If the same $k$ signs two different messages, an attacker can algebraically recover your private key $d$. This isn't theoretical: Sony's PlayStation 3 code signing was [broken in 2010](https://en.wikipedia.org/wiki/PlayStation_3_homebrew#Private_key_compromises) because they used a constant $k$, allowing attackers to extract the private key and sign arbitrary code.
+The random value $k$ must be truly random and **never reused**. If the same $k$ signs two different messages, an attacker can algebraically recover your private key $d$. This isn't theoretical: Sony's PlayStation 3 code signing was [broken in 2010](https://en.wikipedia.org/wiki/Elliptic_Curve_Digital_Signature_Algorithm#Security) because they used a constant $k$, allowing attackers to extract the private key and sign arbitrary code.
 
 ## Takeaway
 

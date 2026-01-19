@@ -120,3 +120,31 @@ Terminology and conventions discovered through editing. The translation-editor a
 - "Now comes the punch line" / "This is the punchline" -> 「さて、ここからが本番だ」 or 「ここが核心だ」 (captures dramatic buildup)
 - "We've traced a boundary" -> 「境界をたどってきた」 (「追跡」 sounds overly investigative)
 - "in a thousand and one years" -> 「あと一年で」 (preserve the rhetorical point rather than literal translation)
+
+## Cryptography / Elliptic Curve Terms
+
+| English | Japanese | Notes |
+|---------|----------|-------|
+| elliptic curve | 楕円曲線 | Standard term |
+| field (algebra) | 体 | Standard term |
+| finite field | 有限体 | Standard term |
+| group (algebra) | 群 | Standard term |
+| discrete logarithm problem (DLP) | 離散対数問題 | Standard term |
+| double-and-add | ダブル・アンド・アッド | Use katakana with middle dots, include English in parentheses |
+| private key | 秘密鍵 | Standard term |
+| public key | 公開鍵 | Standard term |
+| ECDH | 楕円曲線ディフィー・ヘルマン鍵共有 | Full name with middle dot |
+| ECDSA | 楕円曲線DSA | Standard term (per Wikipedia) |
+| symmetric encryption | 共通鍵暗号 | Standard term (not 対称暗号) |
+| asymmetric encryption | 公開鍵暗号 | Standard term (not 非対称暗号) |
+| secrecy / confidentiality | 機密性 | Prefer 機密性 over 秘密 for formal security property |
+| nonce | ノンス | Keep as katakana |
+| digital signature | デジタル署名 | Standard term |
+| authenticity | 真正性 | Standard term |
+
+## Additional Naturalness Notes (Cryptography Articles)
+
+- "Turns out I was wrong" -> 「とんでもない思い違いだった」 (more emphatic than literal)
+- "computationally out of reach" -> 「計算上は手の届かないところにある」 (note: 計算上**は** with は particle)
+- "The cost?" (rhetorical question) -> 「代償は？」 more natural than 「コストは？」
+- "expensive math" -> 「計算コストの高い演算」 not literal 「高価な数学」
