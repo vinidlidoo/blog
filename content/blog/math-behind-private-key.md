@@ -1,6 +1,7 @@
 +++
 title = "The Math Behind Your Private Key (Part 1/2)"
 date = 2026-01-16
+updated = 2026-01-18
 description = "From group theory to elliptic curves: how public-key cryptography actually works"
 
 [taxonomies]
