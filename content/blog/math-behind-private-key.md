@@ -1,5 +1,5 @@
 +++
-title = "The Math Behind Your Private Key"
+title = "The Math Behind Your Private Key (Part 1/2)"
 date = 2026-01-16
 description = "From group theory to elliptic curves: how public-key cryptography actually works"
 
@@ -10,28 +10,30 @@ tags = ["crypto", "math"]
 katex = true
 +++
 
+![Point Addition](/img/elliptic-curve-point-addition.png)
+
 Elliptic curves keep showing up in crypto. I'd been dodging them for years, but while digging into Ethereum's rollup architecture I finally decided to stop and actually learn what's going on. The surprise? It's all built on group theory—the same abstract algebra I learned in college and promptly forgot because it seemed so disconnected from anything real. Turns out I was wrong.
 
-By the end of this post, you'll understand the core math behind public and private keys: how they're constructed from elliptic curves, and why the construction is secure. We'll skip implementation details like hashing and signature protocols—this is about the foundation.
+By the end of this post, you'll understand the core math behind public and private keys: how they're constructed from elliptic curves, and why the construction is secure. Part 2 will cover how this math gets applied in practice.
 
 ## Fields: Numbers with Arithmetic
 
-In [my post on Russell's Paradox](@/blog/russells-paradox.md), I covered what a set is. A **field** is a set $F$ equipped with two **binary operations**—addition and multiplication—satisfying **nine axioms total**: four for each operation, plus distributivity linking them. "Binary" means each operation takes two elements and returns one element from the same set:
+In [my post on Russell's Paradox](@/blog/russells-paradox.md), I covered what a set is. A **field** is a set $F$ equipped with two **binary operations**—addition and multiplication—satisfying **nine axioms**: four for each operation, plus distributivity linking them. "Binary" means each operation takes two elements and returns one element from the same set:
 
 $$+: F \times F \to F$$
 $$\cdot: F \times F \to F$$
 
-Two axiom examples:
+Two axiom examples (see [Appendix](#field-axioms) for full list):
   - associativity: $(a + b) + c = a + (b + c)$
   - multiplicative inverses: $\forall a \neq 0,\ \exists\ a^{-1}$ such that $a \cdot a^{-1} = 1$
 
 As it turns out, fields are the minimal structure required to support linear algebra, calculus and other undergraduate math. The real numbers $\mathbb{R}$ form a field. So do the rationals $\mathbb{Q}$. But the integers $\mathbb{Z}$ do not: there's no integer $n$ such that $2 \cdot n = 1$. The multiplicative inverse of 2 would be $\frac{1}{2}$, which isn't in $\mathbb{Z}$.
 
-Cryptography often uses finite fields. Ethereum's BLS12-381 curve operates over $\mathbb{F}_p$:
+Cryptography often uses finite fields. Ethereum's secp256k1 curve operates over $\mathbb{F}_p$:
 
 $$\mathbb{F}_p = \lbrace 0, 1, 2, \ldots, p-1 \rbrace$$
 
-where $p$ is a large prime ($p \approx 2^{255}$). Arithmetic wraps modulo $p$. Using $p = 7$ as a small example:
+where $p$ is a large prime ($p \approx 2^{256}$). Arithmetic wraps modulo $p$. Using $p = 7$ as a small example:
 - $5 + 4 = 9 \equiv 2 \pmod{7}$
 - $3 \cdot 5 = 15 \equiv 1 \pmod{7}$ — so $3$ and $5$ are multiplicative inverses in $\mathbb{F}_7$
 
@@ -63,17 +65,15 @@ $$y^2 = x^3 + ax + b$$
 
 plus a special **point at infinity** $\mathcal{O}$. The constants $a, b \in \mathbb{F}_p$ define the curve's shape.
 
-This set forms a group under **point addition**. The construction may seem arbitrary, but it's precisely what makes the group axioms hold. Here's how it works:
+This set forms a group under a binary operation called **point addition**. The construction may seem arbitrary, but it's precisely what makes the group axioms hold. Here's how it works:
 
-1. Find the line through $P$ and $Q$ (i.e., solve for slope $m$ and intercept $c$ in $y = mx + c$)
-2. This line intersects the curve at a third point $R$
-3. **Reflect** $R$ over the x-axis: if $R = (x, y)$, then $-R = (x, -y)$
-4. Define $P + Q = -R$
+1. Find the line through $P$ and $Q$ (i.e., solve for slope $m$ and intercept $c$ in $y = mx + c$). If $P = Q$, use the tangent line at $P$.
+2. This line intersects the curve at exactly 3 points (counting multiplicity—a tangent counts twice). Find the third intersection $R$.
+3. Compute the result:
+   - **If $R$ is a finite point**: reflect it over the x-axis to get $P + Q = -R$, where $-R = (x, -y)$.
+   - **If the line is vertical**: there is no finite third intersection. The result is $\mathcal{O}$, the point at infinity.
 
-Edge cases:
-- $P = Q$: use the tangent line at $P$
-- $P$ and $-P$ (vertical line): no third intersection, result is $\mathcal{O}$
-- $P + \mathcal{O}$: defined as $P$ (the point at infinity acts as identity)
+One more rule: $P + \mathcal{O} = P$ for any point $P$. The point at infinity acts as the identity element.
 
 Verifying the group axioms:
 - **Closure**: point addition always yields another point on the curve (or $\mathcal{O}$)
@@ -117,7 +117,39 @@ This is the core of elliptic curve cryptography. Real implementations add layers
 
 We covered a lot of ground. Fields give us arithmetic in finite spaces. Groups are simpler structures—one operation, four axioms—that show up everywhere. Elliptic curves form a group under point addition, and the discrete logarithm problem on these curves is hard enough to secure your private keys.
 
-The construction is elegant: pick a secret number $n$, multiply a known point $P$ by it, publish the result $Q = nP$. Anyone can verify things with $Q$, but recovering $n$ is computationally out of reach.
+The construction is elegant: pick a secret number $n$, multiply a known point $P$ by it, publish the result $Q = nP$. Anyone can verify things with $Q$, but recovering $n$ is computationally out of reach. In Part 2, we'll see how this foundation enables two practical protocols: ECDH for encrypting messages, and ECDSA for digital signatures.
+
+---
+
+<a id="field-axioms"></a>
+
+## Appendix: Field Axioms
+
+<details>
+<summary>The nine axioms</summary>
+
+**Addition axioms** (for all $a, b, c \in F$):
+<ol>
+<li><strong>Associativity</strong>: $(a + b) + c = a + (b + c)$</li>
+<li><strong>Commutativity</strong>: $a + b = b + a$</li>
+<li><strong>Identity</strong>: $\exists\ 0 \in F$ such that $a + 0 = a$</li>
+<li><strong>Inverses</strong>: $\exists\ (-a) \in F$ such that $a + (-a) = 0$</li>
+</ol>
+
+**Multiplication axioms** (for all $a, b, c \in F$):
+<ol start="5">
+<li><strong>Associativity</strong>: $(a \cdot b) \cdot c = a \cdot (b \cdot c)$</li>
+<li><strong>Commutativity</strong>: $a \cdot b = b \cdot a$</li>
+<li><strong>Identity</strong>: $\exists\ 1 \in F$ such that $a \cdot 1 = a$</li>
+<li><strong>Inverses</strong>: $\forall a \neq 0,\ \exists\ a^{-1} \in F$ such that $a \cdot a^{-1} = 1$</li>
+</ol>
+
+**Linking addition and multiplication**:
+<ol start="9">
+<li><strong>Distributivity</strong>: $a \cdot (b + c) = a \cdot b + a \cdot c$</li>
+</ol>
+
+</details>
 
 ---
 
