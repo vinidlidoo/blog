@@ -14,7 +14,7 @@ katex = true
 
 Elliptic curves keep showing up in crypto. I'd been dodging them for years, but while digging into Ethereum's rollup architecture I finally decided to stop and actually learn what's going on. The surprise? It's all built on group theory—the same abstract algebra I learned in college and promptly forgot because it seemed so disconnected from anything real. Turns out I was wrong.
 
-By the end of this post, you'll understand the core math behind public and private keys: how they're constructed from elliptic curves, and why the construction is secure. Part 2 will cover how this math gets applied in practice.
+By the end of this post, you'll understand the core math behind public and private keys: how they're constructed from elliptic curves, and why the construction is secure. [Part 2](@/blog/secrets-and-signatures.md) will cover how this math gets applied in practice.
 
 ## Fields: Numbers with Arithmetic
 
@@ -117,7 +117,7 @@ This is the core of elliptic curve cryptography. Real implementations add layers
 
 We covered a lot of ground. Fields give us arithmetic in finite spaces. Groups are simpler structures—one operation, four axioms—that show up everywhere. Elliptic curves form a group under point addition, and the discrete logarithm problem on these curves is hard enough to secure your private keys.
 
-The construction is elegant: pick a secret number $n$, multiply a known point $P$ by it, publish the result $Q = nP$. Anyone can verify things with $Q$, but recovering $n$ is computationally out of reach. In Part 2, we'll see how this foundation enables two practical protocols: ECDH for encrypting messages, and ECDSA for digital signatures.
+The construction is elegant: pick a secret number $n$, multiply a known point $P$ by it, publish the result $Q = nP$. Anyone can verify things with $Q$, but recovering $n$ is computationally out of reach. In [Part 2](@/blog/secrets-and-signatures.md), we'll see how this foundation enables two practical protocols: ECDH for key exchange, and ECDSA for digital signatures.
 
 ---
 
