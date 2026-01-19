@@ -149,3 +149,6 @@ Run `zola check` after all translations are created/updated.
 - Keep tag values in English across all translations for consistent taxonomy
 - The collaboration footer should be translated: "Ce billet a été écrit en collaboration avec..."
 - When adding a new language for the first time, create `content/blog/_index.<lang>.md` (the section index) or the build will fail
+- Preserve acronym introduction patterns: if source introduces "full term (ACRONYM)" then uses "ACRONYM" later, the target text should follow the same pattern
+- Maintain terminology consistency: if the source uses one term consistently (e.g., never mixing synonyms), the target text should use a single consistent term
+- When prose explains notation choices (e.g., "I called it $n$ there; I'll use $d$ here"), convert the prose but keep the math symbols as-is
