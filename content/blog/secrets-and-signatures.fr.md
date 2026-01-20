@@ -49,7 +49,7 @@ Ensuite : Alice et Bob hachent la coordonnée x de $S$ pour dériver une clé sy
 
 Si vous avez utilisé PGP ou GPG avec une clé moderne, vous avez utilisé cela. La structure hybride est la même : ECDH établit la clé de session, AES chiffre le message.
 
-[^1]: Cela fonctionne élégamment pour deux parties. Les conversations de groupe sont plus complexes : l'approche naïve nécessite $\frac{N(N-1)}{2}$ échanges de clés par paires pour $N$ participants. Les vraies applications de messagerie utilisent des protocoles plus sophistiqués pour éviter cette croissance quadratique.
+[^1]: Cela fonctionne bien pour deux parties. Les conversations de groupe sont plus complexes : l'approche naïve nécessite $\binom{N}{2} = \frac{N(N-1)}{2}$ échanges de clés pour $N$ participants. Les vraies applications de messagerie utilisent des protocoles plus sophistiqués pour éviter cette croissance quadratique.
 
 ## ECDSA : Signatures numériques
 

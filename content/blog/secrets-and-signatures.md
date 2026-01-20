@@ -48,7 +48,7 @@ Why is this secure? An eavesdropper sees $A$, $B$, and $G$, but computing $abG$ 
 What happens next: Alice and Bob hash the x-coordinate of $S$ to derive a symmetric key, then use it with a symmetric cipher like AES (the standard for same-key encryption). ECDH doesn't encrypt anything itself; it bootstraps the shared key that makes symmetric encryption possible.[^1]
 
 If you've used PGP or GPG with a modern key, you've used this. The hybrid structure is the same: ECDH establishes the session key, AES encrypts the message.
-[^1]: This works elegantly for two parties. Group chats are harder: the naive approach requires $\frac{N(N-1)}{2}$ pairwise key exchanges for $N$ participants. Real messaging apps use more sophisticated protocols to avoid this quadratic scaling.
+[^1]: This works elegantly for two parties. Group chats are harder: the naive approach requires $\binom{N}{2} = \frac{N(N-1)}{2}$ pairwise key exchanges for $N$ participants. Real messaging apps use more sophisticated protocols to avoid this quadratic scaling.
 
 ## ECDSA: Digital Signatures
 
