@@ -1,6 +1,7 @@
 +++
 title = "Claude Codeスキルによる翻訳"
 date = 2026-01-14
+updated = 2026-01-19
 description = "カスタムスキルとサブエージェントで、多言語公開を手動翻訳より速く、安く、高品質に"
 
 [taxonomies]

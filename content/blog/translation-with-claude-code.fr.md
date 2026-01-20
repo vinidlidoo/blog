@@ -1,6 +1,7 @@
 +++
 title = "Traduction avec les skills de Claude Code"
 date = 2026-01-14
+updated = 2026-01-19
 description = "Comment les skills personnalisés et les sous-agents rendent la publication multilingue plus rapide, moins chère et de meilleure qualité que la traduction manuelle"
 
 [taxonomies]

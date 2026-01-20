@@ -71,3 +71,4 @@ Terminology and conventions discovered through editing. The translation-editor a
 - "secrecy" (as goal/property) = "confidentialité" not "le secret" (more precise in crypto context)
 - "solves X" (protocol purpose) = "assure X" not "résout X" when X is a property like secrecy/authenticity
 - **Series/part numbering:** Use "Partie N/M" format (e.g., "Partie 1/2") not "1re partie/2" or "Nème partie"
+- "messaging apps" = "applications de messagerie" not "messageries" (which sounds like the service/platform rather than the app)
