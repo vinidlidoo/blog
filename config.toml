@@ -29,7 +29,7 @@ highlight_theme = "css"
 
 [extra]
 author = "Vincent"
-stylesheets = ["css/details.css"]
+stylesheets = ["css/details.css", "css/giscus-fix.css"]
 skin = "indigo_ingot"
 compact_tags = true
 tag_sorting = "frequency"
@@ -44,15 +44,36 @@ socials = [
 ]
 copyright = "© $CURRENT_YEAR Vincent Ethier"
 allowed_domains = [
-  { directive = "font-src", domains = ["'self'", "data:"] },
+  { directive = "font-src", domains = [
+    "'self'",
+    "data:",
+  ] },
   { directive = "script-src", domains = [
     "platform.twitter.com",
+    "giscus.app",
   ] },
   { directive = "frame-src", domains = [
     "platform.twitter.com",
+    "giscus.app",
   ] },
   { directive = "img-src", domains = [
     "'self'",
     "data:",
   ] },
 ]
+
+[extra.giscus]
+enabled_for_all_posts = true
+automatic_loading = true
+repo = "vinidlidoo/vinidlidoo.github.io"
+repo_id = "R_kgDOQ0WZSA"
+category = "👨‍💻 Blog"
+category_id = "DIC_kwDOQ0WZSM4C1LA8"
+mapping = "slug"
+strict_title_matching = 0
+enable_reactions = 1
+comment_box_above_comments = true
+light_theme = "noborder_light"
+dark_theme = "noborder_dark"
+lang = ""
+lazy_loading = true
