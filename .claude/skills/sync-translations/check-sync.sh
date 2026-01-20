@@ -44,14 +44,14 @@ get_translation_baseline() {
     # (not just a rename) - count lines starting with + or - in the diff
     local diff_in_commit=$(git show "$last_commit" -- "$trans_file" 2>/dev/null | grep -c "^[-+]" || true)
 
-    if [[ "$diff_in_commit" -gt 4 ]]; then
+    if [[ "$diff_in_commit" -gt 2 ]]; then
         # Had real content changes (more than just +++ and --- header lines)
         echo "$last_commit"
     else
         # Was likely just a rename, look further back
         git log --format="%H" --follow -- "$trans_file" | while read commit; do
             local changes=$(git show "$commit" -- "$trans_file" 2>/dev/null | grep -c "^[-+]" || true)
-            if [[ "$changes" -gt 4 ]]; then
+            if [[ "$changes" -gt 2 ]]; then
                 echo "$commit"
                 return
             fi
