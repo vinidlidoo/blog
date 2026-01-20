@@ -114,7 +114,6 @@ for en_file in "$BLOG_DIR"/*.md; do
             echo ""
             ((needs_sync++))
         else
-            echo -e "${GREEN}[UP TO DATE]${NC} $trans_file"
             ((up_to_date++))
         fi
     done
