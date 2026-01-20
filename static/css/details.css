@@ -18,6 +18,19 @@ article details[open] summary {
 
 /* Smaller footnote text */
 .footnote-definition{
-    font-size: 0.85rem; 
+    font-size: 0.85rem;
+}
+
+/* Fix language switcher double-tap issue on iOS */
+/* On touch devices, disable hover and rely on native <details> toggle */
+@media (pointer: coarse) {
+    .dropdown:hover .dropdown-content,
+    .dropdown:focus-within .dropdown-content {
+        display: none !important;
+    }
+
+    .dropdown[open] .dropdown-content {
+        display: block !important;
+    }
 }
 
