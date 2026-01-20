@@ -44,6 +44,7 @@ socials = [
 ]
 copyright = "© $CURRENT_YEAR Vincent Ethier"
 allowed_domains = [
+  { directive = "font-src", domains = ["'self'", "data:"] },
   { directive = "script-src", domains = [
     "platform.twitter.com",
   ] },
