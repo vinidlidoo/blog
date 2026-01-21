@@ -98,3 +98,11 @@ Don't run `zola serve` or `zola check` during editing; Vincent prefers to run th
 ## Learnings
 
 - **Numbered lists reset** when interrupted by non-list content. Use HTML `<ol start="N">` to continue numbering across sections.
+- **Critiquing external work**: One jab is enough, then be constructive. Frame as "opens a door" not "failed to deliver." Avoid sounding bitter or sarcastic.
+- **Section titles**: Be specific and descriptive. Generic titles like "On This Blog" or "The Full Loop" are weaker than titles that capture the actual content.
+- **Parallel structure for multi-topic sections**: When covering related topics in one section, use parallel framing ("On X:... On Y:...") to tie them together.
+- **Avoid redundant sentences**: Don't say the same thing twice in different words. If two consecutive sentences make the same point, pick one.
+- **Sentence fragments**: Starting a sentence with "And" can work for effect, but don't do it without strong intention. When in doubt, integrate into the previous sentence.
+- **Genuine acknowledgment**: When pivoting from criticism to opportunity, be honest about the limitation first. Jumping straight to "it's an opening" can feel forced if you haven't earned it.
+- **Caveats for vision sections**: Acknowledge hard problems honestly. Shows intellectual honesty without undermining the argument.
+- **Tech Twitter naming**: For memeable concept names, use established patterns like "-first", "-native", or classical references.
