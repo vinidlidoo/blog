@@ -39,7 +39,7 @@ The vision I keep returning to:
 - **Loop**: AI engages in conversation. The text updates dynamically based on what confuses you. You also answer assessment questions as you go.
 - **End state**: A document co-authored with you, shaped by the questions you asked along the way.
 
-Static text assumes all readers have the same gaps. Dynamic text fills *your* gaps as they emerge.
+Static text assumes all readers have the same gaps. Dynamic text fills *your* gaps as they emerge. This isn't a tutor you consult when the textbook fails you—it's the primary path, and the document you co-author is the lasting artifact.
 
 This is obviously oversimplifying. A real system would need to maintain factual accuracy as content adapts, and in formal education, ensure coverage of shared fundamentals across a student population. Hard problems. But the direction feels right.
 
