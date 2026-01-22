@@ -148,3 +148,32 @@ Terminology and conventions discovered through editing. The translation-editor a
 - "computationally out of reach" -> 「計算上は手の届かないところにある」 (note: 計算上**は** with は particle)
 - "The cost?" (rhetorical question) -> 「代償は？」 more natural than 「コストは？」
 - "expensive math" -> 「計算コストの高い演算」 not literal 「高価な数学」
+
+## Education / AI Learning Terms
+
+| English | Japanese | Notes |
+|---------|----------|-------|
+| prompt-first learning | 質問から始める学習 | Adapted translation capturing the concept |
+| personalization | パーソナライゼーション | Keep as katakana |
+| spaced repetition | 間隔反復 | Standard term |
+| modality (learning) | モダリティ | Keep as katakana |
+| Choose Your Own Adventure | 『きみならどうする？』シリーズ | Japanese equivalent series |
+
+## Additional Naturalness Notes (Education Article)
+
+- "not trivial" (describing substantial work) -> 「並大抵ではない」 more natural than 「簡単ではない」
+- "thin" (describing inadequate content) -> 「物足りない」 captures the disappointment nuance
+- "rabbit hole" -> 「沼にはまる」 per established idiom (not 「穴に潜る」)
+- "the key insight" -> 「ここがポイントで」 more conversational than 「重要な洞察は」
+- "encodes" (capturing style in code/rules) -> 「反映させた」 more natural than 「エンコードした」
+- "obviously oversimplifying" -> 「もちろんこれは単純化しすぎだ」 (「明らかに」 sounds stiff)
+- "That's a discussion for another post" -> 「それはまた別の投稿で」 (concise, conversational)
+- "with special attention to X" -> integrate into sentence (e.g., 「Xを重点的に」), not standalone 「Xに注意を払って」
+- "we're circling the same idea" -> 「結局、同じことを言っている」 not literal 「同じアイデアの周りを回っている」
+- "the primary reason was X" -> use 「〜のは、〜のおかげだ」 to connect clauses naturally
+- "metaphors" (analogies in teaching) -> 「たとえ」 not 「メタファー」 (too literary)
+- "staying faithful to the source" -> 「元の意味を損なわずに」 not 「忠実」 (typically for people/loyalty)
+- "put knowledge to use" -> 「知識を役立てる」 not 「知識を実践に活かす」 (emphasizes being useful)
+- "I'm excited" -> 「楽しみだ」 not 「ワクワクしている」 (sounds infantile for adult writing)
+- "but hey" (casual interjection) -> 「まあ、」 captures the dismissive/casual tone
+- "willing to do X" -> 「Xをする気があれば」 or 「手間をかける気があれば」 (「やる気」 means motivation, not willingness)

@@ -72,3 +72,16 @@ Terminology and conventions discovered through editing. The translation-editor a
 - "solves X" (protocol purpose) = "assure X" not "résout X" when X is a property like secrecy/authenticity
 - **Series/part numbering:** Use "Partie N/M" format (e.g., "Partie 1/2") not "1re partie/2" or "Nème partie"
 - "messaging apps" = "applications de messagerie" not "messageries" (which sounds like the service/platform rather than the app)
+- "make sense" / "click" (understanding) = "cliquer" or "déclencher un déclic" not "faire sens" (anglicism)
+- "rabbit hole" (topic to explore) = "sujet à creuser" not "terrier" (too literal)
+- "the key insight" = "le point essentiel" not "l'insight clé" (anglicism)
+- "iterate" (process) = "recommencer" not "itérer" (too technical/formal in conversational context)
+- "six-pack" (abs) = "des abdos bien dessinés" or "des tablettes de chocolat" not "un ventre plat" (which lacks the muscular connotation)
+- "despite starting at age X" = "alors que je n'ai commencé qu'à X ans" not "malgré un début à X ans" (more natural construction)
+- "I go back and forth" (dialogue) = "On échange" not "J'avance par allers-retours" (awkward)
+- "no vendor lock-in" = "rien de propriétaire" not "pas de dépendance à un fournisseur" (too long)
+- "learner" (in formal contexts) = "élève" not "apprenant" (too jargony, rarely used)
+- "per-reader adaptation" = "personnalisation individuelle" not "adaptation par lecteur" (unclear)
+- "back-and-forth" (interactivity) = "dialogue" or "échange" not "aller-retour"
+- Avoid starting sentences with "Mais" repeatedly → use "Cela dit," or embed "quand même" in sentence
+- When translating quotes from external sources, preserve key adverbs like "dynamiquement"
