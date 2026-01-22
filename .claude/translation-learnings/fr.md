@@ -80,7 +80,7 @@ Terminology and conventions discovered through editing. The translation-editor a
 - "despite starting at age X" = "alors que je n'ai commencé qu'à X ans" not "malgré un début à X ans" (more natural construction)
 - "I go back and forth" (dialogue) = "On échange" not "J'avance par allers-retours" (awkward)
 - "no vendor lock-in" = "rien de propriétaire" not "pas de dépendance à un fournisseur" (too long)
-- "learner" (in formal contexts) = "élève" not "apprenant" (too jargony, rarely used)
+- "learner" (formal education context) = "élève" not "apprenant" (too jargony); in general/autodidact contexts, restructure to avoid the noun (e.g., "aide à apprendre", "le parcours de chacun")
 - "per-reader adaptation" = "personnalisation individuelle" not "adaptation par lecteur" (unclear)
 - "back-and-forth" (interactivity) = "dialogue" or "échange" not "aller-retour"
 - Avoid starting sentences with "Mais" repeatedly → use "Cela dit," or embed "quand même" in sentence
@@ -88,3 +88,11 @@ Terminology and conventions discovered through editing. The translation-editor a
 - "fails you" (textbook) = "fait défaut" not "vous laisse en plan" (too informal/colloquial)
 - Maintain "on" voice for consistency: "le document co-écrit" not "le document que vous co-écrivez" when rest of article uses "on"
 - "artifact" (produced output you keep) = "ce que vous gardez" or "ce qui reste", not "artefact" (which means archaeological object or measurement distortion in French)
+- "I got excited" (emotional reaction) = "Tout excité, je..." not "Je m'emballe" (which sounds more like getting carried away/overreacting)
+- "anyone who's been through school" = "Quiconque a fait des études" not "Quiconque a traversé le système scolaire" (too literal/bureaucratic)
+- "my textbook" (personal notes as learning material, autodidact context) = "mes notes de référence" not "mon support de cours" (implies formal coursework) or "mon manuel" (implies published textbook)
+- "production system" = "système de production" not "vrai système" (technical term)
+- "dinner parties" = "dîners" not "dîners d'amis" (simpler, more natural)
+- "workaround" (informal) = "la solution" not "solution de contournement" (IT jargon)
+- "natural language back-and-forth" = "le dialogue" not "l'échange en langage naturel" (too technical/NLP jargon)
+- "have the material respond" (content adapting) = "que le contenu s'ajuste" not "que le contenu réponde" (captures dynamic adaptation)

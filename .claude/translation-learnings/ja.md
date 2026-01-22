@@ -179,3 +179,16 @@ Terminology and conventions discovered through editing. The translation-editor a
 - "willing to do X" -> 「Xをする気があれば」 or 「手間をかける気があれば」 (「やる気」 means motivation, not willingness)
 - "the primary path" (in contrast to supplemental tools) -> 「学びの中心」 more conversational than formal 「本道」
 - "the lasting artifact" -> 「残る成果物になる」 with 「になる」 flows more naturally than 「〜だ」 when describing what something becomes
+
+## Pronoun Usage
+
+- **Avoid 僕**: Use 私 when first-person is absolutely necessary, but prefer omitting pronouns entirely
+- **Reduce pronoun overuse**: Japanese naturally omits pronouns when subject is clear from context. Overusing 私/あなた/僕 makes text read unnaturally
+- Examples of pronoun reduction:
+  - Bad: 「私は理解しようとしている」 → Good: 「理解しようとしている」
+  - Bad: 「私の場合、それはよく数学を意味する」 → Good: 「数式を見ないと表面的な理解しかできていない気がするので、数学をよく求める」
+  - Bad: 「あなたの混乱に合わせて」 → Good: 「自分の疑問に合わせて」 or 「混乱に合わせて」
+- When emphasis on "you" is needed (contrasting with generic readers), use *あなた* with italics sparingly
+- "easier said than done" -> 「言うは易く行うは難し」 (proverb form, natural)
+- "I'd add" (casual interjection) -> 「付け加えるなら」 or 「一つ付け加えると」 (avoids 私)
+- "What works for me" / "for me" (establishing personal context) -> use 「自分に」 in opening sentence rather than changing section headers (e.g., 「自分にうまくいっている方法」)
