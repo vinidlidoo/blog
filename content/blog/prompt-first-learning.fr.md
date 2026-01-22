@@ -39,7 +39,7 @@ La vision à laquelle je reviens sans cesse :
 - **Boucle** : L'IA engage une conversation. Le texte se met à jour dynamiquement en fonction de ce qui vous pose problème. Vous répondez aussi à des questions d'évaluation au fur et à mesure.
 - **État final** : Un document co-écrit avec vous, façonné par les questions que vous avez posées en chemin.
 
-Le texte statique suppose que tous les lecteurs ont les mêmes lacunes. Le texte dynamique comble *vos* lacunes à mesure qu'elles émergent.
+Le texte statique suppose que tous les lecteurs ont les mêmes lacunes. Le texte dynamique comble *vos* lacunes à mesure qu'elles émergent. Ce n'est pas un tuteur que l'on consulte quand le manuel fait défaut : c'est la voie principale, et le document co-écrit est ce que vous gardez.
 
 C'est évidemment simpliste. Un vrai système devrait maintenir l'exactitude factuelle à mesure que le contenu s'adapte, et dans l'éducation formelle, assurer la couverture de fondamentaux communs pour l'ensemble des étudiants. Des problèmes difficiles, certes, mais la direction semble juste.
 

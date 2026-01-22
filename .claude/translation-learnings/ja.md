@@ -169,7 +169,7 @@ Terminology and conventions discovered through editing. The translation-editor a
 - "obviously oversimplifying" -> 「もちろんこれは単純化しすぎだ」 (「明らかに」 sounds stiff)
 - "That's a discussion for another post" -> 「それはまた別の投稿で」 (concise, conversational)
 - "with special attention to X" -> integrate into sentence (e.g., 「Xを重点的に」), not standalone 「Xに注意を払って」
-- "we're circling the same idea" -> 「結局、同じことを言っている」 not literal 「同じアイデアの周りを回っている」
+- "we're circling the same idea" -> 「行き着く先は同じだ」 (captures convergence from different angles) not 「同じことを言っている」 (too direct)
 - "the primary reason was X" -> use 「〜のは、〜のおかげだ」 to connect clauses naturally
 - "metaphors" (analogies in teaching) -> 「たとえ」 not 「メタファー」 (too literary)
 - "staying faithful to the source" -> 「元の意味を損なわずに」 not 「忠実」 (typically for people/loyalty)
@@ -177,3 +177,5 @@ Terminology and conventions discovered through editing. The translation-editor a
 - "I'm excited" -> 「楽しみだ」 not 「ワクワクしている」 (sounds infantile for adult writing)
 - "but hey" (casual interjection) -> 「まあ、」 captures the dismissive/casual tone
 - "willing to do X" -> 「Xをする気があれば」 or 「手間をかける気があれば」 (「やる気」 means motivation, not willingness)
+- "the primary path" (in contrast to supplemental tools) -> 「学びの中心」 more conversational than formal 「本道」
+- "the lasting artifact" -> 「残る成果物になる」 with 「になる」 flows more naturally than 「〜だ」 when describing what something becomes

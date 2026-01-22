@@ -85,3 +85,6 @@ Terminology and conventions discovered through editing. The translation-editor a
 - "back-and-forth" (interactivity) = "dialogue" or "échange" not "aller-retour"
 - Avoid starting sentences with "Mais" repeatedly → use "Cela dit," or embed "quand même" in sentence
 - When translating quotes from external sources, preserve key adverbs like "dynamiquement"
+- "fails you" (textbook) = "fait défaut" not "vous laisse en plan" (too informal/colloquial)
+- Maintain "on" voice for consistency: "le document co-écrit" not "le document que vous co-écrivez" when rest of article uses "on"
+- "artifact" (produced output you keep) = "ce que vous gardez" or "ce qui reste", not "artefact" (which means archaeological object or measurement distortion in French)
