@@ -96,3 +96,6 @@ Terminology and conventions discovered through editing. The translation-editor a
 - "workaround" (informal) = "la solution" not "solution de contournement" (IT jargon)
 - "natural language back-and-forth" = "le dialogue" not "l'échange en langage naturel" (too technical/NLP jargon)
 - "have the material respond" (content adapting) = "que le contenu s'ajuste" not "que le contenu réponde" (captures dynamic adaptation)
+- "resurfacing" (old news) = "qui refait surface" not "qui resurgit" (more idiomatic for news/content reappearing)
+- "the flow looks like this" = "Voici comment ça se passe" not "Le flux ressemble à ceci" (too literal/technical)
+- "circling similar ideas" = "converger vers les mêmes idées" not "tourner autour d'idées similaires" (more positive connotation)
