@@ -52,7 +52,7 @@ The flow looks like this:
 
 Static text assumes other readers have the same gaps. Dynamic text fills *your* gaps as they emerge.
 
-This isn't an "AI tutor," a helper you consult when the textbook fails. In prompt-first learning, conversation is the path, and the study notes you co-author are what you keep. You also choose where to go: which rabbit holes to explore, which tangents to follow. *Choose Your Own Adventure*, but for learning.
+This isn't an "AI tutor," a helper you consult when the textbook fails. In prompt-first learning, conversation *is* the path, and the study notes you co-author are what you keep. You also choose where to go: which rabbit holes to explore, which tangents to follow. *Choose Your Own Adventure*, but for learning.
 
 This is easier said than done. A production system needs to maintain factual accuracy as content adapts, and in formal education, ensure coverage of shared fundamentals across a student population. Hard problems. But this direction feels right.
 
