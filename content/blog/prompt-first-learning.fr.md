@@ -52,7 +52,7 @@ Voici comment ça se passe :
 
 Le texte statique suppose que les autres lecteurs ont les mêmes lacunes. Le texte dynamique comble *vos* lacunes à mesure qu'elles émergent.
 
-Ce n'est pas un « tuteur IA », un assistant qu'on consulte quand le manuel fait défaut. Dans le prompt-first learning, la conversation est la voie principale, et les notes de révision co-écrites sont ce qu'on garde. On choisit aussi où aller : quels sujets creuser, quelles tangentes suivre. *Un Livre dont vous êtes le héros*, mais pour l'apprentissage.
+Ce n'est pas un « tuteur IA », un assistant qu'on consulte quand le manuel fait défaut. Dans le prompt-first learning, la conversation *est* la voie principale, et les notes de révision co-écrites sont ce qu'on garde. On choisit aussi où aller : quels sujets creuser, quelles tangentes suivre. *Un Livre dont vous êtes le héros*, mais pour l'apprentissage.
 
 C'est plus facile à dire qu'à faire. Un système de production devrait maintenir l'exactitude factuelle à mesure que le contenu s'adapte, et dans l'éducation formelle, assurer la couverture de fondamentaux communs pour l'ensemble des élèves. Des problèmes difficiles. Mais cette direction me semble juste.
 
