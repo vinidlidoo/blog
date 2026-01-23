@@ -23,9 +23,9 @@ title = "vinidlidoo"
 description = "個人ブログ"
 taxonomies = [{ name = "tags" }]
 
-[markdown]
-highlight_code = true
-highlight_theme = "css"
+[markdown.highlighting]
+style = "class"
+theme = "catppuccin-frappe"
 
 [extra]
 author = "Vincent"
@@ -59,6 +59,11 @@ allowed_domains = [
   { directive = "img-src", domains = [
     "'self'",
     "data:",
+    "pub-94e31bf482a74272bb61e9559b598705.r2.dev",
+  ] },
+  { directive = "media-src", domains = [
+    "'self'",
+    "pub-94e31bf482a74272bb61e9559b598705.r2.dev",
   ] },
 ]
 

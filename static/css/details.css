@@ -34,3 +34,8 @@ article details[open] summary {
     }
 }
 
+/* Centered content */
+.centered {
+    text-align: center;
+}
+
