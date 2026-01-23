@@ -22,7 +22,7 @@ J'ai donc essayé la [démo](https://learnyourway.withgoogle.com/) et lu l'[arti
   <source src="https://pub-94e31bf482a74272bb61e9559b598705.r2.dev/video/learn-your-way.mp4" type="video/mp4">
 </video>
 
-Voici où j'ai été déçu. J'ai défini mon profil comme « étudiant de premier cycle intéressé par la peinture » et j'ai chargé le module sur les hydrocarbures. J'ai parcouru le contenu, répondu aux questions, obtenu mon évaluation. À la fin, ce qui me restait, c'était le texte original plus une seule phrase ajoutée : « *On trouve des hydrocarbures dans de nombreux matériaux d'artiste, par exemple la térébenthine utilisée pour diluer les peintures à l'huile ou les essences minérales pour nettoyer les pinceaux.* » Pas de notes de révision reflétant mon parcours. Pas de document façonné par mes difficultés. L'infrastructure fonctionne (transformations de format, pipeline d'évaluation, tout), mais après toute cette interaction, je repars avec le même contenu que tout le monde. Je me suis demandé si augmenter du contenu existant allait vraiment être la meilleure direction pour l'IA et l'apprentissage. Non, il y a sans doute quelque chose de plus fondamental qui attend d'être construit.
+Voici où j'ai été déçu. J'ai défini mon profil comme « étudiant de premier cycle intéressé par la peinture » et j'ai chargé le module sur les hydrocarbures. J'ai parcouru le contenu, répondu aux questions, obtenu mon évaluation. À la fin, ce qui me restait, c'était le texte original plus une seule phrase ajoutée : « *On trouve des hydrocarbures dans de nombreux matériaux d'artiste, par exemple la térébenthine utilisée pour diluer les peintures à l'huile ou les essences minérales pour nettoyer les pinceaux.* » Pas de notes de révision reflétant mon parcours. Pas de document façonné par mes difficultés. L'infrastructure fonctionne (transformations de format, pipeline d'évaluation, tout), mais après toute cette interaction, je repars avec le même contenu que tout le monde. Je me suis demandé : augmenter des manuels existants, est-ce vraiment la meilleure direction à suivre au croisement de l'IA et de l'apprentissage ? Mon avis c'est qu'il y a quelque chose de bien plus fondamental qui attend d'être construit.
 
 ## Le problème de l'augmentation
 
@@ -44,7 +44,7 @@ Cette année, j'ai ajouté une étape : je prends ces notes plus une ébauche de
 
 ## Le Prompt-First Learning
 
-Voici comment ça se passe :
+Voici un résumé du processus que je propose :
 
 - **Départ** : Indiquez ce que vous voulez apprendre, ce que vous savez déjà, comment vous apprenez le mieux. Du contenu source (section de manuel, article, transcription vidéo) peut ancrer la conversation, mais n'est pas obligatoire.
 - **Boucle** : L'IA engage une conversation avec vous, en cherchant en ligne au besoin pour consolider ses réponses. Le texte se met à jour dynamiquement en fonction de ce qui vous pose problème. Vous répondez aussi à des questions d'évaluation au fur et à mesure.
@@ -80,7 +80,7 @@ Sur la modalité : un ami japonais a récemment essayé de lire mes articles sur
 
 ## Pourquoi maintenant
 
-L'IA creuse l'écart entre comment on apprend et comment on pourrait apprendre. Andrej Karpathy [l'a bien formulé](https://youtu.be/lXUZvyajciY?si=pV2gwP7Fe9kN7Gl8&t=7731) sur le podcast Dwarkesh en octobre dernier : « *l'éducation pré-AGI est utile, l'éducation post-AGI est fun. Les gens iront à l'école comme ils vont à la salle de sport : parce que c'est agréable, ça maintient l'esprit vif, et l'intelligence est attirante de la même façon que des abdos bien dessinés.* » J'adhère à cette vision. J'ajouterais : les gens intelligents seront attrayants non seulement pour leurs opinions nuancées sur [P vs NP](https://en.wikipedia.org/wiki/P_versus_NP_problem) lors de dîners, mais parce qu'ils mettent leurs connaissances en pratique. La société récompense ceux qui sont utiles. Mais c'est une discussion pour un autre article.
+L'IA creuse l'écart entre comment on apprend et comment on pourrait apprendre. Andrej Karpathy [l'a bien formulé](https://youtu.be/lXUZvyajciY?si=pV2gwP7Fe9kN7Gl8&t=7731) sur le podcast Dwarkesh en octobre dernier : « *l'éducation pré-AGI est utile, l'éducation post-AGI est fun. Les gens iront à l'école comme ils vont à la salle de sport : parce que c'est agréable, ça maintient l'esprit vif, et l'intelligence est attirante de la même façon que des abdos bien dessinés.* » J'adhère à cette vision. J'ajouterais : les gens intelligents seront attrayants non seulement pour leurs opinions nuancées sur [P vs NP](https://en.wikipedia.org/wiki/P_versus_NP_problem) lors de dîners, mais aussi parce qu'ils mettent leurs connaissances en pratique. La société récompense ceux qui sont utiles. Mais c'est une discussion pour un autre article.
 
 Learn Your Way aide à apprendre ; leur article scientifique inclut des résultats qui le prouvent. Mais la grande opportunité n'est pas une meilleure augmentation. C'est le prompt-first : la conversation comme voie principale, des notes de révision façonnées par le parcours de chacun.
 

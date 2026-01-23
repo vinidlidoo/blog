@@ -179,6 +179,7 @@ Terminology and conventions discovered through editing. The translation-editor a
 - "willing to do X" -> 「Xをする気があれば」 or 「手間をかける気があれば」 (「やる気」 means motivation, not willingness)
 - "the primary path" (in contrast to supplemental tools) -> 「学びの中心」 more conversational than formal 「本道」
 - "the lasting artifact" -> 「残る成果物になる」 with 「になる」 flows more naturally than 「〜だ」 when describing what something becomes
+- "My take is" (expressing personal opinion) -> 「私としては、〜と思う」 direct assertion preferred over rhetorical question 「〜のではないか」
 
 ## Pronoun Usage
 
