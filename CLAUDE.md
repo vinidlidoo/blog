@@ -66,9 +66,21 @@ git submodule update --remote themes/tabi
 
 ## Tabi-Specific Config
 
-- `highlight_theme = "css"` is required (not a named theme)
 - Homepage uses `[extra] section_path = "blog/_index.md"` to show recent posts
 - Taxonomies must be declared in `config.toml` before use in posts
+- `social_media_card` in frontmatter must be a local file path (not external URLs)
+
+## Syntax Highlighting (Zola 0.22+)
+
+```toml
+[markdown.highlighting]
+style = "class"
+theme = "catppuccin-frappe"
+```
+
+- `style = "class"` generates `giallo.css` in `static/` with CSS classes
+- Tabi's CSS provides the actual colors; the theme just defines token types
+- Old format (`[markdown]` with `highlight_code`/`highlight_theme`) no longer works
 
 ## KaTeX (Math Rendering)
 
@@ -97,6 +109,37 @@ Style footnotes via CSS: `.footnote-definition { font-size: 0.85rem; }`
 
 - Place in `static/img/`, reference as `/img/filename.ext`
 - **Case-sensitive on GitHub Pages** (Linux)—ensure filenames match exactly
+- For large images, compress with: `magick input.png -resize 1200x png:- | cwebp -q 90 -o output.webp -- -`
+
+## Video and Audio
+
+For large media files, use Cloudflare R2 bucket (`vinidlidoo-blog`):
+
+```bash
+aws s3 cp file.mp4 s3://vinidlidoo-blog/video/file.mp4 \
+  --endpoint-url https://93e9358874da65cc09f1d1f51d83848a.r2.cloudflarestorage.com \
+  --profile r2
+```
+
+Public URL: `https://pub-94e31bf482a74272bb61e9559b598705.r2.dev/path/file`
+
+Embed with HTML5 tags:
+```html
+<video autoplay loop muted playsinline>
+  <source src="https://pub-....r2.dev/video/file.mp4" type="video/mp4">
+</video>
+
+<audio controls>
+  <source src="https://pub-....r2.dev/audio/file.mp3" type="audio/mpeg">
+</audio>
+```
+
+## Content Security Policy
+
+CSP is configured in `config.toml` under `allowed_domains`. When adding external media:
+- Add domains to `media-src` for video/audio
+- Add domains to `img-src` for images
+- **Inline styles are blocked**—use CSS classes in `static/css/` instead (e.g., `.centered`)
 
 ## Custom Stylesheets
 
