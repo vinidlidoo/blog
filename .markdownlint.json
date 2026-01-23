@@ -2,7 +2,10 @@
   "MD033": {
     "allowed_elements": [
       "details",
-      "summary"
+      "summary",
+      "video",
+      "media",
+      "source"
     ]
   },
   "MD013": false,
