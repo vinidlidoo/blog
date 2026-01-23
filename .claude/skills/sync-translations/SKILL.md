@@ -152,3 +152,4 @@ Run `zola check` after all translations are created/updated.
 - Preserve acronym introduction patterns: if source introduces "full term (ACRONYM)" then uses "ACRONYM" later, the target text should follow the same pattern
 - Maintain terminology consistency: if the source uses one term consistently (e.g., never mixing synonyms), the target text should use a single consistent term
 - When prose explains notation choices (e.g., "I called it $n$ there; I'll use $d$ here"), convert the prose but keep the math symbols as-is
+- When syncing a translation, add `updated = YYYY-MM-DD` to the frontmatter (above `description`) so check-sync.sh won't flag it in the next cycle

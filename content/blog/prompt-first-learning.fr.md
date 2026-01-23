@@ -1,6 +1,7 @@
 +++
 title = "Le Prompt-First Learning"
 date = 2026-01-22
+updated = 2026-01-23
 description = "Et si les manuels s'adaptaient à vos questions, plutôt que l'inverse ?"
 
 [taxonomies]
