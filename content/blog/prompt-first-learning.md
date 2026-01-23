@@ -44,7 +44,7 @@ This year I added another step: I take those notes plus a rough outline and draf
 
 ## Prompt-First Learning
 
-The flow looks like this:
+The flow I'm proposing looks like this:
 
 - **Start**: Enter what you want to learn, what you already know, how you learn best. Source material (textbook section, paper, video transcript) can ground the conversation, but isn't required.
 - **Loop**: The AI engages in conversation with you, occasionally searching online as needed to ground itself. The text updates dynamically based on what confuses you. You also answer assessment questions as you go.
