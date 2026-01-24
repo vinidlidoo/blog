@@ -17,6 +17,78 @@ Read them to absorb the current style—they are your ground truth.
 
 For long/complex topics, propose splitting into multiple posts before writing.
 
+## Workflows
+
+### Workflow 1: Creating an Outline
+
+Use when: User provides a transcript (from Claude conversation) or a brief describing what they want to write about.
+
+**Steps:**
+
+1. **Absorb style** — Read 2-3 recent posts (see "Before Writing")
+
+2. **Draft outline** — Create outline in `drafts/` folder with:
+   - Working title and target audience
+   - Hook summary
+   - Numbered sections with **Main message** for each
+   - Key points/examples per section
+   - Planned diagrams, tables, or code blocks
+
+3. **First sub-agent review** — Spin up a Plan agent to critically review for:
+   - Technical accuracy (are claims correct? examples valid?)
+   - Pedagogical flow (concepts introduced before used? logical progression?)
+   - Gaps and missing connections
+   - Balance (benefits vs tradeoffs, not overselling)
+
+   The agent should NOT read the source transcript—review the outline on its own merits.
+
+4. **Prioritize feedback** — Present reviewer feedback to user as a prioritized task list (use your judgment on priority). User decides what to implement.
+
+5. **Iterate with user** — Address selected feedback through back-and-forth. User may leave `<!-- FEEDBACK: ... -->` comments directly in the outline file.
+
+6. **Second sub-agent review** — Spin up another Plan agent, providing context:
+   - Summary of what first reviewer said
+   - What was implemented
+   - What was intentionally deferred (and why)
+
+   Focus: Do the changes work? Any new issues introduced? Ready for drafting?
+
+7. **Final outline** — Outline is approved when user is satisfied after second review.
+
+### Workflow 2: Writing from Outline
+
+Use when: User has an approved outline in `drafts/` and wants the full post written.
+
+**Steps:**
+
+1. **Absorb style** — Read 2-3 recent posts (if not already done during outline phase)
+
+2. **Write post** — Follow the outline section by section:
+   - Expand main messages into full prose
+   - Add transitions between sections
+   - Include planned diagrams/tables
+   - Match voice and formatting from Style section below
+
+3. **User review** — User reads draft and provides feedback or direct edits
+
+4. **Iterate** — Address feedback until user approves
+
+5. **Finalize** — Create final post at `content/blog/slug-matching-title.md`
+
+### Workflow 3: Editing an Existing Post
+
+Use when: User wants targeted changes to a published or draft post.
+
+**Steps:**
+
+1. **Read the post** — Understand current content, structure, and tone
+
+2. **Clarify scope** — If unclear, ask user what specifically needs changing
+
+3. **Make targeted edits** — Change only what's requested; don't restructure or rewrite unless asked
+
+4. **User review** — User approves changes
+
 ## After Writing
 
 If Vincent made style corrections or expressed preferences during the session, append them to the "Learnings" section at the bottom of this file. Keep entries concise (1-2 lines each).
@@ -89,7 +161,8 @@ katex = true  # only if using math
 
 ## Output
 
-Create the post at `content/blog/slug-matching-title.md`.
+- **Outlines** go to `drafts/topic-name.md`
+- **Final posts** go to `content/blog/slug-matching-title.md`
 
 Don't run `zola serve` or `zola check` during editing; Vincent prefers to run these himself. Batch validation at the end if needed.
 
