@@ -181,6 +181,38 @@ Terminology and conventions discovered through editing. The translation-editor a
 - "the lasting artifact" -> 「残る成果物になる」 with 「になる」 flows more naturally than 「〜だ」 when describing what something becomes
 - "My take is" (expressing personal opinion) -> 「私としては、〜と思う」 direct assertion preferred over rhetorical question 「〜のではないか」
 
+## Data Engineering / Storage Terms
+
+| English | Japanese | Notes |
+|---------|----------|-------|
+| row-oriented | 行指向 | Standard term |
+| column-oriented / columnar | 列指向 | Standard term |
+| row group | 行グループ | Standard term |
+| column chunk | 列チャンク | Standard term |
+| predicate pushdown | 述語プッシュダウン | Standard term |
+| projection (column selection) | プロジェクション | Keep as katakana |
+| dictionary encoding | 辞書エンコーディング | Standard term |
+| delta encoding | デルタエンコーディング | Standard term |
+| run-length encoding (RLE) | ランレングスエンコーディング（RLE） | Keep abbreviation |
+| Bloom filter | Bloomフィルター | Keep "Bloom" in English |
+| cardinality | カーディナリティ | Keep as katakana |
+| immutable | イミュータブル | Keep as katakana |
+| footer (file structure) | フッター | Keep as katakana |
+| batch processing | バッチ処理 | Standard term |
+| seek (disk operation) | seek | Keep in English (technical term) |
+| throughput | スループット | Keep as katakana |
+| latency | レイテンシ | Keep as katakana |
+
+## Additional Naturalness Notes (Data Engineering Article)
+
+- "It felt too good to be true" -> 「うますぎる話に聞こえた」 more natural than 「話がうますぎる気がした」
+- "Neither is acceptable" -> 「どちらも現実的ではない」 (「受け入れられない」 sounds too formal)
+- "terrible" (describing bad performance) -> 「最悪だ」 or 「ひどい」 depending on emphasis
+- "just works" (describing simple solution) -> 「で済む」 (e.g., 「`echo ...` で済む」)
+- "Implication" (table header) -> 「意味するところ」 rather than academic 「含意」
+- "Here's what X looks like" -> 「Xはこんな感じだ」 more conversational than 「Xは次のようになる」
+- When listing technical items inline, use 「〜向けだ」 rather than 「〜に使う」 for variety
+
 ## Pronoun Usage
 
 - **Avoid 僕**: Use 私 when first-person is absolutely necessary, but prefer omitting pronouns entirely

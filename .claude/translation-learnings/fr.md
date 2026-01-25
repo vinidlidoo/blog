@@ -99,3 +99,11 @@ Terminology and conventions discovered through editing. The translation-editor a
 - "resurfacing" (old news) = "qui refait surface" not "qui resurgit" (more idiomatic for news/content reappearing)
 - "the flow looks like this" = "Voici comment ça se passe" not "Le flux ressemble à ceci" (too literal/technical)
 - "circling similar ideas" = "converger vers les mêmes idées" not "tourner autour d'idées similaires" (more positive connotation)
+- "patterns" (data/computing) = "motifs" not "patterns" (anglicism)
+- "single-row lookups" = "lectures ponctuelles" not "recherches d'une seule ligne" (clearer, more idiomatic)
+- "closed-form" (math) = "forme close" or "forme fermée" not "forme clausée"
+- Avoid verb anglicisms like "seeker" - use native French verbs ("se positionner")
+- "analytics workloads" = "traitements analytiques" not "charges analytiques" (workload = charge de travail, but in context "traitements" flows better)
+- "Let's put concrete numbers to this" = "Passons aux chiffres" not "Mettons des chiffres concrets" (more natural imperative)
+- "this is where X actually happens" = "C'est là qu'opère réellement X" not "C'est là que X se produit réellement" (more dynamic verb)
+- Avoid redundant etymological pairs: "paie le coût de reconstruction pour réassembler" not "pour reconstituer" (reconstruction/reconstituer too close)
