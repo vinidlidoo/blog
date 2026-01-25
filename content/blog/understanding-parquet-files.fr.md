@@ -43,11 +43,13 @@ Passer de 10 octets à 1 Mo (100 000 fois plus de données) ne double même pas 
 
 Le même principe s'applique au stockage objet cloud comme S3. Les disques d'AWS ont toujours une surcharge de seek, mais de notre point de vue le goulot d'étranglement est la surcharge des requêtes HTTP (TCP, TLS, aller-retour). Le batching ici signifie demander de grandes plages d'octets par requête HTTP. Contrairement au disque (une seule tête de lecture), S3 permet d'émettre plusieurs requêtes en parallèle, mais la concurrence est limitée donc l'objectif reste le même : **moins de requêtes avec des plages d'octets plus grandes**.
 
+{% table(wide=true) %}
 | Stockage | Latence d'accès | Débit | Implication |
 |----------|-----------------|-------|-------------|
 | HDD | ~10 ms (seek mécanique) | 150 Mo/s | La latence domine ; le batching est essentiel |
 | SSD[^2] | ~0,1 ms (pas de pièces mobiles) | 500–3000 Mo/s | Pénalité plus faible par seek ; le batching reste gagnant |
 | S3 | ~100 ms (aller-retour HTTP) | 100+ Mo/s | Privilégier les grandes plages d'octets ; paralléliser entre chunks |
+{% end %}
 
 [^1]: Une simplification : les fichiers peuvent être fragmentés sur des blocs disque non contigus, et les systèmes de fichiers ajoutent des couches d'abstraction. Le modèle mental reste valide pour comprendre les compromis de disposition.
 [^2]: Les SSD éliminent les seeks mécaniques et sont plus tolérants, mais le principe reste : peu de grandes lectures séquentielles battent beaucoup de petites lectures.
@@ -56,11 +58,13 @@ Le même principe s'applique au stockage objet cloud comme S3. Les disques d'AWS
 
 Les données analytiques sont typiquement tabulaires : lignes et colonnes. Quand on sérialise une table en séquence d'octets, il y a deux choix naturels. Considérons une simple table d'employés :
 
+{% table() %}
 | name  | age | salary | dept |
 |-------|-----|--------|------|
 | Alice | 32  | 95000  | Eng  |
 | Bob   | 28  | 72000  | Mkt  |
 | Carol | 45  | 120000 | Eng  |
+{% end %}
 
 **Orienté ligne** (CSV) : stocker chaque ligne de manière contiguë, puis la ligne suivante.
 `[Alice,32,95000,Eng][Bob,28,72000,Mkt][Carol,45,120000,Eng]`
