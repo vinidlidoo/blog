@@ -79,6 +79,7 @@ Terminology and conventions discovered through editing. The translation-editor a
 - After introducing a strategy or explanation with 「戦略は」or similar, use 「こうだ。」 instead of colon
 - When presenting numbered lists with a lead-in, end the lead-in with 「次の4つだけ。」 or similar complete sentence
 - Use period 。 consistently after parenthetical explanations in running text
+- **Watch for colons in English source**: When English uses "X: Y" where Y defines/explains X, Japanese needs explicit connection. Add 「つまり、」 before Y, or restructure. Without this, two separate sentences look disconnected.
 
 ## Additional Terms (Turing Completeness Article)
 

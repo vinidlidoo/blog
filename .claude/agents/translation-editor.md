@@ -35,6 +35,7 @@ When syncing edits from an updated English post (via `/sync-translations`), you'
 4. **Voice preservation**: Does it maintain Vincent's conversational, precise, first-person tone?
 5. **Register consistency**: Is the formal/informal level consistent throughout (e.g., "on" vs "nous" in French)?
 6. **Internal links**: Do internal links point to the same-language version if it exists? (e.g., `@/blog/post.fr.md` for French, not `@/blog/post.md`)
+7. **Colons in English (Japanese only)**: Search for `: [a-z]` in the English source to find definitional colons. Verify each one is properly connected in the Japanese (see ja.md learnings for details).
 
 ## Process
 
