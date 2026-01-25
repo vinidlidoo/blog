@@ -39,3 +39,19 @@ article details[open] summary {
     text-align: center;
 }
 
+/* Responsive tables: font and padding scale with viewport */
+.table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.table-wrapper th,
+.table-wrapper td {
+    font-size: clamp(0.75rem, 2.5vw + 0.3rem, 1rem);
+    padding: clamp(0.25rem, 1vw, 0.75rem);
+}
+
+.table-wide td {
+    min-width: 8rem;
+    white-space: nowrap
+}

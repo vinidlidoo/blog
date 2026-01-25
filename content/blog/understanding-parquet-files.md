@@ -43,11 +43,13 @@ Going from 10 bytes to 1MB (100,000x more data) doesn't even double the I/O time
 
 The same principle applies to cloud object storage like S3. AWS's disks still have seek overhead, but from your perspective the bottleneck is HTTP request overhead (TCP, TLS, round-trip). Batching here means requesting large byte ranges per HTTP request. Unlike disk (one read head), S3 lets you issue multiple requests in parallel, but concurrency is limited so the goal remains the same: **fewer requests with larger byte ranges**.
 
+{% table(wide=true) %}
 | Storage | Access Latency | Throughput | Implication |
 |---------|----------------|------------|-------------|
 | HDD | ~10ms (mechanical seek) | 150 MB/s | Latency dominates; batching essential |
 | SSD[^2] | ~0.1ms (no moving parts) | 500–3000 MB/s | Smaller penalty per seek; batching still wins |
 | S3 | ~100ms (HTTP round-trip) | 100+ MB/s | Large byte ranges per request; parallelize across chunks |
+{% end %}
 
 [^1]: A simplification: files can be fragmented across non-contiguous disk blocks, and filesystems add abstraction layers. The mental model still holds for understanding layout trade-offs.
 [^2]: SSDs eliminate mechanical seeks and are more forgiving, but the principle holds: few large sequential reads beat many small reads.
@@ -56,11 +58,13 @@ The same principle applies to cloud object storage like S3. AWS's disks still ha
 
 Analytics data is typically tabular: rows and columns. When you serialize a table into a byte sequence, there are two natural choices. Consider a simple employee table:
 
+{% table() %}
 | name  | age | salary | dept |
 |-------|-----|--------|------|
 | Alice | 32  | 95000  | Eng  |
 | Bob   | 28  | 72000  | Mkt  |
 | Carol | 45  | 120000 | Eng  |
+{% end %}
 
 **Row-oriented** (CSV): store each row contiguously, then the next row.
 `[Alice,32,95000,Eng][Bob,28,72000,Mkt][Carol,45,120000,Eng]`
