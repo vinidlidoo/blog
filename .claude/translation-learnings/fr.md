@@ -37,6 +37,8 @@ Terminology and conventions discovered through editing. The translation-editor a
 | accepting states | états acceptants | |
 | mismatch | discordance | Not "non-correspondance" |
 | soundness (logic) | correction | Not "cohérence" (which means consistency) |
+| string (data type) | chaînes de caractères (first mention), then "string" | "chaînes" alone is ambiguous (chain, channel); use full term once, then English |
+| single record (one at a time) | enregistrement individuel | Not "enregistrement unique" (which means distinct/one-of-a-kind) |
 | consistency (logic) | consistance | "cohérent/incohérent" acceptable but "consistant" is more precise |
 | actual numbers (vs real numbers) | les nombres tels qu'ils sont | "nombres réels" means real numbers (mathematical term) |
 | Turing complete | Turing-complet | Hyphenated in French |

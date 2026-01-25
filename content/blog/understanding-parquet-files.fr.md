@@ -1,5 +1,5 @@
 +++
-title = "Quand Parquet surpasse CSV"
+title = "Quand Parquet supplante CSV"
 date = 2026-01-23
 updated = 2026-01-25
 description = "La réalité physique qui rend la disposition des fichiers déterminante"
@@ -129,7 +129,7 @@ Moins d'octets signifie des E/S plus rapides. La compression amplifie les gains 
 
 Ces techniques sont appliquées au niveau des pages dans chaque column chunk. Chaque chunk contient des valeurs d'une seule colonne, donc toutes les valeurs partagent le même type. Et en pratique, les valeurs d'une colonne suivent souvent des motifs (catégories répétées, timestamps séquentiels, clés triées). Parquet exploite les deux :
 
-**L'encodage par dictionnaire** pour les chaînes à faible cardinalité (peu de valeurs uniques). Considérons 8 noms de départements répétés sur 1 million de lignes. Au lieu de stocker « Engineering » 200 000 fois (~12 octets chacun), on construit un dictionnaire associant chaque valeur unique à un petit entier : `{0: "Design", 1: "Engineering", ...}`. Puis on stocke juste les codes entiers (1 octet chacun) au lieu des chaînes complètes. Compression d'environ 12:1.
+**L'encodage par dictionnaire** pour les chaînes de caractères à faible cardinalité (peu de valeurs uniques). Considérons 8 noms de départements répétés sur 1 million de lignes. Au lieu de stocker « Engineering » 200 000 fois (~12 octets chacun), on construit un dictionnaire associant chaque valeur unique à un petit entier : `{0: "Design", 1: "Engineering", ...}`. Puis on stocke juste les codes entiers (1 octet chacun) au lieu des strings entiers. Compression d'environ 12:1.
 
 **L'encodage delta** pour les entiers séquentiels. Les timestamps s'incrémentent souvent de petites quantités : `[1704067200, 1704067201, 1704067203, ...]`. Au lieu de stocker chaque valeur de 8 octets, on stocke la première valeur une fois, puis juste les différences : `[1704067200, +1, +2, ...]`. Les deltas tiennent en 1–2 octets. Compression d'environ 4–8:1.
 
@@ -157,7 +157,7 @@ Requête : `SELECT name FROM employees WHERE salary > 200000`
 
 Si 2 des 10 row groups survivent, on a éliminé 80 % des E/S avant de lire la moindre donnée réelle.
 
-Cela fonctionne aussi pour les chaînes. Min/max utilisent l'ordre alphabétique, donc si un row group a min="Aaron" et max="Cynthia", une requête pour `name = 'Zoe'` peut le sauter entièrement.
+Cela fonctionne aussi pour les strings. Min/max utilisent l'ordre alphabétique, donc si un row group a min="Aaron" et max="Cynthia", une requête pour `name = 'Zoe'` peut le sauter entièrement.
 
 <details>
 <summary>Filtres de Bloom pour les colonnes à haute cardinalité</summary>
@@ -170,20 +170,20 @@ Pour les colonnes à haute cardinalité comme `user_id`, min/max est inutile (la
 
 Parquet optimise pour les lectures analytiques : beaucoup de lignes, peu de colonnes. Les coûts apparaissent à deux endroits :
 
-**Les écritures sont coûteuses et inflexibles.** Créer un fichier Parquet nécessite de mettre en mémoire tampon un row group entier (~128 Mo), calculer les statistiques pour chaque column chunk, appliquer l'encodage et compresser. CSV, c'est juste concaténer des chaînes. Et les fichiers Parquet sont immuables : on ne peut pas ajouter de lignes sans réécrire le fichier (le footer serait invalidé). Avec CSV, `echo "new,row" >> file.csv` fonctionne tout simplement.
+**Les écritures sont coûteuses et inflexibles.** Créer un fichier Parquet nécessite de mettre en mémoire tampon un row group entier (~128 Mo), calculer les statistiques pour chaque column chunk, appliquer l'encodage et compresser. CSV, c'est juste concaténer des strings. Et les fichiers Parquet sont immuables : on ne peut pas ajouter de lignes sans réécrire le fichier (le footer serait invalidé). Avec CSV, `echo "new,row" >> file.csv` fonctionne tout simplement.
 
 **Toutes les lectures n'en bénéficient pas.** Les lectures ponctuelles sont terribles : même avec le predicate pushdown, on lit des column chunks entiers (des mégaoctets) pour récupérer une ligne. Les bases de données orientées ligne utilisent des index pour un accès O(log n) à un enregistrement. Et plus on sélectionne de colonnes, moins on gagne. `SELECT *` lit tout, perdant l'avantage de la projection (bien que la compression aide toujours), et paie le coût de reconstruction pour réassembler les colonnes en lignes.
 
-Si la charge de travail est transactionnelle (beaucoup de lectures et écritures d'enregistrements uniques), Parquet est le mauvais choix.
+Si la charge de travail est transactionnelle (beaucoup de lectures et écritures d'enregistrements individuels), Parquet est le mauvais choix.
 
 ## À retenir
 
 Le format choisi doit correspondre à la charge de travail :
 
 - Analytique (scanner des millions de lignes, agréger peu de colonnes, filtrer) → Parquet
-- Transactionnel (récupérer/mettre à jour/ajouter des enregistrements uniques par clé) → orienté ligne
+- Transactionnel (récupérer/mettre à jour/ajouter des enregistrements individuels par clé) → orienté ligne
 
-De nombreux systèmes utilisent les deux. Postgres pour l'application en production, fichiers Parquet (ou un entrepôt en colonnes comme BigQuery) pour le reporting. Ils servent des objectifs différents.
+De nombreux systèmes utilisent les deux. Postgres pour l'application en production, fichiers Parquet (ou un entrepôt de données orienté colonnes comme BigQuery) pour le reporting. Ils servent des objectifs différents.
 
 Parquet a tellement dominé la catégorie de l'analytique en colonnes que l'innovation s'est déplacée vers des espaces adjacents : Arrow pour le traitement en mémoire, les lakehouses (Delta Lake, Iceberg, Hudi) pour les transactions et les ajouts par-dessus des fichiers immuables.
 
