@@ -5,7 +5,7 @@ description = "ファイルレイアウトが重要になる物理的な現実"
 draft = false
 
 [taxonomies]
-tags = ["data"]
+tags = ["computer-science"]
 
 [extra]
 katex = true

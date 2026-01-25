@@ -5,7 +5,7 @@ description = "La réalité physique qui rend la disposition des fichiers déter
 draft = false
 
 [taxonomies]
-tags = ["data"]
+tags = ["computer-science"]
 
 [extra]
 katex = true
