@@ -151,6 +151,28 @@ stylesheets = ["css/details.css"]
 
 Files go in `static/css/`.
 
+## Responsive Tables
+
+Use the `table` shortcode for responsive tables that scale on mobile:
+
+```markdown
+{% table() %}
+| col1 | col2 |
+|------|------|
+| a    | b    |
+{% end %}
+```
+
+For wide tables with many columns or long content, use `wide=true` to prevent text wrapping (enables horizontal scroll instead):
+
+```markdown
+{% table(wide=true) %}
+| col1 | col2 | col3 | col4 |
+|------|------|------|------|
+| long content here | more content | etc | etc |
+{% end %}
+```
+
 ## Mermaid Diagrams
 
 Generate diagrams as static SVGs (avoid mermaid shortcode - has rendering issues).
