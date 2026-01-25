@@ -138,7 +138,7 @@ These techniques are applied at the page level within each column chunk. Each ch
 
 There are many other techniques (bit packing, various compression codecs), but these illustrate the core idea: **grouping values by column exposes patterns that compress well**.
 
-[^3]: Parquet doesn't sort your data. You must sort before writing. RLE only benefits the primary sort key; secondary keys have short runs.
+[^3]: Parquet doesn't sort your data. You must sort before writing. The primary sort key benefits most; secondary keys benefit less, and only if low-cardinality.
 
 ### 3. Predicate Pushdown
 
@@ -163,7 +163,7 @@ This works for strings too. Min/max use alphabetical ordering, so if a row group
 <details>
 <summary>Bloom filters for high-cardinality columns</summary>
 
-For high-cardinality columns like `user_id`, min/max is useless (the range spans everything). Bloom filters offer an alternative: a bit array with multiple hash functions that answers "definitely not here" or "maybe here." The false positive rate follows $(1 - e^{-kn/m})^k$ where $k$ is hash functions, $n$ is rows in the row group, $m$ is bits—and there's an elegant closed-form optimum. A topic for another post.
+For high-cardinality columns like `user_id`, min/max is useless (the range spans everything). Bloom filters offer an alternative: a bit array with multiple hash functions that answers "definitely not here" or "maybe here." A false positive ("maybe here" when the value isn't actually there) means a wasted read. The rate follows $(1 - e^{-kn/m})^k$ where $k$ is hash functions, $n$ is rows, $m$ is bits—and there's a closed-form formula for the optimal $k$ that minimizes this rate. A topic for another post.
 
 </details>
 
