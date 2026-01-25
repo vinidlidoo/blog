@@ -184,3 +184,5 @@ Don't run `zola serve` or `zola check` during editing; Vincent prefers to run th
 - **Concrete framing**: "The flow looks like this" beats "The vision I keep returning to." Ground descriptions in what's happening, not how you feel about it.
 - **Soften alignment claims**: "It looks like we're circling similar ideas" is more honest than asserting you and others are aligned.
 - **Media continuity**: When embedding audio/video, keep the follow-up commentary attached to the preceding context. Don't orphan explanatory sentences after media blocks.
+- **Don't start sentences with "Because"**: Use sparingly for effect only. Prefer "X, so Y" constructions.
+- **Introduce terminology before using it**: If a concept hasn't been explained yet, use plain language first.
