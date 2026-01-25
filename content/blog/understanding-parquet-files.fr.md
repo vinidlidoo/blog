@@ -129,7 +129,7 @@ Moins d'octets signifie des E/S plus rapides. La compression amplifie les gains 
 
 Ces techniques sont appliquées au niveau des pages dans chaque column chunk. Chaque chunk contient des valeurs d'une seule colonne, donc toutes les valeurs partagent le même type. Et en pratique, les valeurs d'une colonne suivent souvent des motifs (catégories répétées, timestamps séquentiels, clés triées). Parquet exploite les deux :
 
-**L'encodage par dictionnaire** pour les chaînes de caractères à faible cardinalité (peu de valeurs uniques). Considérons 8 noms de départements répétés sur 1 million de lignes. Au lieu de stocker « Engineering » 200 000 fois (~12 octets chacun), on construit un dictionnaire associant chaque valeur unique à un petit entier : `{0: "Design", 1: "Engineering", ...}`. Puis on stocke juste les codes entiers (1 octet chacun) au lieu des strings entiers. Compression d'environ 12:1.
+**L'encodage par dictionnaire** pour les chaînes de caractères à faible cardinalité (peu de valeurs uniques). Considérons 8 noms de départements répétés sur 1 million de lignes. Au lieu de stocker « Engineering » 200 000 fois (~12 octets chacun), on construit un dictionnaire associant chaque valeur unique à un petit entier : `{0: "Design", 1: "Engineering", ...}`. Puis on stocke juste les codes entiers (1 octet chacun) au lieu des chaînes complètes. Compression d'environ 12:1.
 
 **L'encodage delta** pour les entiers séquentiels. Les timestamps s'incrémentent souvent de petites quantités : `[1704067200, 1704067201, 1704067203, ...]`. Au lieu de stocker chaque valeur de 8 octets, on stocke la première valeur une fois, puis juste les différences : `[1704067200, +1, +2, ...]`. Les deltas tiennent en 1–2 octets. Compression d'environ 4–8:1.
 
@@ -137,7 +137,7 @@ Ces techniques sont appliquées au niveau des pages dans chaque column chunk. Ch
 
 Il existe de nombreuses autres techniques (bit packing, divers codecs de compression), mais celles-ci illustrent l'idée centrale : **regrouper les valeurs par colonne expose des motifs qui se compressent bien**.
 
-[^3]: Parquet ne trie pas les données. Il faut trier avant l'écriture. Le RLE ne bénéficie qu'à la clé de tri principale ; les clés secondaires ont des séquences courtes.
+[^3]: Parquet ne trie pas les données. Il faut trier avant l'écriture. La clé de tri principale bénéficie le plus ; les clés secondaires bénéficient moins, et seulement si elles sont de faible cardinalité.
 
 ### 3. Predicate Pushdown
 
@@ -162,7 +162,7 @@ Cela fonctionne aussi pour les strings. Min/max utilisent l'ordre alphabétique,
 <details>
 <summary>Filtres de Bloom pour les colonnes à haute cardinalité</summary>
 
-Pour les colonnes à haute cardinalité comme `user_id`, min/max est inutile (la plage couvre tout). Les filtres de Bloom offrent une alternative : un tableau de bits avec plusieurs fonctions de hachage qui répond « certainement pas ici » ou « peut-être ici ». Le taux de faux positifs suit $(1 - e^{-kn/m})^k$ où $k$ est le nombre de fonctions de hachage, $n$ les lignes dans le row group, $m$ les bits—et il existe un optimum élégant sous forme close. Un sujet pour un autre billet.
+Pour les colonnes à haute cardinalité comme `user_id`, min/max est inutile (la plage couvre tout). Les filtres de Bloom offrent une alternative : un tableau de bits avec plusieurs fonctions de hachage qui répond « certainement pas ici » ou « peut-être ici ». Un faux positif (« peut-être ici » alors que la valeur n'y est pas) signifie une lecture inutile. Le taux suit $(1 - e^{-kn/m})^k$ où $k$ est le nombre de fonctions de hachage, $n$ les lignes, $m$ les bits—et il existe une formule en forme close pour le $k$ optimal qui minimise ce taux. Un sujet pour un autre billet.
 
 </details>
 
