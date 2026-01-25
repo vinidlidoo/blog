@@ -1,6 +1,7 @@
 +++
-title = "Pourquoi Parquet surpasse CSV pour l'analytique"
+title = "Quand Parquet surpasse CSV"
 date = 2026-01-23
+updated = 2026-01-25
 description = "La réalité physique qui rend la disposition des fichiers déterminante"
 draft = false
 
@@ -21,7 +22,7 @@ Je l'avoue : je n'ai jamais vraiment compris *pourquoi*. Quand j'ai demandé des
 
 ## Les fichiers comme tableaux d'octets
 
-Sur disque, les données d'un fichier sont stockées comme une séquence contiguë d'octets :[^1] $[b_0, b_1, b_2, \ldots, b_n]$ où chaque $b_i \in \lbrace 0,1 \rbrace^8$ et $n$ se compte typiquement en millions (Mo) voire milliards (Go) pour les traitements analytiques.
+Sur disque, les données d'un fichier sont stockées comme une **séquence contiguë d'octets** :[^1] $[b_0, b_1, b_2, \ldots, b_n]$ où chaque $b_i$ est un octet (8 bits, chacun 0 ou 1) et $n$ se compte typiquement en millions (Mo) voire milliards (Go) pour les traitements analytiques.
 
 Les requêtes analytiques ont rarement besoin de toutes ces données. Une requête typique pourrait agréger une colonne, filtrer sur une autre, et ignorer le reste. Si un fichier a 100 colonnes et 10 millions de lignes, mais que la requête ne touche que 3 colonnes, lire le fichier entier signifie transférer 30 fois plus d'octets que nécessaire. À grande échelle—des centaines de fichiers de plusieurs gigaoctets chacun—cette surcharge domine. Lire des fichiers entiers n'est pas viable.
 
@@ -88,7 +89,9 @@ Un fichier Parquet a trois composants clés :
 
 Sous forme de séquence d'octets :
 
-<p class="centered"><code>[RG0:Col0][RG0:Col1]...[RG1:Col0][RG1:Col1]...[Footer]</code></p>
+```
+[RG0:Col0][RG0:Col1][RG0:Col2]...[RG1:Col0][RG1:Col1][RG1:Col2]...[Footer]
+```
 
 Les **row groups** (~128 Mo chacun) sont des partitions horizontales de lignes. Ils permettent le traitement parallèle : les moteurs de requêtes distribués comme Spark ou BigQuery peuvent assigner différents row groups à différents workers.
 
