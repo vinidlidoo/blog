@@ -1,5 +1,5 @@
 +++
-title = "Why Parquet Files Beat CSV for Analytics"
+title = "When Parquet Files Beat CSV"
 date = 2026-01-23
 description = "The physical reality that makes file layout matter"
 draft = false
@@ -21,7 +21,7 @@ I'll be honest: I never deeply understood *why*. When I pressed for reasons, I h
 
 ## Files as Byte Arrays
 
-On disk, a file's data is stored as a contiguous sequence of bytes:[^1] $[b_0, b_1, b_2, \ldots, b_n]$ where each $b_i \in \lbrace 0,1 \rbrace^8$ and $n$ typically ranges from millions (MB) to billions (GB) for analytics workloads.
+On disk, a file's data is stored as a contiguous **sequence of bytes**:[^1] $[b_0, b_1, b_2, \ldots, b_n]$ where each $b_i$ is a byte (8 bits, each 0 or 1) and $n$ typically ranges from millions (MB) to billions (GB) for analytics workloads.
 
 Analytics queries rarely need all this data. A typical query might aggregate one column, filter on another, and ignore the rest. If your file has 100 columns and 10 million rows, but your query only touches 3 columns, reading the entire file means transferring 30x more bytes than necessary. At scale—hundreds of files, each gigabytes—this overhead dominates. Reading entire files is not viable.
 
@@ -44,6 +44,7 @@ Going from 10 bytes to 1MB (100,000x more data) doesn't even double the I/O time
 The same principle applies to cloud object storage like S3. AWS's disks still have seek overhead, but from your perspective the bottleneck is HTTP request overhead (TCP, TLS, round-trip). Batching here means requesting large byte ranges per HTTP request. Unlike disk (one read head), S3 lets you issue multiple requests in parallel, but concurrency is limited so the goal remains the same: **fewer requests with larger byte ranges**.
 
 {% table(wide=true) %}
+
 | Storage | Access Latency | Throughput | Implication |
 |---------|----------------|------------|-------------|
 | HDD | ~10ms (mechanical seek) | 150 MB/s | Latency dominates; batching essential |
@@ -59,6 +60,7 @@ The same principle applies to cloud object storage like S3. AWS's disks still ha
 Analytics data is typically tabular: rows and columns. When you serialize a table into a byte sequence, there are two natural choices. Consider a simple employee table:
 
 {% table() %}
+
 | name  | age | salary | dept |
 |-------|-----|--------|------|
 | Alice | 32  | 95000  | Eng  |
@@ -88,7 +90,9 @@ A Parquet file has three key components:
 
 As a byte sequence:
 
-<p class="centered"><code>[RG0:Col0][RG0:Col1]...[RG1:Col0][RG1:Col1]...[Footer]</code></p>
+```
+[RG0:Col0][RG0:Col1][RG0:Col2]...[RG1:Col0][RG1:Col1][RG1:Col2]...[Footer]
+```
 
 **Row groups** (~128MB each) are horizontal partitions of rows. They enable parallel processing: distributed query engines like Spark or BigQuery can assign different row groups to different workers.
 
