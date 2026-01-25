@@ -5,7 +5,7 @@ description = "The physical reality that makes file layout matter"
 draft = false
 
 [taxonomies]
-tags = ["data"]
+tags = ["computer-science"]
 
 [extra]
 katex = true
