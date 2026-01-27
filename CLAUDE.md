@@ -55,11 +55,13 @@ URLs: English at `/blog/...`, French at `/fr/blog/...`
 ## Theme (Git Submodule)
 
 The tabi theme is a git submodule. After cloning on a new machine:
+
 ```bash
 git submodule update --init
 ```
 
 To update theme:
+
 ```bash
 git submodule update --remote themes/tabi
 ```
@@ -85,6 +87,7 @@ theme = "catppuccin-frappe"
 ## KaTeX (Math Rendering)
 
 Enable per-post with `katex = true` in `[extra]`. Limitations:
+
 - `\mathrm{}` doesn't render inside `<details>` blocks—use plain text instead
 - `\begin{cases}` can be flaky—use inline prose for piecewise definitions
 - Standard commands (`\frac`, `\sqrt`, `\sum`, `\left`, `\right`) work fine
@@ -92,6 +95,7 @@ Enable per-post with `katex = true` in `[extra]`. Limitations:
 ## Footnotes
 
 Standard markdown syntax:
+
 ```markdown
 Text with footnote[^1].
 
@@ -124,6 +128,7 @@ aws s3 cp file.mp4 s3://vinidlidoo-blog/video/file.mp4 \
 Public URL: `https://pub-94e31bf482a74272bb61e9559b598705.r2.dev/path/file`
 
 Embed with HTML5 tags:
+
 ```html
 <video autoplay loop muted playsinline>
   <source src="https://pub-....r2.dev/video/file.mp4" type="video/mp4">
@@ -137,6 +142,7 @@ Embed with HTML5 tags:
 ## Content Security Policy
 
 CSP is configured in `config.toml` under `allowed_domains`. When adding external media:
+
 - Add domains to `media-src` for video/audio
 - Add domains to `img-src` for images
 - **Inline styles are blocked**—use CSS classes in `static/css/` instead (e.g., `.centered`)
@@ -144,6 +150,7 @@ CSP is configured in `config.toml` under `allowed_domains`. When adding external
 ## Custom Stylesheets
 
 Add per-post CSS via frontmatter:
+
 ```toml
 [extra]
 stylesheets = ["css/details.css"]
