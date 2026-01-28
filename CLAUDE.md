@@ -22,10 +22,14 @@ content/
 └── blog/
     ├── _index.md       # Blog section config (English)
     ├── _index.fr.md    # Blog section config (French)
+    ├── _index.ja.md    # Blog section config (Japanese)
     ├── *.md            # Blog posts (English)
-    └── *.fr.md         # Blog posts (French)
+    ├── *.fr.md         # Blog posts (French)
+    └── *.ja.md         # Blog posts (Japanese)
 config.toml             # Site config (base_url, theme, taxonomies, languages)
-i18n/                   # UI string overrides (language_name, tags, etc.)
+i18n/                   # UI string overrides (language_name, tags, newsletter, etc.)
+templates/              # Template overrides (index.html, section.html, page.html)
+templates/partials/     # Reusable partials (newsletter.html)
 themes/tabi/            # Theme (git submodule)
 ```
 
@@ -48,9 +52,9 @@ Content here...
 
 ## Multilingual Support
 
-English (default) and French. Translations use Zola's file naming: `post-name.fr.md` alongside `post-name.md`.
+English (default), French, and Japanese. Translations use Zola's file naming: `post-name.fr.md` / `post-name.ja.md` alongside `post-name.md`.
 
-URLs: English at `/blog/...`, French at `/fr/blog/...`
+URLs: English at `/blog/...`, French at `/fr/blog/...`, Japanese at `/ja/blog/...`
 
 ## Theme (Git Submodule)
 
@@ -145,6 +149,7 @@ CSP is configured in `config.toml` under `allowed_domains`. When adding external
 
 - Add domains to `media-src` for video/audio
 - Add domains to `img-src` for images
+- Add domains to `form-action` for form submissions (e.g., `buttondown.com`)
 - **Inline styles are blocked**—use CSS classes in `static/css/` instead (e.g., `.centered`)
 
 ## Custom Stylesheets
@@ -191,3 +196,29 @@ mmdc -i static/mmdc/diagram-name.mmd -o static/img/diagram-name.svg -b white
 - Source files in `static/mmdc/` with YAML frontmatter for theme config
 - See `static/mmdc/translation-workflow.mmd` for example with classDef styling
 - Use simple `<img>` tag in markdown (no special classes needed with white background)
+
+## Newsletter (Buttondown)
+
+Email subscription form via Buttondown, configured globally in `config.toml`:
+
+```toml
+[extra]
+newsletter_action = "https://buttondown.com/api/emails/embed-subscribe/vinidlidoo"
+```
+
+- Form HTML lives in `templates/partials/newsletter.html` (single source of truth)
+- Included in homepage (`index.html`), blog section (`section.html`), and posts (`page.html`)
+- Labels and button text use i18n strings: `newsletter_label` and `newsletter_button` in `i18n/*.toml`
+- Styled via `static/css/newsletter.css` (responsive, theme-aware)
+- Giscus comments are disabled but config is preserved in `config.toml`
+
+## Template Overrides
+
+Custom templates in `templates/` override the tabi theme:
+
+- `index.html` — Homepage: renders intro text above posts, newsletter form below
+- `section.html` — Blog section: adds newsletter form after post list
+- `page.html` — Post pages: adds newsletter form after article content (where comments were)
+- `partials/newsletter.html` — Reusable newsletter form partial
+
+Tabi uses `load_data` for i18n (not Zola's built-in `trans()`). Strings are accessed via `language_strings.key_name`, set up in `base.html`.
