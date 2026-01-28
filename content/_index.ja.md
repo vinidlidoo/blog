@@ -4,3 +4,7 @@ sort_by = "date"
 section_path = "blog/_index.ja.md"
 max_posts = 5
 +++
+
+# ようこそ
+
+数学、AI、暗号、CSなど、気になること全般について書いています。短いけど本格的。博士号は不要。

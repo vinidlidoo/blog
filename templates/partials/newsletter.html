@@ -1,0 +1,8 @@
+{# Newsletter signup form partial #}
+{%- if config.extra.newsletter_action -%}
+<form action="{{ config.extra.newsletter_action }}" method="post" target="_blank" class="embeddable-buttondown-form">
+    <label for="bd-email">{{ language_strings.newsletter_label }}</label>
+    <input type="email" name="email" id="bd-email" placeholder="your@email.com" />
+    <input type="submit" value="{{ language_strings.newsletter_button }}" />
+</form>
+{%- endif -%}

@@ -1,3 +1,5 @@
 language_name = "Français"
 all_tags = "Étiquettes"
 tags = "étiquettes"
+newsletter_label = "Soyez notifié quand je publie quelque chose de nouveau."
+newsletter_button = "S'abonner"

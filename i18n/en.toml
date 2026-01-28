@@ -1,3 +1,5 @@
 language_name = "English"
 all_tags = "All tags"
 tags = "tags"
+newsletter_label = "Get notified when I post something new."
+newsletter_button = "Subscribe"
