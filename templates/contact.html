@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block main_content %}
+<main>
+    <section>
+        {{ section.content | safe }}
+    </section>
+    <section>
+        {%- include "partials/contact.html" -%}
+    </section>
+</main>
+
+{%- include "partials/extra_features.html" -%}
+{% endblock main_content %}

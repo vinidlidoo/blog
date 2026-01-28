@@ -29,8 +29,9 @@ theme = "catppuccin-frappe"
 
 [extra]
 newsletter_action = "https://buttondown.com/api/emails/embed-subscribe/vinidlidoo"
+contact_form_action = "https://formspree.io/f/xeekqdav"
 author = "Vincent"
-stylesheets = ["css/details.css", "css/giscus-fix.css", "css/newsletter.css"]
+stylesheets = ["css/details.css", "css/giscus-fix.css", "css/newsletter.css", "css/contact.css"]
 skin = "indigo_ingot"
 compact_tags = true
 tag_sorting = "frequency"
@@ -38,6 +39,7 @@ favicon = "img/favicon.png"
 menu = [
   { name = "blog", url = "blog", trailing_slash = true },
   { name = "tags", url = "tags", trailing_slash = true },
+  { name = "contact", url = "contact", trailing_slash = true },
 ]
 socials = [
   { name = "github", url = "https://github.com/vinidlidoo", icon = "github" },
@@ -69,6 +71,7 @@ allowed_domains = [
   { directive = "form-action", domains = [
     "'self'",
     "buttondown.com",
+    "formspree.io",
   ] },
 ]
 

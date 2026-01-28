@@ -1,0 +1,10 @@
+{# Contact form partial #}
+{%- if config.extra.contact_form_action -%}
+<form action="{{ config.extra.contact_form_action }}" method="POST" class="contact-form">
+    <label for="cf-email">{{ language_strings.contact_email_label }}</label>
+    <input type="email" name="email" id="cf-email" placeholder="your@email.com" required />
+    <label for="cf-message">{{ language_strings.contact_message_label }}</label>
+    <textarea name="message" id="cf-message" rows="5" required></textarea>
+    <input type="submit" value="{{ language_strings.contact_send }}" />
+</form>
+{%- endif -%}
