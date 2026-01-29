@@ -147,4 +147,4 @@ Le paradoxe de Russell montre que la théorie naïve des ensembles — où toute
 
 ---
 
-*Ce billet a été écrit en collaboration avec [Claude](https://claude.ai) (Opus 4.5).*
+*Cet article a été écrit en collaboration avec [Claude](https://claude.ai) (Opus 4.5).*

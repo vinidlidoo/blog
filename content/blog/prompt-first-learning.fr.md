@@ -87,4 +87,4 @@ Learn Your Way aide à apprendre ; leur article scientifique inclut des résulta
 
 ---
 
-*Ce billet a été écrit en collaboration avec [Claude](https://claude.ai) (Opus 4.5).*
+*Cet article a été écrit en collaboration avec [Claude](https://claude.ai) (Opus 4.5).*

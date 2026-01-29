@@ -16,7 +16,7 @@ Le mois dernier, le PDG de DeepMind Demis Hassabis a [répliqué](https://twitte
 
 J'ai entendu les expressions « machine de Turing » et « Turing-complet » des centaines de fois au fil des années, mais je dois admettre que je n'ai jamais vraiment compris ce qu'elles signifiaient. Voici mon essai d'explication : courte, dense, mais accessible. La partie 1 couvre ce qu'est réellement une machine de Turing. [La partie 2](@/blog/turing-completeness.md) expliquera ce que « Turing-complet » signifie et reviendra sur l'affirmation de Demis.
 
-[^1]: [Tweet complet à la fin du billet](#tweet)
+[^1]: [Tweet complet à la fin de l'article](#tweet)
 
 ## Contexte historique
 
@@ -148,7 +148,7 @@ Une machine **accepte** l'entrée $w$ si elle finit par atteindre un état dans 
 
 Regardez bien $L(M)$. La machine $M$ est finie : un nombre fini d'états, un alphabet de ruban fini, donc un nombre fini de règles de transition. Et pourtant, le langage $L(M)$ peut contenir une infinité de chaînes. **Une machine de Turing est une description finie d'un ensemble potentiellement infini.**
 
-Cela fait écho à quelque chose que j'ai exploré dans [mon billet sur le paradoxe de Russell](@/blog/russells-paradox.md). En notation en compréhension, $\lbrace x : x > 5 \rbrace$ décrit une infinité de nombres avec quelques symboles. Une machine de Turing fait quelque chose de similaire :
+Cela fait écho à quelque chose que j'ai exploré dans [mon article sur le paradoxe de Russell](@/blog/russells-paradox.md). En notation en compréhension, $\lbrace x : x > 5 \rbrace$ décrit une infinité de nombres avec quelques symboles. Une machine de Turing fait quelque chose de similaire :
 
 $$\lbrace x : x > 5 \rbrace \quad \text{vs} \quad \lbrace w : M \text{ accepte } w \rbrace$$
 
@@ -172,4 +172,4 @@ Mais pourquoi une machine si simple devrait-elle nous intéresser ? [La partie 2
 
 ---
 
-*Ce billet a été écrit en collaboration avec [Claude](https://claude.ai) (Opus 4.5).*
+*Cet article a été écrit en collaboration avec [Claude](https://claude.ai) (Opus 4.5).*

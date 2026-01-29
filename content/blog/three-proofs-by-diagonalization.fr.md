@@ -107,7 +107,7 @@ Contradiction. Plus de salades que de fruits.
 
 ## 3. Le paradoxe de Russell : pas d'ensemble universel
 
-Dans un [billet précédent](@/blog/russells-paradox.fr.md), j'ai exploré le paradoxe de Russell et comment il a brisé la théorie naïve des ensembles. Ce que je n'avais pas souligné alors, c'est que l'argument de Russell est **la même technique diagonale**.
+Dans un [article précédent](@/blog/russells-paradox.fr.md), j'ai exploré le paradoxe de Russell et comment il a brisé la théorie naïve des ensembles. Ce que je n'avais pas souligné alors, c'est que l'argument de Russell est **la même technique diagonale**.
 
 Voici la structure parallèle :
 
@@ -141,4 +141,4 @@ La diagonalisation révèle que certaines collections sont trop grandes pour êt
 
 ---
 
-*Ce billet a été écrit en collaboration avec [Claude](https://claude.ai) (Opus 4.5).*
+*Cet article a été écrit en collaboration avec [Claude](https://claude.ai) (Opus 4.5).*

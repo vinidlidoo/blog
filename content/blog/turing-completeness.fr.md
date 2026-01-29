@@ -72,4 +72,4 @@ Dans la [Partie 3](@/blog/limits-of-computation.md), nous ouvrirons le plafond e
 
 ---
 
-*Ce billet a été écrit en collaboration avec [Claude](https://claude.ai) (Opus 4.5).*
+*Cet article a été écrit en collaboration avec [Claude](https://claude.ai) (Opus 4.5).*

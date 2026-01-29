@@ -15,7 +15,7 @@ katex = true
 
 Pendant les fêtes, j'ai eu une conversation avec un ami à propos de la mise en cache des prompts. L'intuition de chacun sur l'ingénierie de contexte est logique : si vous discutez avec ChatGPT ou Claude et que la conversation accumule du contexte non pertinent, le supprimer devrait aider le modèle à se concentrer. Meilleure précision, non ?
 
-Oui, mais il y a un piège. Supprimer des tokens au milieu d'une conversation invalide le **cache KV** — un mécanisme clé qui accélère l'inférence des LLM. On ne perd pas juste un peu de calcul mis en cache ; on perd **tout ce qui suit la modification**. C'est pourquoi claude.ai, ChatGPT ou Claude Code ne modifient ou ne suppriment pas fréquemment les messages précédents[^1]. Comme l'a exprimé un PM de Claude Code [sur Twitter](https://x.com/trq212/status/2004026126889320668) : « *Les agents de programmation seraient d'un coût prohibitif s'ils ne maintenaient pas le cache de prompt entre les tours.* » Ce billet explique pourquoi.
+Oui, mais il y a un piège. Supprimer des tokens au milieu d'une conversation invalide le **cache KV** — un mécanisme clé qui accélère l'inférence des LLM. On ne perd pas juste un peu de calcul mis en cache ; on perd **tout ce qui suit la modification**. C'est pourquoi claude.ai, ChatGPT ou Claude Code ne modifient ou ne suppriment pas fréquemment les messages précédents[^1]. Comme l'a exprimé un PM de Claude Code [sur Twitter](https://x.com/trq212/status/2004026126889320668) : « *Les agents de programmation seraient d'un coût prohibitif s'ils ne maintenaient pas le cache de prompt entre les tours.* » Cet article explique pourquoi.
 
 [^1]: La compaction se produit, mais rarement.
 
@@ -164,4 +164,4 @@ La sortie à la position $i$ prédit le prochain token $t_{i+1}$, en utilisant u
 
 ---
 
-*Ce billet a été écrit en collaboration avec [Claude](https://claude.ai) (Opus 4.5).*
+*Cet article a été écrit en collaboration avec [Claude](https://claude.ai) (Opus 4.5).*

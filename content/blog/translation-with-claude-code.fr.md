@@ -105,4 +105,4 @@ Le système a pris quelques heures à construire. Maintenant j'écris en anglais
 
 ---
 
-*Ce billet a été écrit en collaboration avec [Claude](https://claude.ai) (Opus 4.5).*
+*Cet article a été écrit en collaboration avec [Claude](https://claude.ai) (Opus 4.5).*

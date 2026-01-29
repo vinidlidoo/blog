@@ -162,7 +162,7 @@ Cela fonctionne aussi pour les strings. Min/max utilisent l'ordre alphabétique,
 <details>
 <summary>Filtres de Bloom pour les colonnes à haute cardinalité</summary>
 
-Pour les colonnes à haute cardinalité comme `user_id`, min/max est inutile (la plage couvre tout). Les filtres de Bloom offrent une alternative : un tableau de bits avec plusieurs fonctions de hachage qui répond « certainement pas ici » ou « peut-être ici ». Un faux positif (« peut-être ici » alors que la valeur n'y est pas) signifie une lecture inutile. Le taux suit $(1 - e^{-kn/m})^k$ où $k$ est le nombre de fonctions de hachage, $n$ les lignes, $m$ les bits—et il existe une formule en forme close pour le $k$ optimal qui minimise ce taux. Un sujet pour un autre billet.
+Pour les colonnes à haute cardinalité comme `user_id`, min/max est inutile (la plage couvre tout). Les filtres de Bloom offrent une alternative : un tableau de bits avec plusieurs fonctions de hachage qui répond « certainement pas ici » ou « peut-être ici ». Un faux positif (« peut-être ici » alors que la valeur n'y est pas) signifie une lecture inutile. Le taux suit $(1 - e^{-kn/m})^k$ où $k$ est le nombre de fonctions de hachage, $n$ les lignes, $m$ les bits—et il existe une formule en forme close pour le $k$ optimal qui minimise ce taux. Un sujet pour un autre article.
 
 </details>
 
@@ -191,4 +191,4 @@ Le principe sous-jacent est l'asymétrie de latence d'accès : que ce soit les s
 
 ---
 
-*Ce billet a été écrit en collaboration avec [Claude](https://claude.ai) (Opus 4.5).*
+*Cet article a été écrit en collaboration avec [Claude](https://claude.ai) (Opus 4.5).*
