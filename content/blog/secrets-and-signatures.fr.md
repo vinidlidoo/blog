@@ -109,4 +109,4 @@ Cela montre comment la théorie abstraite des groupes de la 1re partie n'est pas
 
 ---
 
-*Ce billet a été écrit en collaboration avec [Claude](https://claude.ai) (Opus 4.5).*
+*Cet article a été écrit en collaboration avec [Claude](https://claude.ai) (Opus 4.5).*

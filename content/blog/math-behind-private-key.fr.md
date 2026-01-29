@@ -154,4 +154,4 @@ La construction est élégante : choisissez un nombre secret $n$, multipliez un 
 
 ---
 
-*Ce billet a été écrit en collaboration avec [Claude](https://claude.ai) (Opus 4.5).*
+*Cet article a été écrit en collaboration avec [Claude](https://claude.ai) (Opus 4.5).*

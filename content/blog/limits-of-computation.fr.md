@@ -107,4 +107,4 @@ Cette frontière ne dépend pas de la technologie. Ordinateurs plus rapides, ord
 
 ---
 
-*Ce billet a été écrit en collaboration avec [Claude](https://claude.ai) (Opus 4.5).*
+*Cet article a été écrit en collaboration avec [Claude](https://claude.ai) (Opus 4.5).*
