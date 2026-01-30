@@ -245,12 +245,11 @@ Terminology and conventions discovered through editing. The translation-editor a
 - Localized contact links: use `/ja/contact/` for Japanese translations
 - "accreditors" -> 「認証評価機関」 (evaluates institutions) not 「認定機関」 (too close to 資格認定団体)
 - "credentialing bodies" -> 「資格認定団体」 (issues credentials to individuals)
-- "Discovery" (education stage) -> 「探索」 not 「発見」 (発見 = finding something new; 探索 = exploring options)
 - "performance tasks" (assessment) -> 「実技課題」 not 「パフォーマンス課題」 (実技 captures hands-on meaning)
 - "AI-assessed performance" -> 「AIによる実技評価」 not 「AI評価によるパフォーマンス課題」
 - "task simulations" -> 「実技シミュレーション」 not 「タスクシミュレーション」
 - "certain forms of cheating" -> drop 「特定の」, just 「不正行為が」 (特定の sounds overly precise)
+- "pain points" -> 「課題」 consistently, not 「問題」 (課題 implies challenges to address; 問題 is more generic/negative)
 - "study notes" -> 「復習ノート」 not 「スタディノート」 (established term from prompt-first learning post)
-- "actors" (stakeholders) -> 「関係者」 not 「アクター」
 - "Where AI Fits" (title) -> 「AIの出番はどこか」 not 「AIはどこに位置するか」 (位置する is too formal)
-- "let me know" (closing) -> 「教えてください」 not 「教えてほしい」 (ほしい too demanding for reader address)
+

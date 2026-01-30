@@ -13,6 +13,9 @@ build_search_index = false
 
 taxonomies = [{ name = "tags" }]
 
+[link_checker]
+skip_prefixes = ["https://journals.sagepub.com/"]
+
 [languages.fr]
 title = "vinidlidoo"
 description = "Un blog personnel"
