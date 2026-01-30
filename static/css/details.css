@@ -55,3 +55,8 @@ article details[open] summary {
     min-width: 8rem;
     white-space: nowrap
 }
+
+/* Space between headings and immediately following images */
+h1 + img, h2 + img, h3 + img, h4 + img, h5 + img, h6 + img {
+    margin-top: 1rem;
+}

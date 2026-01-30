@@ -1,14 +1,5 @@
 {
-  "MD033": {
-    "allowed_elements": [
-      "details",
-      "summary",
-      "video",
-      "audio",
-      "div",
-      "source"
-    ]
-  },
+  "MD033": false,
   "MD013": false,
   "MD036": false
 }
