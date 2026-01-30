@@ -13,7 +13,7 @@ stylesheets = ["css/details.css"]
 
 <img src="/img/education-value-chain.webp" alt="The education value chain: Discovery, Learning, Assessment, and Credentialing.">
 
-On January 21, 2026, Google announced [SAT practice tests inside Gemini](https://blog.google/products-and-platforms/products/education/practice-sat-gemini/) (free, full-length, AI-graded). The next day, OpenAI launched [Education for Countries](https://openai.com/index/edu-for-countries/) at Davos, a program helping governments bring AI into their national education systems. Google's move is specific; OpenAI's is broader. Either way, AI in education is accelerating.
+On January 21, 2026, Google announced [SAT practice tests inside Gemini](https://blog.google/products-and-platforms/products/education/practice-sat-gemini/) (free, full-length, AI-graded). The same day, OpenAI launched [Education for Countries](https://openai.com/index/edu-for-countries/) at Davos, a program helping governments bring AI into their national education systems. Google's move is specific; OpenAI's is broader. Either way, AI in education is accelerating.
 
 The question is *where* in education. "AI will transform education" is about as actionable as "software will fix business." A high schooler choosing between nursing and computer science has a different problem than a bootcamp student struggling with recursion, who has a different problem than a hiring manager trying to verify a candidate's credentials. Which part of education are we talking about? This post tries to answer that by decomposing education into stages, mapping what's broken at each, and sketching where technology could intervene.
 
@@ -21,7 +21,7 @@ The question is *where* in education. "AI will transform education" is about as 
 
 Education, viewed from the learner's perspective, is a four-stage value chain. Each stage answers a different question:
 
-{% table() %}
+{% table(wide=true) %}
 
 | Stage | Function | Core Question |
 |-------|----------|---------------|
@@ -37,7 +37,7 @@ Consider a working professional pivoting from marketing to data science. She sta
 
 These stages are sequential but not strictly linear. Our career-switcher might loop back from Assessment to Learning when she discovers a gap. A student might cycle between Learning and Assessment many times before reaching Credentialing. The value chain describes the logical progression, not a rigid pipeline.
 
-[^1]: The closest parallels are Learn-Practice-Certify (common in professional certification) and the seven-step transformative learning cycle from [De Witt et al. (2024)](https://journals.sagepub.com/doi/10.1177/15413446231220317).
+[^1]: The closest parallels are the learn-practice-certify progression common in professional certification and the seven-step transformative learning cycle from [De Witt et al. (2023)](https://journals.sagepub.com/doi/10.1177/15413446231220317).
 
 ## What's Broken: Stage by Stage
 
@@ -45,13 +45,13 @@ Each stage breaks in its own way. Here's what learners, educators, and employers
 
 <img src="/img/four-stages-education.webp" alt="The four stages of the education value chain — Discovery, Learning, Assessment, and Credentialing — each with their pain points.">
 
-I count fifteen pain points across the four stages, each with a one-line summary. Not exhaustive, but I'm pretty sure it hits the 80/20 bar:
+I enumerate fifteen pain points across the four stages, each with a one-line summary. Not exhaustive, but should hit the 80/20 bar:
 
 ### Discovery
 
 <ol>
 <li><strong>Orientation</strong>: hard to pin down the intersection of what you're interested in, what you're good at, what the world needs (and what pays)</li>
-<li><strong>Access</strong>: suitable programs are hard to find, and harder to finance</li>
+<li><strong>Access</strong>: suitable programs are hard to find, get into, and finance</li>
 </ol>
 
 ### Learning

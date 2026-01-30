@@ -10,9 +10,11 @@ Write or edit blog posts matching Vincent's established style, tone, and complex
 ## Before Writing
 
 Find the most recent English posts (exclude translations like `.fr.md`, `.ja.md`):
+
 ```bash
-/bin/ls -t content/blog/*.md | grep -v '\.\(fr\|ja\)\.md$' | grep -v '_index' | head -3
+/bin/ls -t content/blog/*.md | rg -v '\.(fr|ja)\.md$' | rg -v '_index' | head -3
 ```
+
 Read them to absorb the current style—they are your ground truth.
 
 For long/complex topics, propose splitting into multiple posts before writing.
@@ -96,6 +98,7 @@ If Vincent made style corrections or expressed preferences during the session, a
 ## Style
 
 ### Voice
+
 - **Conversational but precise**—explaining to a curious friend, not lecturing
 - **First person**—"I want to explore", "Let's see what this means"
 - **Humble curiosity**—share the learning journey, not just conclusions
@@ -103,6 +106,7 @@ If Vincent made style corrections or expressed preferences during the session, a
 - **Honest about difficulty**—don't claim something is "expected" or "obvious" when it's actually surprising
 
 ### Structure
+
 - **Hook**: Open with what sparked the exploration (a tweet, podcast, conversation, problem); promise a concrete reward ("by the end you'll understand X")
 - **Motivate each section**: Answer "why am I reading this?" before diving in
 - **Short sections**: 2-4 paragraphs per `##` section; use questions as section transitions ("But can X do Y?")
@@ -113,6 +117,7 @@ If Vincent made style corrections or expressed preferences during the session, a
 - **Footer**: `*This post was written in collaboration with [Claude](https://claude.ai) (Opus 4.5).*`
 
 ### Technical Content
+
 - Explain domain-specific notation piece by piece; use consistent notation throughout
 - Use concrete examples and anthropomorphizations
 - Explain concepts before naming them; show the technique first, then give it a name
@@ -125,10 +130,12 @@ If Vincent made style corrections or expressed preferences during the session, a
 - Link to related posts with explicit names: `[my post on Russell's Paradox](@/blog/russells-paradox.md)`
 
 ### Math-Heavy Posts
+
 - Use display math liberally; equations should be easy to spot, not buried in prose
 - Use bullet points for lists of examples, axioms, verification steps; less prose for technical content
 
 ### Formatting
+
 - **Bold** key terms on first use
 - Minimize em dashes; prefer colons, semicolons, periods, or parentheses
 - KaTeX: `$...$` inline, `$$...$$` block; use `\lbrace`/`\rbrace` for set braces, `\*` for Kleene star
@@ -139,6 +146,7 @@ If Vincent made style corrections or expressed preferences during the session, a
 - No emojis
 
 ### Series Posts
+
 - Title format: "Title (Part N/M)"
 - Link to previous/next parts at top and bottom
 - Each part should stand alone while building on prior context
@@ -186,3 +194,6 @@ Don't run `zola serve` or `zola check` during editing; Vincent prefers to run th
 - **Media continuity**: When embedding audio/video, keep the follow-up commentary attached to the preceding context. Don't orphan explanatory sentences after media blocks.
 - **Don't start sentences with "Because"**: Use sparingly for effect only. Prefer "X, so Y" constructions.
 - **Introduce terminology before using it**: If a concept hasn't been explained yet, use plain language first.
+- **Show, don't tell**: When introducing a framework or tool, demonstrate its value through a concrete scenario rather than explaining what it's good for.
+- **Avoid sarcastic rhetorical openers**: Questions like "So what's the framework good for?" read as dry and dismissive. Lead with the payoff directly.
+- **Don't double-hedge**: One hedge per claim is enough. "As far as I can tell, it's comprehensive" works; "As far as I can tell, it's comprehensive enough" undermines itself.
