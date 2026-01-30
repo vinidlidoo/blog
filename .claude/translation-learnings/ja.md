@@ -154,7 +154,7 @@ Terminology and conventions discovered through editing. The translation-editor a
 
 | English | Japanese | Notes |
 |---------|----------|-------|
-| prompt-first learning | 質問から始める学習 | Adapted translation capturing the concept |
+| prompt-first learning | プロンプトファースト学習 | Keep as katakana compound |
 | personalization | パーソナライゼーション | Keep as katakana |
 | spaced repetition | 間隔反復 | Standard term |
 | modality (learning) | モダリティ | Keep as katakana |
@@ -226,3 +226,31 @@ Terminology and conventions discovered through editing. The translation-editor a
 - "easier said than done" -> 「言うは易く行うは難し」 (proverb form, natural)
 - "I'd add" (casual interjection) -> 「付け加えるなら」 or 「一つ付け加えると」 (avoids 私)
 - "What works for me" / "for me" (establishing personal context) -> use 「自分に」 in opening sentence rather than changing section headers (e.g., 「自分にうまくいっている方法」)
+- "cold joint" (soldering) -> 「いもはんだ」 (standard Japanese soldering term, not 「冷たいはんだ」)
+- "employability" -> 「市場価値」 more natural than 「雇用可能性」
+- "highest-leverage" -> 「最も効果の大きい」 not 「最もレバレッジの高い」 (unnecessary katakana)
+- "solution" (casual) -> 「解決策」 not 「ソリューション」 (less corporate)
+- "dev bootcamp" -> 「プログラミングブートキャンプ」 (clearer for Japanese readers)
+- "Discovery" (education stage) -> 「探索」 not 「発見」 (発見 implies finding something new; 探索 fits exploring options)
+- "subfield" -> 「分野」 not 「サブフィールド」 (unnecessary katakana)
+- "invasive" (privacy context) -> 「プライバシーを侵しやすい」 not 「侵襲的」 (too medical)
+- "auditable" -> 「検証可能」 not 「監査可能」 (simpler, more natural)
+- "navigable decision space" -> 「自分で探れる意思決定空間」 not 「ナビゲーション可能な意思決定空間」
+- "remaining artifact" -> 「最終的に残るのは」 not 「残る成果物は」 (成果物 is corporate jargon)
+- "transparent container" (metaphorical) -> 「中身の見える器」 not 「透明なコンテナ」
+- "actors" (stakeholders) -> 「関係者」 not 「アクター」 (less jargony)
+- "intervene" (technology helping) -> 「役立つ」 not 「介入」 (介入 has negative/forceful connotation)
+- "let me know" (closing call-to-action) -> 「教えてください」 not 「教えてほしい」 (ほしい feels too demanding; slight politeness is appropriate for direct reader address even in だ-register articles)
+- "three-dimensional X problem" -> 「3つの軸（...）からなるX」 (more natural than literal 「N次元の問題」)
+- Localized contact links: use `/ja/contact/` for Japanese translations
+- "accreditors" -> 「認証評価機関」 (evaluates institutions) not 「認定機関」 (too close to 資格認定団体)
+- "credentialing bodies" -> 「資格認定団体」 (issues credentials to individuals)
+- "Discovery" (education stage) -> 「探索」 not 「発見」 (発見 = finding something new; 探索 = exploring options)
+- "performance tasks" (assessment) -> 「実技課題」 not 「パフォーマンス課題」 (実技 captures hands-on meaning)
+- "AI-assessed performance" -> 「AIによる実技評価」 not 「AI評価によるパフォーマンス課題」
+- "task simulations" -> 「実技シミュレーション」 not 「タスクシミュレーション」
+- "certain forms of cheating" -> drop 「特定の」, just 「不正行為が」 (特定の sounds overly precise)
+- "study notes" -> 「復習ノート」 not 「スタディノート」 (established term from prompt-first learning post)
+- "actors" (stakeholders) -> 「関係者」 not 「アクター」
+- "Where AI Fits" (title) -> 「AIの出番はどこか」 not 「AIはどこに位置するか」 (位置する is too formal)
+- "let me know" (closing) -> 「教えてください」 not 「教えてほしい」 (ほしい too demanding for reader address)

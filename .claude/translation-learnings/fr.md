@@ -109,3 +109,21 @@ Terminology and conventions discovered through editing. The translation-editor a
 - "Let's put concrete numbers to this" = "Passons aux chiffres" not "Mettons des chiffres concrets" (more natural imperative)
 - "this is where X actually happens" = "C'est là qu'opère réellement X" not "C'est là que X se produit réellement" (more dynamic verb)
 - Avoid redundant etymological pairs: "paie le coût de reconstruction pour réassembler" not "pour reconstituer" (reconstruction/reconstituer too close)
+- "actionable" (practical/usable) = "opérationnel" not "actionnable" (anglicism)
+- "perform poorly" (exam context) = "s'effondrent" not "performent mal" (anglicism)
+- "putting X to work" = "X en action" not "Mettre X au travail" (too literal)
+- "thought experiments" = "exercices de pensée" not "expériences de pensée" (faux ami)
+- "upload" = "importer" not "télécharger" (which means download in common usage)
+- "artifact" (deliverable/output) = "livrable" not "artefact" (archaeological/measurement connotation)
+- "what's broken" (section header) = "Où ça casse" not "Ce qui dysfonctionne" ("dysfonctionner" is awkward as a verb)
+- "failure modes" (casual context) = "failles" not "modes de défaillance" (too engineering-speak for a blog)
+- "too coarse" (granularity) = "trop sommaire" not "trop grossier" (which also means rude)
+- "claims" (credentials context) = "déclarations" not "affirmations" (less formal/philosophical)
+- "container" (metaphorical) = "support" not "conteneur" (too industrial)
+- "thought experiments" = "pistes de réflexion" preferred over "exercices de pensée" (more natural)
+- "incentives" = "incitatifs" not "incitations" (anglicism)
+- "shifting trust from X to Y" = "la confiance ne repose plus sur X, mais sur Y" (restructure rather than translate literally)
+- "audit the evidence" = "vérifier les preuves" not "auditer le fondement empirique" (too academic)
+- Avoid triple gerund chains ("en X, en Y, et en Z") — fold two ideas together when possible
+- French contact links should use `/fr/contact/` not `/contact/`
+- "angle mort" for "gap" (in a framework) avoids repeating "manque" near "Il manque"
