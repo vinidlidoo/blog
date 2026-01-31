@@ -104,7 +104,7 @@ Large language models can already hold extended, context-aware conversations and
 
 <img src="/img/ai-assessed-performance.webp" alt="An AI-assessed performance task where the system observes a learner soldering a circuit board through AR.">
 
-Today's models are multimodal and can react in real-time: they can observe what you're doing through a screen or a camera and interpret it as it happens. An AI-assessed performance system would use this to replace exams with task simulations. Instead of answering questions about circuit design, you solder a circuit board while the AI watches through AR, flagging a cold joint before you move to the next component. Instead of writing about project management principles, you work through a scenario while the AI evaluates your decisions as they happen. Every learner's task unfolds differently based on their choices, making certain forms of cheating significantly harder. What you're assessed on is closer to what you'd do on the job.
+Today's models are multimodal: they can process text, images, and video, and interpret what you're doing through a screen or a camera. An AI-assessed performance system would use this to replace exams with task simulations. Instead of answering questions about circuit design, you design and route a circuit board while the AI evaluates your component choices and trace layout. Instead of writing about project management principles, you work through a scenario while the AI evaluates your decisions. Every learner's task unfolds differently based on their choices, making certain forms of cheating significantly harder. What you're assessed on is closer to what you'd do on the job.
 
 ### Credentialing: Evidence-Anchored Credentials
 
