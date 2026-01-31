@@ -6,6 +6,7 @@ description: Manage blog post translations. Creates new translations for posts t
 # Sync Translations Skill
 
 Create new translations and update existing ones. This skill handles both:
+
 - **Creating** translations for posts that don't have them
 - **Syncing** existing translations when the English source has changed
 
@@ -18,6 +19,7 @@ Create new translations and update existing ones. This skill handles both:
 **Without argument:** Auto-detects all posts needing work (missing translations OR outdated ones).
 
 **With argument:** Works on the specified post only.
+
 - `/sync-translations kv-cache`
 - `/sync-translations content/blog/turing-machines.md`
 
@@ -36,6 +38,7 @@ Run `check-sync.sh` to see translation status:
 ```
 
 Reports three statuses:
+
 - `[NEEDS TRANSLATION]` - No translation exists for this language
 - `[NEEDS SYNC]` - Translation exists but English has changed
 - `[UP TO DATE]` - Translation is current
@@ -75,20 +78,30 @@ For internal links (`@/blog/post-name.md`), check if a translation exists for th
 2. If no translation exists → keep the English link `@/blog/post-name.md`
 
 Example for French translation:
+
 - `[Three Proofs](@/blog/three-proofs.md)` → `[Trois preuves](@/blog/three-proofs.fr.md)` (if `.fr.md` exists)
+
+## Pre-Translation Checklist
+
+Before translating or updating, do these steps:
+
+1. **Collect established terminology**: For every internal link (`@/blog/...`), read the target translation (if it exists) and note vocabulary choices already used for shared concepts.
+2. **Localize absolute URLs**: Replace `/contact/`, `/about/`, etc. with their localized versions (`/fr/contact/`, `/ja/contact/`).
 
 ## Translation Style
 
-- **Match Vincent's tone**: conversational, precise, first-person ("Je veux explorer...")
-- **Adapt idioms**: translate meaning, not words ("sent me down a rabbit hole" → "m'a entraîné dans une exploration")
-- **Technical terms**: use accepted translations where they exist; keep English terms in italics if no good translation exists
-- **Mathematical terms**: use standard target-language mathematical vocabulary
+- **Default to native vocabulary** over loanwords. Only use katakana/anglicisms (Japanese) or anglicisms (French) for established technical terms or when no natural equivalent exists.
+- **Match the source register**: if the English is conversational, the translation must be conversational. Avoid formal/academic/technical vocabulary when the English uses plain language.
+- **Technical terms**: use accepted translations where they exist; keep English terms if no good translation exists.
+- **Mathematical terms**: use standard target-language mathematical vocabulary.
+- See the learnings file for vocabulary and style conventions.
 
 ## Workflow
 
 ### 1. Detect Work Needed
 
 Run `check-sync.sh` (or inline logic) to categorize posts:
+
 - `NEEDS_TRANSLATION` → create mode
 - `NEEDS_SYNC` → sync mode
 
@@ -98,18 +111,16 @@ Run `check-sync.sh` (or inline logic) to categorize posts:
 
 **For posts needing NEW translation (create mode):**
 
-1. Read the learnings file (`.claude/translation-learnings/<lang>.md`) if it exists
+1. Read `.claude/translation-learnings/schema.md` and the learnings file (`.claude/translation-learnings/<lang>.jsonl`)
 2. Read the source post completely
 3. Translate following preservation rules and style guidelines
 4. Write to `<source-basename>.<lang>.md` in the same directory
-5. Invoke `translation-editor` subagent in **fresh mode** (full review)
 
 **For posts needing SYNC (update mode):**
 
 1. Get git diff from translation's baseline commit
-2. Read the current translation and learnings file
+2. Read `.claude/translation-learnings/schema.md`, the learnings file, and the current translation
 3. Apply targeted edits—preserve unchanged sections, translate only changed/added content
-4. Invoke `translation-editor` subagent in **update mode** (focused review on changed sections)
 
 ### 3. Editor Review (Required)
 
@@ -147,7 +158,7 @@ Run `zola check` after all translations are created/updated.
 ## Learnings
 
 - Keep tag values in English across all translations for consistent taxonomy
-- The collaboration footer should be translated: "Cet article a été écrit en collaboration avec..." (use "article" not "billet" in French)
+- The collaboration footer should be translated (see learnings files for language-specific wording)
 - When adding a new language for the first time, create `content/blog/_index.<lang>.md` (the section index) or the build will fail
 - Preserve acronym introduction patterns: if source introduces "full term (ACRONYM)" then uses "ACRONYM" later, the target text should follow the same pattern
 - Maintain terminology consistency: if the source uses one term consistently (e.g., never mixing synonyms), the target text should use a single consistent term

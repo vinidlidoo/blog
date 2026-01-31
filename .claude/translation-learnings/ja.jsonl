@@ -1,0 +1,171 @@
+{"type":"mapping","en":"set-builder notation","ja":"集合の内包的記法","domain":"math"}
+{"type":"mapping","en":"unrestricted comprehension","ja":"無制限の内包","domain":"math"}
+{"type":"mapping","en":"cumulative hierarchy","ja":"累積的階層","domain":"math"}
+{"type":"mapping","en":"power set","ja":"冪集合","domain":"math"}
+{"type":"mapping","en":"limit ordinal","ja":"極限順序数","domain":"math"}
+{"type":"mapping","en":"naive set theory","ja":"素朴集合論","domain":"math"}
+{"type":"mapping","en":"KV cache","ja":"KVキャッシュ","domain":"ai"}
+{"type":"mapping","en":"prompt caching","ja":"プロンプトキャッシング","domain":"ai"}
+{"type":"mapping","en":"forward pass","ja":"フォワードパス","domain":"ai"}
+{"type":"mapping","en":"decoder block","ja":"デコーダブロック","domain":"ai"}
+{"type":"mapping","en":"hidden state","ja":"隠れ状態","domain":"ai"}
+{"type":"mapping","en":"attention head","ja":"アテンションヘッド","domain":"ai"}
+{"type":"mapping","en":"cache hit/miss","ja":"キャッシュヒット/ミス","domain":"ai"}
+{"type":"mapping","en":"token","ja":"トークン","domain":"ai"}
+{"type":"mapping","en":"context engineering","ja":"コンテキストエンジニアリング","domain":"ai"}
+{"type":"mapping","en":"Turing machine","ja":"チューリングマシン","domain":"cs"}
+{"type":"mapping","en":"Turing complete","ja":"チューリング完全","domain":"cs"}
+{"type":"mapping","en":"tape (Turing machine)","ja":"テープ","domain":"cs"}
+{"type":"mapping","en":"head (Turing machine)","ja":"ヘッド","domain":"cs"}
+{"type":"mapping","en":"cell","ja":"セル","domain":"cs"}
+{"type":"mapping","en":"state","ja":"状態","domain":"cs"}
+{"type":"mapping","en":"transition function","ja":"遷移関数","domain":"cs"}
+{"type":"mapping","en":"accept/reject","ja":"受理/拒否","domain":"cs"}
+{"type":"mapping","en":"tape alphabet","ja":"テープアルファベット","domain":"cs"}
+{"type":"mapping","en":"input alphabet","ja":"入力アルファベット","domain":"cs"}
+{"type":"mapping","en":"language (formal)","ja":"言語","domain":"cs"}
+{"type":"mapping","en":"palindrome","ja":"回文","domain":"cs"}
+{"type":"mapping","en":"algorithm","ja":"アルゴリズム","domain":"cs"}
+{"type":"mapping","en":"computer (historical, person)","ja":"computer","domain":"cs","notes":"keep in English with quotes when referring to human calculator"}
+{"type":"mapping","en":"Universal Turing Machine","ja":"万能チューリングマシン","domain":"cs"}
+{"type":"mapping","en":"Church-Turing Thesis","ja":"チャーチ=チューリングのテーゼ","domain":"cs","notes":"use = sign between names"}
+{"type":"mapping","en":"conditional branching","ja":"条件分岐","domain":"cs"}
+{"type":"mapping","en":"encoding","ja":"エンコーディング","domain":"cs"}
+{"type":"mapping","en":"general intelligence","ja":"汎用知能","domain":"cs"}
+{"type":"mapping","en":"halting problem","ja":"停止問題","domain":"cs"}
+{"type":"mapping","en":"undecidable","ja":"決定不能","domain":"cs"}
+{"type":"mapping","en":"decidable","ja":"決定可能","domain":"cs"}
+{"type":"mapping","en":"halt decider","ja":"停止判定器","domain":"cs"}
+{"type":"mapping","en":"Rice's theorem","ja":"ライスの定理","domain":"cs"}
+{"type":"mapping","en":"Godel's incompleteness theorem","ja":"ゲーデルの不完全性定理","domain":"cs"}
+{"type":"mapping","en":"Hilbert's program","ja":"ヒルベルト・プログラム","domain":"cs","notes":"use middle dot for compound"}
+{"type":"mapping","en":"completeness (logic)","ja":"完全性","domain":"cs"}
+{"type":"mapping","en":"soundness","ja":"健全性","domain":"cs"}
+{"type":"mapping","en":"consistency","ja":"無矛盾 / 無矛盾性","domain":"cs","notes":"also 整合性"}
+{"type":"mapping","en":"independent (of axioms)","ja":"独立","domain":"cs"}
+{"type":"mapping","en":"diagonal argument","ja":"対角線論法","domain":"cs"}
+{"type":"mapping","en":"elliptic curve","ja":"楕円曲線","domain":"cryptography"}
+{"type":"mapping","en":"field (algebra)","ja":"体","domain":"cryptography"}
+{"type":"mapping","en":"finite field","ja":"有限体","domain":"cryptography"}
+{"type":"mapping","en":"group (algebra)","ja":"群","domain":"cryptography"}
+{"type":"mapping","en":"discrete logarithm problem (DLP)","ja":"離散対数問題","domain":"cryptography"}
+{"type":"mapping","en":"double-and-add","ja":"ダブル・アンド・アッド","domain":"cryptography","notes":"use katakana with middle dots, include English in parentheses"}
+{"type":"mapping","en":"private key","ja":"秘密鍵","domain":"cryptography"}
+{"type":"mapping","en":"public key","ja":"公開鍵","domain":"cryptography"}
+{"type":"mapping","en":"ECDH","ja":"楕円曲線ディフィー・ヘルマン鍵共有","domain":"cryptography","notes":"full name with middle dot"}
+{"type":"mapping","en":"ECDSA","ja":"楕円曲線DSA","domain":"cryptography"}
+{"type":"mapping","en":"symmetric encryption","ja":"共通鍵暗号","avoid":"対称暗号","domain":"cryptography"}
+{"type":"mapping","en":"asymmetric encryption","ja":"公開鍵暗号","avoid":"非対称暗号","domain":"cryptography"}
+{"type":"mapping","en":"secrecy / confidentiality","ja":"機密性","avoid":"秘密","domain":"cryptography"}
+{"type":"mapping","en":"nonce","ja":"ノンス","domain":"cryptography"}
+{"type":"mapping","en":"digital signature","ja":"デジタル署名","domain":"cryptography"}
+{"type":"mapping","en":"authenticity","ja":"真正性","domain":"cryptography"}
+{"type":"mapping","en":"prompt-first learning","ja":"プロンプトファースト学習","domain":"education"}
+{"type":"mapping","en":"personalization","ja":"パーソナライゼーション","domain":"education"}
+{"type":"mapping","en":"spaced repetition","ja":"間隔反復","domain":"education"}
+{"type":"mapping","en":"modality (learning)","ja":"モダリティ","domain":"education"}
+{"type":"mapping","en":"Choose Your Own Adventure","ja":"『きみならどうする？』シリーズ","domain":"education"}
+{"type":"mapping","en":"row-oriented","ja":"行指向","domain":"data"}
+{"type":"mapping","en":"column-oriented / columnar","ja":"列指向","domain":"data"}
+{"type":"mapping","en":"row group","ja":"行グループ","domain":"data"}
+{"type":"mapping","en":"column chunk","ja":"列チャンク","domain":"data"}
+{"type":"mapping","en":"predicate pushdown","ja":"述語プッシュダウン","domain":"data"}
+{"type":"mapping","en":"projection (column selection)","ja":"プロジェクション","domain":"data"}
+{"type":"mapping","en":"dictionary encoding","ja":"辞書エンコーディング","domain":"data"}
+{"type":"mapping","en":"delta encoding","ja":"デルタエンコーディング","domain":"data"}
+{"type":"mapping","en":"run-length encoding (RLE)","ja":"ランレングスエンコーディング（RLE）","domain":"data"}
+{"type":"mapping","en":"Bloom filter","ja":"Bloomフィルター","domain":"data","notes":"keep Bloom in English"}
+{"type":"mapping","en":"cardinality","ja":"カーディナリティ","domain":"data"}
+{"type":"mapping","en":"immutable","ja":"イミュータブル","domain":"data"}
+{"type":"mapping","en":"footer (file structure)","ja":"フッター","domain":"data"}
+{"type":"mapping","en":"batch processing","ja":"バッチ処理","domain":"data"}
+{"type":"mapping","en":"seek (disk operation)","ja":"seek","domain":"data","notes":"keep in English"}
+{"type":"mapping","en":"throughput","ja":"スループット","domain":"data"}
+{"type":"mapping","en":"latency","ja":"レイテンシ","domain":"data"}
+{"type":"mapping","en":"Implications (section header)","ja":"実際の影響","avoid":"含意"}
+{"type":"mapping","en":"cost prohibitive","ja":"採算が合わない","avoid":"コスト的に成り立たない"}
+{"type":"mapping","en":"attends to (attention mechanism)","ja":"注目する","avoid":"アテンションを向ける","domain":"ai"}
+{"type":"mapping","en":"grows monotonically (casual)","ja":"増え続ける一方になりがち","avoid":"単調に増加する傾向がある"}
+{"type":"mapping","en":"in collaboration with","ja":"と協力して〜しました","avoid":"との協力で〜されました"}
+{"type":"mapping","en":"anthropomorphization (pedagogical)","ja":"身近なたとえ話 / たとえ話","avoid":"擬人化"}
+{"type":"mapping","en":"cringe (embarrassingly bad output)","ja":"痛々しさ","avoid":"違和感"}
+{"type":"mapping","en":"voice (authorial voice)","ja":"トーン","avoid":"声"}
+{"type":"mapping","en":"native speaker","ja":"〜語ネイティブ","avoid":"生まれながらの〜話者"}
+{"type":"mapping","en":"sent me down a rabbit hole","ja":"沼にはまってしまった","avoid":"穴に潜る"}
+{"type":"mapping","en":"from thin air","ja":"何もないところから"}
+{"type":"mapping","en":"abstract curiosities","ja":"抽象的な珍品","avoid":"抽象的な好奇心","notes":"curiosities = rare/unusual items, not the feeling"}
+{"type":"mapping","en":"yes, really (parenthetical)","ja":"嘘じゃない","avoid":"本当だ"}
+{"type":"mapping","en":"a handful of","ja":"少しばかりの / いくつかの"}
+{"type":"mapping","en":"nicer syntax (casual)","ja":"より使いやすい構文","avoid":"より美しい構文"}
+{"type":"mapping","en":"Incredibly useful","ja":"これほど便利なものはない","avoid":"信じられないほど便利だ"}
+{"type":"mapping","en":"Now comes the punch line","ja":"さて、ここからが本番だ / ここが核心だ"}
+{"type":"mapping","en":"We've traced a boundary","ja":"境界をたどってきた","avoid":"追跡"}
+{"type":"mapping","en":"in a thousand and one years","ja":"あと一年で","notes":"preserve rhetorical point rather than literal translation"}
+{"type":"mapping","en":"Turns out I was wrong","ja":"とんでもない思い違いだった"}
+{"type":"mapping","en":"computationally out of reach","ja":"計算上は手の届かないところにある","notes":"計算上は with は particle"}
+{"type":"mapping","en":"The cost? (rhetorical)","ja":"代償は？","avoid":"コストは？"}
+{"type":"mapping","en":"expensive math","ja":"計算コストの高い演算","avoid":"高価な数学"}
+{"type":"mapping","en":"not trivial (substantial work)","ja":"並大抵ではない","avoid":"簡単ではない","domain":"education"}
+{"type":"mapping","en":"thin (inadequate content)","ja":"物足りない","domain":"education"}
+{"type":"mapping","en":"the key insight","ja":"ここがポイントで","avoid":"重要な洞察は"}
+{"type":"mapping","en":"encodes (capturing style in rules)","ja":"反映させた","avoid":"エンコードした"}
+{"type":"mapping","en":"obviously oversimplifying","ja":"もちろんこれは単純化しすぎだ","avoid":"明らかに"}
+{"type":"mapping","en":"That's a discussion for another post","ja":"それはまた別の投稿で"}
+{"type":"mapping","en":"with special attention to X","ja":"Xを重点的に","avoid":"Xに注意を払って","notes":"integrate into sentence"}
+{"type":"mapping","en":"we're circling the same idea","ja":"行き着く先は同じだ","avoid":"同じことを言っている"}
+{"type":"mapping","en":"the primary reason was X","ja":"〜のは、〜のおかげだ","notes":"use おかげだ to connect clauses naturally"}
+{"type":"mapping","en":"metaphors (analogies in teaching)","ja":"たとえ","avoid":"メタファー"}
+{"type":"mapping","en":"staying faithful to the source","ja":"元の意味を損なわずに","avoid":"忠実"}
+{"type":"mapping","en":"put knowledge to use","ja":"知識を役立てる","avoid":"知識を実践に活かす"}
+{"type":"mapping","en":"I'm excited","ja":"楽しみだ","avoid":"ワクワクしている","notes":"ワクワク sounds infantile for adult writing"}
+{"type":"mapping","en":"but hey (casual interjection)","ja":"まあ、"}
+{"type":"mapping","en":"willing to do X","ja":"Xをする気があれば / 手間をかける気があれば","avoid":"やる気","notes":"やる気 means motivation, not willingness"}
+{"type":"mapping","en":"the primary path","ja":"学びの中心","avoid":"本道","domain":"education"}
+{"type":"mapping","en":"the lasting artifact","ja":"残る成果物になる","notes":"になる flows more naturally than だ when describing what something becomes"}
+{"type":"mapping","en":"My take is (personal opinion)","ja":"私としては、〜と思う","avoid":"〜のではないか","notes":"direct assertion preferred over rhetorical question"}
+{"type":"mapping","en":"It felt too good to be true","ja":"うますぎる話に聞こえた","avoid":"話がうますぎる気がした","domain":"data"}
+{"type":"mapping","en":"Neither is acceptable","ja":"どちらも現実的ではない","avoid":"受け入れられない","domain":"data"}
+{"type":"mapping","en":"terrible (bad performance)","ja":"最悪だ / ひどい","domain":"data"}
+{"type":"mapping","en":"just works (simple solution)","ja":"で済む","domain":"data"}
+{"type":"mapping","en":"Implication (table header)","ja":"意味するところ","avoid":"含意","domain":"data"}
+{"type":"mapping","en":"Here's what X looks like","ja":"Xはこんな感じだ","avoid":"Xは次のようになる"}
+{"type":"mapping","en":"easier said than done","ja":"言うは易く行うは難し"}
+{"type":"mapping","en":"I'd add (casual interjection)","ja":"付け加えるなら / 一つ付け加えると","notes":"avoids 私"}
+{"type":"mapping","en":"What works for me","ja":"自分にうまくいっている方法","notes":"use 自分に rather than changing section headers"}
+{"type":"mapping","en":"cold joint (soldering)","ja":"いもはんだ","avoid":"冷たいはんだ"}
+{"type":"mapping","en":"employability","ja":"市場価値","avoid":"雇用可能性"}
+{"type":"mapping","en":"highest-leverage","ja":"最も効果の大きい","avoid":"最もレバレッジの高い"}
+{"type":"mapping","en":"solution (casual)","ja":"解決策","avoid":"ソリューション"}
+{"type":"mapping","en":"dev bootcamp","ja":"プログラミングブートキャンプ"}
+{"type":"mapping","en":"Discovery (education stage)","ja":"探索","avoid":"発見","domain":"education","notes":"発見 implies finding something new; 探索 fits exploring options"}
+{"type":"mapping","en":"subfield","ja":"分野","avoid":"サブフィールド"}
+{"type":"mapping","en":"invasive (privacy context)","ja":"プライバシーを侵しやすい","avoid":"侵襲的","domain":"education"}
+{"type":"mapping","en":"auditable","ja":"検証可能","avoid":"監査可能"}
+{"type":"mapping","en":"navigable decision space","ja":"自分で探れる意思決定空間","avoid":"ナビゲーション可能な意思決定空間"}
+{"type":"mapping","en":"remaining artifact","ja":"最終的に残るのは","avoid":"残る成果物は","notes":"成果物 is corporate jargon"}
+{"type":"mapping","en":"transparent container (metaphorical)","ja":"中身の見える器","avoid":"透明なコンテナ"}
+{"type":"mapping","en":"actors (stakeholders)","ja":"関係者","avoid":"アクター"}
+{"type":"mapping","en":"intervene (technology helping)","ja":"役立つ","avoid":"介入","notes":"介入 has negative/forceful connotation"}
+{"type":"mapping","en":"let me know (closing)","ja":"教えてください","avoid":"教えてほしい","notes":"ほしい feels too demanding; slight politeness appropriate for reader address"}
+{"type":"mapping","en":"three-dimensional X problem","ja":"3つの軸（...）からなるX","avoid":"N次元の問題"}
+{"type":"mapping","en":"accreditors","ja":"認証評価機関","avoid":"認定機関","domain":"education","notes":"認定機関 too close to 資格認定団体"}
+{"type":"mapping","en":"credentialing bodies","ja":"資格認定団体","domain":"education"}
+{"type":"mapping","en":"performance tasks (assessment)","ja":"実技課題","avoid":"パフォーマンス課題","domain":"education"}
+{"type":"mapping","en":"AI-assessed performance","ja":"AIによる実技評価","avoid":"AI評価によるパフォーマンス課題","domain":"education"}
+{"type":"mapping","en":"task simulations","ja":"実技シミュレーション","avoid":"タスクシミュレーション","domain":"education"}
+{"type":"mapping","en":"certain forms of cheating","ja":"不正行為が","avoid":"特定の不正行為が","domain":"education"}
+{"type":"mapping","en":"pain points","ja":"課題","avoid":"問題","notes":"課題 implies challenges to address; 問題 is more generic/negative"}
+{"type":"mapping","en":"study notes","ja":"復習ノート","avoid":"スタディノート","domain":"education"}
+{"type":"mapping","en":"Where AI Fits (title)","ja":"AIの出番はどこか","avoid":"AIはどこに位置するか","domain":"education"}
+{"type":"style","rule":"Use 「〜だ」 over 「〜である」 for most explanatory sentences to maintain a casual, blog-like tone.","avoid":"〜である"}
+{"type":"style","rule":"Keep technical explanations precise but avoid overly formal academic register."}
+{"type":"style","rule":"Do not use em dashes (— or ―) in Japanese text. Use parentheses （）, periods 。, conjunctive form 「〜で、」, or restructure (e.g., add 「つまり」 for 'that is').","en":"em dashes","avoid":"— ―"}
+{"type":"style","en":"series/part numbering","rule":"Use 「第N回/全M回」 format. Use 回 (installment) not 部 (part/volume) for casual blog series.","avoid":"部"}
+{"type":"style","rule":"Keep proper nouns in katakana rather than substituting Japanese names, especially when they serve a mnemonic purpose."}
+{"type":"style","en":"colons in English source","rule":"When English uses 'X: Y' where Y defines/explains X, Japanese needs explicit connection. Add 「つまり、」 before Y, or restructure. Without this, two separate sentences look disconnected."}
+{"type":"style","en":"strategy/explanation lead-ins","rule":"After introducing with 「戦略は」 or similar, use 「こうだ。」 instead of colon. End numbered-list lead-ins with a complete sentence like 「次の4つだけ。」"}
+{"type":"style","rule":"Use period 。 consistently after parenthetical explanations in running text."}
+{"type":"style","rule":"Restructure sentences ending awkwardly with 「〜しながら」 to flow more naturally."}
+{"type":"style","rule":"Avoid 僕. Use 私 when first-person is absolutely necessary, but prefer omitting pronouns entirely. Japanese naturally omits pronouns when subject is clear from context.","avoid":"僕 and overuse of 私/あなた"}
+{"type":"style","rule":"When emphasis on 'you' is needed (contrasting with generic readers), use *あなた* with italics sparingly."}
+{"type":"style","rule":"When listing technical items inline, use 「〜向けだ」 rather than 「〜に使う」 for variety."}

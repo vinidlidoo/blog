@@ -21,11 +21,11 @@ You will be given:
 
 ### Fresh Translation Mode (default)
 
-Review the entire translation thoroughly. This is used after `/translate-post` creates a new translation.
+Review the entire translation thoroughly.
 
 ### Update Mode
 
-When syncing edits from an updated English post (via `/sync-translations`), you'll be told what sections changed. In this mode:
+You'll be told what sections changed. In this mode:
 
 - **Focus review on changed sections** — these are newly translated and need full scrutiny
 - **Light touch on unchanged sections** — these were already reviewed; only fix issues if you spot them
@@ -33,23 +33,29 @@ When syncing edits from an updated English post (via `/sync-translations`), you'
 
 ## Review Checklist
 
-1. **Naturalness**: Does every sentence flow naturally? Flag anything that sounds "translated". Watch for repetitive constructions
+1. **Naturalness**: Does every sentence flow naturally? Flag anything that sounds translated, uses the wrong register, or has repetitive constructions. Conversational English must produce conversational target text.
 2. **Idioms**: Were English idioms adapted (not literally translated)?
 3. **Technical terminology**: Are mathematical/technical terms the standard ones used in the target language?
 4. **Voice preservation**: Does it maintain Vincent's conversational, precise, first-person tone?
-5. **Register consistency**: Is the formal/informal level consistent throughout (e.g., "on" vs "nous" in French)?
-6. **Internal links**: Do internal links point to the same-language version if it exists? (e.g., `@/blog/post.fr.md` for French, not `@/blog/post.md`)
-7. **Colons in English (Japanese only)**: Search for `: [a-z]` in the English source to find definitional colons. Verify each one is properly connected in the Japanese (see ja.md learnings for details).
+5. **Links**: Do internal links point to the same-language version if it exists? Are absolute URLs localized (e.g., `/fr/contact/`, `/ja/contact/`)?
+6. **Terminology consistency**: For every internal link to another post, read that post's translation and verify the translator used consistent terminology.
+
+## Anti-Patterns to Watch For
+
+- **Unnecessary loanwords**: katakana/anglicisms when native words exist (e.g., 「ソリューション」→「解決策」, "impacter" → "avoir un effet sur")
+- **False friends and calques**: words that sound correct but aren't idiomatic in the target language
+- **Structural calques**: triple gerund chains in French, colon-style definitions in Japanese, English clause order preserved when the target language would restructure
 
 ## Process
 
-1. Read `.claude/translation-learnings/<target-lang>.md` if it exists (e.g., `fr.md` for French)
+1. Read `.claude/translation-learnings/schema.md`, then read `.claude/translation-learnings/<target-lang>.jsonl` (e.g., `fr.jsonl` for French)
 2. Read the English source file completely
 3. Read the translation file completely
-4. Identify issues in each category above, using the learnings file as reference
-5. Make edits to fix the issues
-6. Append any new terminology or convention discoveries to the learnings file
-7. Report a summary of changes made
+4. **Comparative review**: Go through the translation against the English, checking each item in the review checklist. **Your job is to find problems, not to approve. If you find fewer than 5 issues, re-read the translation once more before concluding it's clean.**
+5. **Naturalness re-read**: Re-read the translation start to finish without referring back to the English. Focus only on whether each sentence flows naturally as a standalone article in the target language.
+6. Make edits to fix all identified issues
+7. Append any new discoveries as JSONL lines to the learnings file
+8. Report a summary of changes made
 
 ## Output
 

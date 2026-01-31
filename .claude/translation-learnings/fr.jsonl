@@ -1,0 +1,105 @@
+{"type":"mapping","en":"proof by contradiction","fr":"par l'absurde","avoid":"en vue d'une contradiction","domain":"math"}
+{"type":"mapping","en":"size (of a set)","fr":"cardinalité","avoid":"taille","domain":"math"}
+{"type":"mapping","en":"power set","fr":"ensemble des parties","domain":"math"}
+{"type":"mapping","en":"uncountable","fr":"indénombrable","domain":"math"}
+{"type":"mapping","en":"decimal expansion","fr":"développement décimal","avoid":"décimale infinie","domain":"math"}
+{"type":"mapping","en":"set-builder notation","fr":"notation en compréhension","avoid":"notation ensembliste","domain":"math"}
+{"type":"mapping","en":"unrestricted comprehension","fr":"compréhension naïve","domain":"math"}
+{"type":"mapping","en":"attends to (attention mechanism)","fr":"prête attention à","avoid":"assiste à","domain":"ai"}
+{"type":"mapping","en":"cache hit","fr":"succès de cache","domain":"ai","notes":"'hit de cache' acceptable but less native"}
+{"type":"mapping","en":"cache miss","fr":"échec de cache","domain":"ai","notes":"'miss de cache' acceptable but less native"}
+{"type":"mapping","en":"forward pass","fr":"passe forward","domain":"ai","notes":"keep 'forward' as technical term"}
+{"type":"mapping","en":"hidden state","fr":"état caché","domain":"ai"}
+{"type":"mapping","en":"sleep-time agents","fr":"sleep-time agents","domain":"ai","notes":"keep English; do not translate literally"}
+{"type":"mapping","en":"tape (Turing machine)","fr":"ruban","avoid":"bande","domain":"cs"}
+{"type":"mapping","en":"head (Turing machine)","fr":"tête de lecture","domain":"cs"}
+{"type":"mapping","en":"transition function","fr":"fonction de transition","domain":"cs"}
+{"type":"mapping","en":"tape alphabet","fr":"alphabet du ruban","domain":"cs"}
+{"type":"mapping","en":"input alphabet","fr":"alphabet d'entrée","domain":"cs"}
+{"type":"mapping","en":"accepting states","fr":"états acceptants","domain":"cs"}
+{"type":"mapping","en":"mismatch","fr":"discordance","avoid":"non-correspondance","domain":"cs"}
+{"type":"mapping","en":"soundness (logic)","fr":"correction","avoid":"cohérence","domain":"cs","notes":"cohérence means consistency"}
+{"type":"mapping","en":"string (data type)","fr":"chaînes de caractères","domain":"cs","notes":"use full term on first mention, then 'string'; 'chaînes' alone is ambiguous"}
+{"type":"mapping","en":"single record (one at a time)","fr":"enregistrement individuel","avoid":"enregistrement unique","domain":"cs","notes":"unique means distinct/one-of-a-kind"}
+{"type":"mapping","en":"consistency (logic)","fr":"consistance","domain":"cs","notes":"cohérent/incohérent acceptable but consistant is more precise"}
+{"type":"mapping","en":"actual numbers (vs real numbers)","fr":"les nombres tels qu'ils sont","domain":"math","notes":"nombres réels means real numbers (mathematical term)"}
+{"type":"mapping","en":"Turing complete","fr":"Turing-complet","domain":"cs","notes":"hyphenated in French"}
+{"type":"mapping","en":"Universal Turing Machine","fr":"machine de Turing universelle (MTU)","domain":"cs"}
+{"type":"mapping","en":"provably (unsolvable)","fr":"démontrablement","avoid":"prouvablement","domain":"cs"}
+{"type":"mapping","en":"the evidence behind","fr":"le fondement empirique de","avoid":"la preuve qui sous-tend","domain":"cs"}
+{"type":"mapping","en":"illustration (pedagogical examples)","fr":"illustration","avoid":"anthropomorphisation"}
+{"type":"mapping","en":"in other words","fr":"autrement dit"}
+{"type":"mapping","en":"with one caveat","fr":"avec un bémol"}
+{"type":"mapping","en":"finally reaches","fr":"finit par atteindre","avoid":"atteint finalement"}
+{"type":"mapping","en":"hand me","fr":"passez-moi","avoid":"donnez-moi"}
+{"type":"mapping","en":"X asked","fr":"a posé la question","avoid":"s'est demandé"}
+{"type":"mapping","en":"slip through (mistakes)","fr":"passent inaperçues","avoid":"passent à travers"}
+{"type":"mapping","en":"fluent in X","fr":"parle couramment X","avoid":"fluent en X"}
+{"type":"mapping","en":"cringe (awkward content)","fr":"la gêne","avoid":"le malaise"}
+{"type":"mapping","en":"does it sound translated or native?","fr":"a-t-on l'impression d'une traduction ou d'un texte original ?","avoid":"ça sonne traduit"}
+{"type":"mapping","en":"for reach (audience)","fr":"pour toucher un public plus large","avoid":"pour la portée"}
+{"type":"mapping","en":"business/technical writing","fr":"rédiger en contexte professionnel/technique","avoid":"vocabulaire"}
+{"type":"mapping","en":"adding X to itself","fr":"ajouter X à lui-même","avoid":"additionner X à lui-même"}
+{"type":"mapping","en":"forward direction","fr":"calcul direct","avoid":"direction avant","domain":"cryptography"}
+{"type":"mapping","en":"the hard direction","fr":"le sens difficile","avoid":"la direction difficile","domain":"cryptography"}
+{"type":"mapping","en":"the reverse direction","fr":"le sens inverse","avoid":"la direction inverse","domain":"cryptography"}
+{"type":"mapping","en":"Here's the algebra","fr":"Voici le raisonnement","avoid":"Voici l'algèbre"}
+{"type":"mapping","en":"secrecy (as goal/property)","fr":"confidentialité","avoid":"le secret","domain":"cryptography"}
+{"type":"mapping","en":"solves X (protocol purpose)","fr":"assure X","avoid":"résout X","domain":"cryptography","notes":"when X is a property like secrecy/authenticity"}
+{"type":"mapping","en":"messaging apps","fr":"applications de messagerie","avoid":"messageries"}
+{"type":"mapping","en":"make sense / click (understanding)","fr":"cliquer / déclencher un déclic","avoid":"faire sens"}
+{"type":"mapping","en":"rabbit hole (topic to explore)","fr":"sujet à creuser","avoid":"terrier"}
+{"type":"mapping","en":"the key insight","fr":"le point essentiel","avoid":"l'insight clé"}
+{"type":"mapping","en":"iterate (process)","fr":"recommencer","avoid":"itérer"}
+{"type":"mapping","en":"six-pack (abs)","fr":"des abdos bien dessinés / des tablettes de chocolat","avoid":"un ventre plat"}
+{"type":"mapping","en":"despite starting at age X","fr":"alors que je n'ai commencé qu'à X ans","avoid":"malgré un début à X ans"}
+{"type":"mapping","en":"I go back and forth (dialogue)","fr":"On échange","avoid":"J'avance par allers-retours"}
+{"type":"mapping","en":"no vendor lock-in","fr":"rien de propriétaire","avoid":"pas de dépendance à un fournisseur"}
+{"type":"mapping","en":"learner (formal education)","fr":"élève","avoid":"apprenant","notes":"in autodidact contexts, restructure to avoid the noun"}
+{"type":"mapping","en":"per-reader adaptation","fr":"personnalisation individuelle","avoid":"adaptation par lecteur"}
+{"type":"mapping","en":"back-and-forth (interactivity)","fr":"dialogue / échange","avoid":"aller-retour"}
+{"type":"mapping","en":"fails you (textbook)","fr":"fait défaut","avoid":"vous laisse en plan"}
+{"type":"mapping","en":"artifact (produced output)","fr":"livrable / ce que vous gardez / ce qui reste","avoid":"artefact","notes":"artefact means archaeological object or measurement distortion in French"}
+{"type":"mapping","en":"I got excited","fr":"Tout excité, je...","avoid":"Je m'emballe"}
+{"type":"mapping","en":"anyone who's been through school","fr":"Quiconque a fait des études","avoid":"Quiconque a traversé le système scolaire"}
+{"type":"mapping","en":"my textbook (personal notes)","fr":"mes notes de référence","avoid":"mon support de cours / mon manuel","notes":"autodidact context"}
+{"type":"mapping","en":"production system","fr":"système de production","avoid":"vrai système"}
+{"type":"mapping","en":"dinner parties","fr":"dîners","avoid":"dîners d'amis"}
+{"type":"mapping","en":"workaround","fr":"la solution","avoid":"solution de contournement"}
+{"type":"mapping","en":"natural language back-and-forth","fr":"le dialogue","avoid":"l'échange en langage naturel"}
+{"type":"mapping","en":"have the material respond","fr":"que le contenu s'ajuste","avoid":"que le contenu réponde"}
+{"type":"mapping","en":"resurfacing (old news)","fr":"qui refait surface","avoid":"qui resurgit"}
+{"type":"mapping","en":"the flow looks like this","fr":"Voici comment ça se passe","avoid":"Le flux ressemble à ceci"}
+{"type":"mapping","en":"circling similar ideas","fr":"converger vers les mêmes idées","avoid":"tourner autour d'idées similaires"}
+{"type":"mapping","en":"patterns (data/computing)","fr":"motifs","avoid":"patterns","domain":"data"}
+{"type":"mapping","en":"single-row lookups","fr":"lectures ponctuelles","avoid":"recherches d'une seule ligne","domain":"data"}
+{"type":"mapping","en":"closed-form (math)","fr":"forme close / forme fermée","avoid":"forme clausée","domain":"math"}
+{"type":"mapping","en":"analytics workloads","fr":"traitements analytiques","avoid":"charges analytiques","domain":"data"}
+{"type":"mapping","en":"Let's put concrete numbers to this","fr":"Passons aux chiffres","avoid":"Mettons des chiffres concrets"}
+{"type":"mapping","en":"this is where X actually happens","fr":"C'est là qu'opère réellement X","avoid":"C'est là que X se produit réellement"}
+{"type":"mapping","en":"actionable","fr":"opérationnel","avoid":"actionnable"}
+{"type":"mapping","en":"perform poorly (exam context)","fr":"s'effondrent","avoid":"performent mal"}
+{"type":"mapping","en":"putting X to work","fr":"X en action","avoid":"Mettre X au travail"}
+{"type":"mapping","en":"thought experiments","fr":"pistes de réflexion","avoid":"expériences de pensée","notes":"exercices de pensée also acceptable but pistes de réflexion preferred"}
+{"type":"mapping","en":"upload","fr":"importer","avoid":"télécharger","notes":"télécharger means download in common usage"}
+{"type":"mapping","en":"what's broken (section header)","fr":"Où ça casse","avoid":"Ce qui dysfonctionne"}
+{"type":"mapping","en":"failure modes (casual)","fr":"failles","avoid":"modes de défaillance"}
+{"type":"mapping","en":"too coarse (granularity)","fr":"trop sommaire","avoid":"trop grossier","notes":"grossier also means rude"}
+{"type":"mapping","en":"claims (credentials context)","fr":"déclarations","avoid":"affirmations","domain":"education"}
+{"type":"mapping","en":"container (metaphorical)","fr":"support","avoid":"conteneur"}
+{"type":"mapping","en":"incentives","fr":"incitatifs","avoid":"incitations"}
+{"type":"mapping","en":"shifting trust from X to Y","fr":"la confiance ne repose plus sur X, mais sur Y","notes":"restructure rather than translate literally"}
+{"type":"mapping","en":"audit the evidence","fr":"vérifier les preuves","avoid":"auditer le fondement empirique"}
+{"type":"mapping","en":"gap (in a framework)","fr":"angle mort","notes":"avoids repeating 'manque' near 'Il manque'"}
+{"type":"mapping","en":"collaboration footer","fr":"Cet article a été écrit en collaboration avec...","avoid":"billet","notes":"use 'article' not 'billet'"}
+{"type":"style","rule":"Use 'on' for impersonal/general statements, 'nous' sparingly for rhetorical emphasis. Maintain consistent voice throughout."}
+{"type":"style","rule":"Avoid 'qui...qui' chains. Use present participles to break repetition."}
+{"type":"style","rule":"Keep well-known English technical terms (e.g., 'forward pass', 'sleep-time agents') rather than creating awkward literal translations."}
+{"type":"style","en":"pourvu que vs si","rule":"Use 'si' for simple conditions; 'pourvu que' for provisions/provisos."}
+{"type":"style","rule":"Prefer verb forms over nominalizations: 'ils branchent, bouclent' not 'ils font du branchement, des boucles'."}
+{"type":"style","en":"series/part numbering","rule":"Use 'Partie N/M' format (e.g., 'Partie 1/2').","avoid":"1re partie/2 or Nème partie"}
+{"type":"style","rule":"Avoid starting sentences with 'Mais' repeatedly. Use 'Cela dit,' or embed 'quand même' in sentence."}
+{"type":"style","rule":"When translating quotes from external sources, preserve key adverbs like 'dynamiquement'."}
+{"type":"style","rule":"Avoid redundant etymological pairs: don't use 'reconstruction' near 'reconstituer'."}
+{"type":"style","rule":"Avoid triple gerund chains ('en X, en Y, et en Z'). Fold two ideas together when possible."}
+{"type":"style","rule":"Avoid verb anglicisms like 'seeker'. Use native French verbs ('se positionner')."}
