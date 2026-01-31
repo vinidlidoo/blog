@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet href="https://vinidlidoo.github.io/feed_style.xsl" type="text/xsl"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <tabi:metadata xmlns:tabi="https://github.com/welpo/tabi">
+        <tabi:base_url>https:&#x2F;&#x2F;vinidlidoo.github.io</tabi:base_url>
+        <tabi:separator>
+            •
+        </tabi:separator>
+        <tabi:about_feeds>This is a web feed, also known as an Atom feed. Subscribe by copying the URL from the address bar into your newsreader</tabi:about_feeds>
+        <tabi:visit_the_site>Visit website</tabi:visit_the_site>
+        <tabi:recent_posts>Recent posts</tabi:recent_posts>
+        <tabi:last_updated_on>Updated on $DATE</tabi:last_updated_on>
+        <tabi:default_theme></tabi:default_theme>
+        <tabi:post_listing_date>date</tabi:post_listing_date>
+        <tabi:current_section>vinidlidoo</tabi:current_section>
+    </tabi:metadata><link rel="extra-stylesheet" href="https://vinidlidoo.github.io/skins/indigo_ingot.css?h=d429472afbb246441b1a" /><title>vinidlidoo</title>
+        <subtitle>A personal blog</subtitle>
+    <link href="https://vinidlidoo.github.io/atom.xml" rel="self" type="application/atom+xml"/>
+    <link href="https://vinidlidoo.github.io" rel="alternate" type="text/html"/>
+    <generator uri="https://www.getzola.org/">Zola</generator><updated>2026-01-29T00:00:00+00:00</updated><id>https://vinidlidoo.github.io/atom.xml</id><entry xml:lang="en">
+        <title>The Education Value Chain: Where AI Fits</title>
+        <published>2026-01-29T00:00:00+00:00</published>
+        <updated>2026-01-29T00:00:00+00:00</updated>
+        <author>
+            <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://vinidlidoo.github.io/blog/education-value-chain/" type="text/html"/>
+        <id>https://vinidlidoo.github.io/blog/education-value-chain/</id>
+        <summary type="html">Education isn&#x27;t one thing. Decomposing it into stages reveals where technology can actually help.</summary>
+        </entry><entry xml:lang="en">
+        <title>When Parquet Files Beat CSV</title>
+        <published>2026-01-23T00:00:00+00:00</published>
+        <updated>2026-01-23T00:00:00+00:00</updated>
+        <author>
+            <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://vinidlidoo.github.io/blog/understanding-parquet-files/" type="text/html"/>
+        <id>https://vinidlidoo.github.io/blog/understanding-parquet-files/</id>
+        <summary type="html">The physical reality that makes file layout matter</summary>
+        </entry><entry xml:lang="en">
+        <title>Prompt-First Learning</title>
+        <published>2026-01-22T00:00:00+00:00</published>
+        <updated>2026-01-22T00:00:00+00:00</updated>
+        <author>
+            <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://vinidlidoo.github.io/blog/prompt-first-learning/" type="text/html"/>
+        <id>https://vinidlidoo.github.io/blog/prompt-first-learning/</id>
+        <summary type="html">What if textbooks adapted to your questions, not the other way around?</summary>
+        </entry><entry xml:lang="en">
+        <title>From Keys to Protocols: ECDH and ECDSA (Part 2&#x2F;2)</title>
+        <published>2026-01-19T00:00:00+00:00</published>
+        <updated>2026-01-19T00:00:00+00:00</updated>
+        <author>
+            <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://vinidlidoo.github.io/blog/secrets-and-signatures/" type="text/html"/>
+        <id>https://vinidlidoo.github.io/blog/secrets-and-signatures/</id>
+        <summary type="html">How elliptic curve math enables secure key exchange and digital signatures</summary>
+        </entry><entry xml:lang="en">
+        <title>The Math Behind Your Private Key (Part 1&#x2F;2)</title>
+        <published>2026-01-16T00:00:00+00:00</published>
+        <updated>2026-01-18T00:00:00+00:00</updated>
+        <author>
+            <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://vinidlidoo.github.io/blog/math-behind-private-key/" type="text/html"/>
+        <id>https://vinidlidoo.github.io/blog/math-behind-private-key/</id>
+        <summary type="html">From group theory to elliptic curves: how public-key cryptography actually works</summary>
+        </entry><entry xml:lang="en">
+        <title>Translation with Claude Code Skills</title>
+        <published>2026-01-14T00:00:00+00:00</published>
+        <updated>2026-01-14T00:00:00+00:00</updated>
+        <author>
+            <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://vinidlidoo.github.io/blog/translation-with-claude-code/" type="text/html"/>
+        <id>https://vinidlidoo.github.io/blog/translation-with-claude-code/</id>
+        <summary type="html">How custom skills and subagents make multilingual publishing faster, cheaper, and better than manual translation</summary>
+        </entry><entry xml:lang="en">
+        <title>The Limits of Computation (Part 3&#x2F;3)</title>
+        <published>2026-01-11T00:00:00+00:00</published>
+        <updated>2026-01-11T00:00:00+00:00</updated>
+        <author>
+            <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://vinidlidoo.github.io/blog/limits-of-computation/" type="text/html"/>
+        <id>https://vinidlidoo.github.io/blog/limits-of-computation/</id>
+        <summary type="html">What Turing machines can&#x27;t do, and why it matters</summary>
+        </entry><entry xml:lang="en">
+        <title>What It Means to Be Turing Complete (Part 2&#x2F;3)</title>
+        <published>2026-01-10T00:00:00+00:00</published>
+        <updated>2026-01-10T00:00:00+00:00</updated>
+        <author>
+            <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://vinidlidoo.github.io/blog/turing-completeness/" type="text/html"/>
+        <id>https://vinidlidoo.github.io/blog/turing-completeness/</id>
+        <summary type="html">Why brains and AI are &#x27;approximate Turing machines&#x27;</summary>
+        </entry><entry xml:lang="en">
+        <title>What is a Turing Machine? (Part 1&#x2F;3)</title>
+        <published>2026-01-09T00:00:00+00:00</published>
+        <updated>2026-01-09T00:00:00+00:00</updated>
+        <author>
+            <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://vinidlidoo.github.io/blog/turing-machines/" type="text/html"/>
+        <id>https://vinidlidoo.github.io/blog/turing-machines/</id>
+        <summary type="html">The elegant abstraction that defines what it means to compute</summary>
+        </entry><entry xml:lang="en">
+        <title>Three Proofs by Diagonalization</title>
+        <published>2026-01-08T00:00:00+00:00</published>
+        <updated>2026-01-08T00:00:00+00:00</updated>
+        <author>
+            <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://vinidlidoo.github.io/blog/three-proofs-by-diagonalization/" type="text/html"/>
+        <id>https://vinidlidoo.github.io/blog/three-proofs-by-diagonalization/</id>
+        <summary type="html">A family of proofs that construct objects guaranteed to differ from every item in a list</summary>
+        </entry><entry xml:lang="en">
+        <title>KV Cache Invalidation</title>
+        <published>2026-01-07T00:00:00+00:00</published>
+        <updated>2026-01-08T00:00:00+00:00</updated>
+        <author>
+            <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://vinidlidoo.github.io/blog/kv-cache-invalidation/" type="text/html"/>
+        <id>https://vinidlidoo.github.io/blog/kv-cache-invalidation/</id>
+        <summary type="html">Why removing context from an LLM conversation forces full recomputation</summary>
+        </entry><entry xml:lang="en">
+        <title>Russell&#x27;s Paradox</title>
+        <published>2026-01-06T00:00:00+00:00</published>
+        <updated>2026-01-06T00:00:00+00:00</updated>
+        <author>
+            <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://vinidlidoo.github.io/blog/russells-paradox/" type="text/html"/>
+        <id>https://vinidlidoo.github.io/blog/russells-paradox/</id>
+        <summary type="html">A fundamental contradiction that shook the foundations of mathematics</summary>
+        </entry>
+</feed>
