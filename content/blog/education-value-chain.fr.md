@@ -1,6 +1,7 @@
 +++
 title = "La chaîne de valeur de l'éducation : où l'IA s'inscrit"
 date = 2026-01-29
+updated = 2026-01-31
 description = "L'éducation n'est pas un bloc monolithique. La décomposer en étapes révèle où la technologie peut réellement aider."
 
 [taxonomies]
@@ -93,7 +94,7 @@ d'entre elles ? Ce qui suit, ce sont des pistes de réflexion (une par étape), 
 
 <img src="/img/career-pathfinding-agent.webp" alt="Un agent IA analysant des documents et cartographiant des trajectoires de carrière en data science, UX design et éthique de l'IA.">
 
-Les agents IA actuels peuvent déjà utiliser des outils pour interroger des bases de données, analyser des documents et écrire des modèles de prévision en Python. Un agent de navigation combinerait ces capacités : on importe son CV, ses relevés de notes et tout ce qui capture où on en est, et l'IA croise ces données avec des données du marché du travail en temps réel, des offres d'emploi et des taxonomies de compétences pour construire une image de là où on pourrait aller. Pas un résultat de quiz, mais une simulation : investir six mois dans l'infrastructure de données et les statistiques, et voici comment l'employabilité évolue sur trois trajectoires de carrière. Pivoter vers l'UX à la place, et voici ce qui change. Le problème tridimensionnel de la découverte (intérêt, aptitude, demande) devient un espace de décision navigable.
+Les agents IA actuels peuvent déjà interroger des bases de données, analyser des documents et écrire du code d'analyse. Un agent de navigation combinerait ces capacités pour la planification de carrière : on importe son CV et ses relevés de notes, et l'IA croise ces données avec des offres d'emploi et des référentiels de compétences pour cartographier les perspectives. Investir six mois dans les statistiques et l'infrastructure de données, et l'agent esquisse comment les options évoluent ; pivoter vers l'UX à la place, et le tableau change. Le problème tridimensionnel de la découverte (intérêt, aptitude, demande) devient un espace de décision navigable.
 
 ### Apprentissage : la question comme point de départ
 
@@ -103,9 +104,9 @@ Les grands modèles de langage peuvent déjà tenir des conversations longues et
 
 ### Évaluation : performance évaluée par l'IA
 
-<img src="/img/ai-assessed-performance.webp" alt="Une évaluation de performance par IA où le système observe quelqu'un qui soude un circuit imprimé en réalité augmentée.">
+<img src="/img/ai-assessed-performance.webp" alt="Une évaluation de performance par IA où le système observe quelqu'un qui conçoit un circuit imprimé en réalité augmentée.">
 
-Les modèles actuels sont multimodaux et peuvent réagir en temps réel : ils peuvent observer ce qu'on fait à travers un écran ou une caméra et l'interpréter au fur et à mesure. Un système d'évaluation de performance par IA utiliserait ces capacités pour remplacer les examens par des simulations de tâches. Au lieu de répondre à des questions sur la conception de circuits, on soude un circuit imprimé pendant que l'IA observe en réalité augmentée, signalant une soudure froide avant qu'on passe au composant suivant. Au lieu d'écrire sur les principes de gestion de projet, on travaille sur un scénario pendant que l'IA évalue les décisions au fur et à mesure. Le parcours de chaque candidat se déroule différemment selon ses choix, rendant certaines formes de triche nettement plus difficiles. Ce sur quoi on est évalué est plus proche de ce qu'on ferait en poste.
+Les modèles actuels sont multimodaux : ils traitent texte, images et vidéo, et peuvent interpréter ce qu'on fait à travers un écran ou une caméra. Un système d'évaluation de performance par IA utiliserait ces capacités pour remplacer les examens par des simulations de tâches. Au lieu de répondre à des questions sur la conception de circuits, on conçoit et route un circuit imprimé pendant que l'IA évalue les choix de composants et le tracé des pistes. Au lieu d'écrire sur les principes de gestion de projet, on travaille sur un scénario pendant que l'IA évalue les décisions. Le parcours de chaque candidat se déroule différemment selon ses choix, rendant certaines formes de triche nettement plus difficiles. Ce sur quoi on est évalué est plus proche de ce qu'on ferait en poste.
 
 ### Certification : des certificats ancrés dans les preuves
 
