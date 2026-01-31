@@ -92,7 +92,7 @@ Now that we have the stages and their pain points, we can ask: what would it loo
 
 <img src="/img/career-pathfinding-agent.webp" alt="An AI pathfinding agent analyzing uploaded documents and mapping career trajectories across data science, UX design, and AI ethics paths.">
 
-Current AI agents can already use tools to query databases, parse documents, and write forecasting models in Python. A pathfinding agent would combine these capabilities: you upload your resume, transcripts, and anything else that captures where you are, and the AI cross-references it against real-time labor market data, job postings, and skill taxonomies to build a picture of where you could go. Not a quiz result, but a simulation: invest six months in data infrastructure and statistics, and here's how your employability shifts across three career paths. Pivot to UX instead, and here's what changes. The three-dimensional discovery problem (interest, aptitude, demand) becomes a navigable decision space.
+Current AI agents can already query databases, parse documents, and write analysis code. A pathfinding agent would combine these for career planning: you upload your resume and transcripts, and the AI cross-references them against job postings and skill frameworks to map where you could go. Invest six months in statistics and data infrastructure, and it sketches how your options shift; pivot to UX instead, and the picture changes. The three-dimensional discovery problem (interest, aptitude, demand) becomes a navigable decision space.
 
 ### Learning: Prompt-First Learning
 
