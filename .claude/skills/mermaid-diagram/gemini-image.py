@@ -2,7 +2,7 @@
 # /// script
 # dependencies = ["google-genai", "pillow"]
 # ///
-"""Generate an image from a text prompt using Gemini."""
+"""Generate an image from a text prompt using Gemini, optionally with reference images."""
 
 import argparse
 import os
@@ -10,6 +10,7 @@ import sys
 
 from google import genai
 from google.genai import types
+from PIL import Image
 
 MODELS = {
     "flash": "gemini-2.5-flash-image",
@@ -23,6 +24,12 @@ def main():
     parser.add_argument("prompt", nargs="+", help="Text prompt for image generation")
     parser.add_argument("-m", "--model", choices=MODELS.keys(), default="flash",
                         help="Model to use: flash (free tier) or pro (Nano Banana Pro)")
+    parser.add_argument("-i", "--image", action="append", default=[],
+                        help="Input image(s) as reference (can be repeated)")
+    parser.add_argument("-s", "--size", choices=["1K", "2K"], default="1K",
+                        help="Output image resolution: 1K or 2K (default: 1K)")
+    parser.add_argument("-a", "--aspect-ratio", default=None,
+                        help="Aspect ratio (e.g., 16:9, 3:2, 1:1)")
     args = parser.parse_args()
 
     output_path = args.output
@@ -33,12 +40,20 @@ def main():
         print("Error: GEMINI_API_KEY environment variable not set", file=sys.stderr)
         sys.exit(1)
 
+    contents = [prompt]
+    for img_path in args.image:
+        contents.append(Image.open(img_path))
+
     client = genai.Client(api_key=api_key)
     response = client.models.generate_content(
         model=MODELS[args.model],
-        contents=[prompt],
+        contents=contents,
         config=types.GenerateContentConfig(
             response_modalities=["TEXT", "IMAGE"],
+            image_config=types.ImageConfig(
+                image_size=args.size,
+                **({"aspect_ratio": args.aspect_ratio} if args.aspect_ratio else {}),
+            ),
         ),
     )
 
