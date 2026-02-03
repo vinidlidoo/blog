@@ -277,6 +277,7 @@ flowchart TD
 - Final SVGs/images for the blog go in `static/img/`
 - Use white background (`-b white`) for blog theme compatibility
 - See `static/mmdc/` for existing examples of style and frontmatter usage
-- **Drafts and previews** go in `drafts/img/` (symlinked to the main worktree's `drafts/` — gitignored, local only)
-  - The user may place reference images or hand sketches here as input
-  - All intermediate/preview output goes here before promoting to `static/img/`
+- **Drafts and previews** go in `drafts/img/` (iCloud-synced for iPad input, gitignored)
+  - User may add sketches (Freeform → PDF) or annotated PNGs from iPad — both readable directly
+  - Convert PDF to PNG if needed: `magick input.pdf output.png`
+  - All intermediate output goes here before promoting to `static/img/`
