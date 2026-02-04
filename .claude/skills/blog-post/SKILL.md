@@ -197,3 +197,6 @@ Don't run `zola serve` or `zola check` during editing; Vincent prefers to run th
 - **Show, don't tell**: When introducing a framework or tool, demonstrate its value through a concrete scenario rather than explaining what it's good for.
 - **Avoid sarcastic rhetorical openers**: Questions like "So what's the framework good for?" read as dry and dismissive. Lead with the payoff directly.
 - **Don't double-hedge**: One hedge per claim is enough. "As far as I can tell, it's comprehensive" works; "As far as I can tell, it's comprehensive enough" undermines itself.
+- **KaTeX underscore escaping**: Markdown processes underscores before KaTeX. Inside `\text{}`, use double backslash: `\text{node\\_hash}`. For subscripts after `\text{}`, escape and use braces: `\text{child}\_{0}` not `\text{child}_0`.
+- **KaTeX array line breaks**: Use three backslashes `\\\` for line breaks inside `\begin{array}` environments. Two backslashes `\\` won't work. Also prefer `\begin{array}{ll}...\end{array}` with `\left\lbrace...\right.` over `\begin{cases}` which is flaky in KaTeX.
+- **Escape tildes for approximation**: Use `\~` instead of `~` for "approximately" (e.g., `\~100 GB`). Unescaped tildes can be misinterpreted as strikethrough markers by some editors/renderers.
