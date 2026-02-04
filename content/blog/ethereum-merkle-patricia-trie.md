@@ -139,29 +139,7 @@ $$\text{where } h_{i,j} = \left\lbrace \begin{array}{ll} H_i & \text{if } j = k_
 
 If $H_0$ matches the state root, the proof is valid. Note that the prover must supply the full account: if any field were wrong, the leaf hash would differ, and the proof would fail.
 
-```
-                         ┌─────────────┐
-                         │ H₃ = root?  │  ← check against block header
-                         └──────┬──────┘
-                                │
-        ┌───────────────────────┼───────────────────────┐
-        │                       │                       │
-   [0] [1] [2] [3]        [*4*: H₂]        [5] ... [f]     ← 15 siblings + H₂
-                                │                    \
-        ┌───────────────────────┼────────────┐        \
-        │                       │            │        (other
-   [0] [1] ... [9]        [*a*: H₁]     [b]...[f]      accounts...)
-                                │
-        ┌───────────────────────┼───────────────────────┐
-        │                       │                       │
-   [0] [1] ... [6]        [*7*: H₀]        [8] ... [f]
-                                │
-                         ┌──────┴──────┐
-                         │   Alice's   │
-                         │   account   │  → H₀ = hash(account)
-                         │  (4 fields) │
-                         └─────────────┘
-```
+<img src="/img/merkle-proof.png" alt="Merkle proof verification: Alice's account is hashed bottom-up through three levels of the hexary trie. At each level, the computed hash (orange) is combined with 15 sibling hashes (green, provided by the prover) to produce the next hash. Gray subtree hints show the rest of the tree that the verifier never needs to see.">
 
 <details>
 <summary>Walkthrough</summary>
