@@ -8,7 +8,10 @@ tags = ["crypto"]
 
 [extra]
 katex = true
+social_media_card = "/img/merkle-patricia-trie-banner.webp"
 +++
+
+![Ethereum's Merkle Patricia Trie](/img/merkle-patricia-trie-banner.webp)
 
 Ethereum is the second-largest blockchain by market cap, securing hundreds of billions of dollars in value. Everyone knows it's a distributed ledger. But how does it actually store all that data? Hundreds of millions of accounts. Smart contracts with their own persistent storage: token balances, NFT ownership records, DeFi positions. Over 100 GB of state, replicated across nearly a million validators worldwide, growing every day. The answer is a data structure called the Merkle Patricia Trie.
 
@@ -55,22 +58,7 @@ We've established that we need a tree. So we have a key-value store (addresses �
 
 **A trie uses the key itself as the path through the tree.** Each character in the key determines which branch to take. For an address like `0x4a7f...`, you start at the root, branch on `4`, then `a`, then `7`, then `f`, and so on until you reach the account data. You don't store keys explicitly; the path *is* the key.
 
-```
-                      (root)
-                     /  |  \
-                    4   8   f
-                    |
-                    a
-                   / \
-                  7   c
-                  |   |
-                 ...  ...
-                  |    |
-              0x4a7... 0x4ac...
-              (acct)   (acct)
-```
-
-<!-- placeholder note to remember to depict the Patricia optimization (extension nodes) in the final diagram -->
+<img src="/img/trie-structure.webp" alt="A hexary trie where addresses become paths: the root branches on hex digits, and following the digits of an address leads to the account data at the leaves. An extension node compresses a chain of single-child branches into one node (the Patricia optimization).">
 
 Ethereum uses a **hexary** trie: one child per hex digit (0-F), giving a maximum **width** of 16. The **depth** depends on key length. An Ethereum address is 20 bytes (40 hex characters), so the world state trie has a maximum depth of 40. Contract storage tries (referenced by `storageRoot`) use 32-byte keys (64 hex characters), so their maximum depth is 64. The **Patricia** variant used by Ethereum compresses the trie by collapsing chains of nodes that have only one child into a single node.
 
@@ -128,29 +116,7 @@ $$\text{where } h_{i,j} = \left\lbrace \begin{array}{ll} H_i & \text{if } j = k_
 
 If $H_0$ matches the state root, the proof is valid. Note that the prover must supply the full account: if any field were wrong, the leaf hash would differ, and the proof would fail.
 
-```
-                         ┌─────────────┐
-                         │ H₃ = root?  │  ← check against block header
-                         └──────┬──────┘
-                                │
-        ┌───────────────────────┼───────────────────────┐
-        │                       │                       │
-   [0] [1] [2] [3]        [*4*: H₂]        [5] ... [f]     ← 15 siblings + H₂
-                                │                    \
-        ┌───────────────────────┼────────────┐        \
-        │                       │            │        (other
-   [0] [1] ... [9]        [*a*: H₁]     [b]...[f]      accounts...)
-                                │
-        ┌───────────────────────┼───────────────────────┐
-        │                       │                       │
-   [0] [1] ... [6]        [*7*: H₀]        [8] ... [f]
-                                │
-                         ┌──────┴──────┐
-                         │   Alice's   │
-                         │   account   │  → H₀ = hash(account)
-                         │  (4 fields) │
-                         └─────────────┘
-```
+<img src="/img/merkle-proof.webp" alt="Merkle proof verification: Alice's account is hashed bottom-up through three levels of the hexary trie. At each level, the computed hash (orange) is combined with 15 sibling hashes (green, provided by the prover) to produce the next hash. Gray subtree hints show the rest of the tree that the verifier never needs to see.">
 
 <details>
 <summary>Walkthrough</summary>

@@ -5,7 +5,7 @@ description: Create and iterate on Mermaid diagrams. Preview with mermaid-ascii,
 
 # Mermaid Diagram Skill
 
-Create diagrams for blog posts: understand the content, pick the right diagram type, iterate with `mermaid-ascii` for terminal preview, then render final SVG with `mmdc`. Optionally polish with Gemini image generation — either as a fallback when Mermaid can't produce a good layout, or as an enhancement step after Mermaid output to get a more polished look.
+Create diagrams for blog posts: understand the content, pick the right diagram type, iterate with `mermaid-ascii` for terminal preview, then render SVG with `mmdc`. Optionally polish with Gemini image generation — either as a fallback when Mermaid can't produce a good layout, or as an enhancement step after Mermaid output to get a more polished look.
 
 ## Invocation
 
@@ -197,7 +197,7 @@ If Mermaid can't produce a usable layout at all (e.g., complex spatial arrangeme
 
 After user approval, copy to `static/img/`.
 
-3. The user may also choose to use the ASCII art directly in the post (inside a code block), or feed it to an external image generator themselves.
+1. The user may also choose to use the ASCII art directly in the post (inside a code block), or feed it to an external image generator themselves.
 
 ## Tools
 
@@ -205,7 +205,7 @@ After user approval, copy to `static/img/`.
 
 Terminal preview of Mermaid diagrams as ASCII art. Supports flowcharts and sequence diagrams.
 
-- **Repo:** https://github.com/AlexanderGrooff/mermaid-ascii
+- **Repo:** <https://github.com/AlexanderGrooff/mermaid-ascii>
 - **Installed at:** `~/.local/bin/mermaid-ascii`
 - **Update script:** `~/.local/bin/update-mermaid-ascii`
 
@@ -245,6 +245,7 @@ gemini-image.py -m pro -s 2K -i input.png output.png "Regenerate at higher resol
 ### gemini-prompt-template.md
 
 Prompt template for Gemini image generation. Contains:
+
 - Standard prompt structure
 - Color palettes (default, warm, cool)
 - Example prompts
@@ -258,7 +259,7 @@ Use this template as a starting point, especially for the Excalidraw hand-drawn 
 
 Node/TypeScript library for rendering Mermaid as SVG or ASCII with theming. Supports more diagram types than mermaid-ascii (flowcharts, sequence, state, class, ER). Could replace `mmdc` for SVG rendering.
 
-- **Repo:** https://github.com/lukilabs/beautiful-mermaid
+- **Repo:** <https://github.com/lukilabs/beautiful-mermaid>
 - **Install:** `npm install beautiful-mermaid`
 
 ## Quick Syntax Reference
