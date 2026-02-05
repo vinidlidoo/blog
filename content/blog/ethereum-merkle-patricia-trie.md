@@ -4,7 +4,7 @@ date = 2026-02-03
 description = "How Ethereum stores its state, commits it to a single hash, and why that design is hitting its limits"
 
 [taxonomies]
-tags = ["crypto"]
+tags = ["crypto", "computer-science"]
 
 [extra]
 katex = true
@@ -28,15 +28,15 @@ There are two account types. **Externally owned accounts** (EOAs) are controlled
 - **codeHash**: hash of the account's bytecode (empty for EOAs)
 - **storageRoot**: hash pointing to the contract's storage (empty for EOAs)
 
-Contracts separate storage from code. Storage (token balances, ownership records, configuration) lives in its own key-value store, nested within the world state via `storageRoot`. Code is stored on-chain but outside the world state, referenced by `codeHash`. We'll revisit this nested storage when we discuss proofs.
+Contracts separate storage from code. Storage (token balances, ownership records, configuration) lives in its own key-value store, nested within the world state via `storageRoot`. Code is stored on-chain but outside the world state, referenced by `codeHash`. We'll revisit this nested storage when we discuss Merkle proofs.
 
 [^1]: Other tokens like USDC are tracked in contract storage.
 
 ## Why a Tree?
 
-If you were building this at a typical tech company, you'd probably use a *flat key-value mapping*: address as the key, account data as the value. Lookups are fast, updates are straightforward, and the tooling is mature. Why does Ethereum need anything more complex?
+If you were building this at your typical tech company, you'd probably use a *flat key-value mapping*: address as the key, account data as the value. Lookups are fast, updates are straightforward, and the tooling is mature. Why does Ethereum need anything more complex?
 
-Ethereum is a distributed system. Nearly a million validators execute the same transactions and must arrive at identical state. To verify consensus, every node produces a **commitment**: a short value that represents the entire state. For now, think of it as a 32-byte hash. This commitment goes in the block header. If yours doesn't match everyone else's, you're on the wrong chain.
+Ethereum is a distributed system. Nearly a million validators execute the same transactions and must arrive at identical state. To verify consensus, every node produces a **commitment**: a short value that represents the entire state. In Ethereum today, this is a 32-byte hash. This commitment goes in the block header. If yours doesn't match, your state has diverged from the network.
 
 This creates two key requirements that a flat key-value mapping can't satisfy.
 
@@ -50,7 +50,7 @@ A tree fixes this. Each node's hash is computed from its children's hashes. Chan
 
 Alice wants to check her balance without trusting anyone. She can't store 100+ GB of state. With a flat key-value store, the only way to verify a value is to recompute the commitment yourself, which requires having the entire state.
 
-A tree fixes this too. To prove a value exists, the prover provides the path from that leaf to the root, plus enough information (a proof) at each level to recompute the hashes. Alice (the verifier) can then reconstruct the root hash from this small proof and checks it against the known root. We'll see exactly how this works when we discuss proofs.
+A tree fixes this too. To prove a value exists, the prover provides the path from that leaf to the root, plus enough information (a proof) at each level to recompute the hashes. Alice (the verifier) can then reconstruct the root hash from this small proof and check it against the known root.
 
 ## Tries: Keys as Paths
 
@@ -60,23 +60,25 @@ We've established that we need a tree. So we have a key-value store (addresses �
 
 <img src="/img/trie-structure.webp" alt="A hexary trie where hashed addresses become paths: the root branches on hex digits, and following the digits of a hashed address leads to the account data at the leaves. An extension node compresses a chain of single-child branches into one node (the Patricia optimization).">
 
-Ethereum uses a **hexary** trie: one child per hex digit (0-F), giving a maximum **width** of 16. The **depth** depends on key length. Before insertion, each address is hashed with keccak256, producing a 32-byte key (64 hex digits). This prevents attackers from crafting addresses that create pathologically unbalanced branches. Contract storage keys are hashed the same way. Both tries have a maximum depth of 64. The **Patricia** variant used by Ethereum compresses the trie by collapsing chains of nodes with only one child into a single node (aka extension node).
+Ethereum uses a **hexary** trie: one child per hex digit (0-F), giving a maximum **width** of 16. The **depth** depends on key length. Before insertion, each address is hashed with keccak256, producing a 32-byte key (64 hex digits).[^2] Contract storage keys are hashed the same way. Both tries have a maximum depth of 64. The **Patricia** variant used by Ethereum compresses the trie by collapsing branch nodes with only one child into an extension node (purple in the figure above).
+
+[^2]: keccak256 is Ethereum's hash function; the pre-standardization version of what became SHA-3. Hashing prevents attackers from crafting addresses that create pathologically unbalanced branches.
 
 ## Merkle Patricia Tries
 
-We have the trie structure. Now we can add the **Merkle** part.
+We have the trie structure. Now we are ready to add the **Merkle** part.
 
-In a plain trie, each node represents a hex digit in the key. In a Merkle trie, **each node also has a hash computed from its children's hashes**. Change any leaf, and every node on the path to the root gets a new hash.
+In a plain Patricia trie, each node represents a hex digit in the key. In a Merkle trie, **each node also has a hash computed from its children's hashes**. Change any leaf, and every node on the path to the root gets a new hash.
 
-How is each node's hash computed? For a branch node, combine references to all 16 children (empty for missing children) and hash the result with keccak256, Ethereum's hash function (the pre-standardization version of what became SHA-3). The output is a single 32-byte hash.
+How is each node's hash computed? For a branch node, combine references to all of its children and hash the result with keccak256. The output is a single 32-byte hash.
 
 <img src="/img/merkle-hash-propagation.webp" alt="Merkle tree showing hash propagation: each parent's hash is computed from its children's hashes, with color-coded levels showing the recursive pattern">
 
 The root hash commits to the entire state, which goes into every block header. Any validator can compute the state root after executing a block's transactions and verify it matches. And because only the path from a changed leaf to the root needs rehashing, we get the O(log n) updates promised earlier—efficient commitment.
 
-Why does this work? **Collision resistance**. It's computationally infeasible to find two different states that produce the same keccak256 root. The root hash uniquely identifies the state.
+What property does this rely on? **Collision resistance**: it's computationally infeasible to find two distinct states that produce the same keccak256 root. The root hash uniquely identifies the state.
 
-The actual Ethereum implementation is more complex: RLP encoding to serialize nodes before hashing, different arrays for different node types (branch, leaf, and extension), flags for even/odd path lengths.
+The actual Ethereum implementation is more complex: RLP encoding to serialize nodes before hashing, different array specs for different node types (branch, leaf, and extension), flags for even/odd path lengths.
 
 <details>
 <summary>More on the implementation</summary>
@@ -95,7 +97,7 @@ To look up a key, start from the root hash (in the block header), fetch the root
 
 We claimed earlier that a tree enables partial proofs: verifying a single value without the full state. Here's how.
 
-Alice wants to verify her Ethereum balance from her phone's wallet. The full state is 100+ GB; she can't store it. She could ask [Infura](https://www.infura.io/) (a third-party service that queries Ethereum for you), but they could be compromised, or lying, or hacked. She'd have no way to know.
+Alice wants to verify her Ethereum balance from her phone's wallet. The full state is 100+ GB; she can't store it. Her wallet might query a third-party node provider like [Infura](https://www.infura.io/) or [Alchemy](https://www.alchemy.com/) behind the scenes, but that provider could be compromised, or lying, or hacked. She'd have no way to know.
 
 The Merkle structure offers an alternative. Alice (**the verifier**) stores just block headers (a few KB each). She asks *any* full node (**the prover**) for her balance *plus a proof*. She recomputes the root from the proof. If it matches the state root in the header, the balance is correct, mathematically guaranteed.
 
@@ -114,7 +116,7 @@ $$H_{i-1} = \text{hash}(h_{i,0} \| h_{i,1} \| \cdots \| h_{i,15})$$
 
 $$\text{where } h_{i,j} = \left\lbrace \begin{array}{ll} H_i & \text{if } j = k_{i-1} \\\ S_i[j] & \text{otherwise} \end{array} \right.$$
 
-If $H_0$ matches the state root, the proof is valid. Note that the prover must supply the full account: if any field were wrong, the leaf hash would differ, and the proof would fail.
+If $H_0$ matches the state root, the proof is valid. The prover must supply the full account (if any field were wrong, the leaf hash would differ and the proof would fail), but the verifier never sees the rest of the state; just the sibling hashes along the path:
 
 <img src="/img/merkle-proof.webp" alt="Merkle proof verification: Alice's account is hashed bottom-up through three levels of the hexary trie. At each level, the computed hash (orange) is combined with 15 sibling hashes (green, provided by the prover) to produce the next hash. Gray subtree hints show the rest of the tree that the verifier never needs to see.">
 
@@ -131,8 +133,6 @@ Suppose hashing Alice's address produces a key starting with `7a4...`. In a simp
 
 </details>
 
-The verifier never sees the rest of the state, just the sibling hashes needed to reconstruct the path.
-
 What about values in contract storage? Recall that each account has a `storageRoot`, the root of another trie containing that contract's storage. To prove a storage value, you provide two proofs: one from the state root to the account (which includes `storageRoot`), and another from `storageRoot` to the storage slot. The same verification logic applies, just nested.
 
 ## Smaller Proofs, Bigger Possibilities
@@ -141,21 +141,21 @@ Alice can verify a single state value with a Merkle proof. Validators do somethi
 
 Ethereum's core commitment is decentralization. As Vitalik Buterin [put it](https://decrypt.co/154990/future-ethereum-upgrades-could-allow-full-nodes-to-run-on-mobile-phones-vitalik-buterin): "In the longer term there's a plan to maintain fully verified Ethereum nodes where you could literally run it on your phone." Validation should be accessible to ordinary hardware, not just data centers.
 
-Currently the world state [grows by roughly a gigabyte per week](https://www.theblock.co/post/383156/ethereum-foundation-researchers-warn-of-storage-burden-from-state-bloat). As it grows, less of the trie fits in memory, so more lookups require random disk reads. As I covered in [a previous article](@/blog/understanding-parquet-files.md), finding the data on disk takes longer than reading it. To meet Ethereum's 12-second slot constraint, validators need faster storage (SSDs at minimum, increasingly NVMe-class), pushing costs upward and working against the decentralization goal.
+Currently the world state [grows by roughly a gigabyte per week](https://www.theblock.co/post/383156/ethereum-foundation-researchers-warn-of-storage-burden-from-state-bloat). As it grows, less of the trie fits in memory, so more lookups require random disk reads. As I covered in [a previous article](@/blog/understanding-parquet-files.md), accessing data on disk can create bottlenecks. To meet Ethereum's 12-second slot constraint, validators need faster storage (SSDs at minimum, increasingly NVMe-class), pushing costs upward and working against the decentralization goal.
 
 But what if validators didn't store state at all? Instead of reading from disk, they could receive proofs for every value a block touches. The same trick Alice used, scaled up.
 
-The problem is proof size. Each proof requires sibling hashes at every level: 15 siblings × 64 levels × 32 bytes ≈ 30 KB worst case, [\~3 KB on average](https://notes.ethereum.org/@vbuterin/verkle_tree_eip). With current blocks using [\~30M gas](https://etherscan.io/chart/gasused) and cold state reads costing [2100 gas each](https://eips.ethereum.org/EIPS/eip-2929),[^2] a block easily touches thousands of values. At \~3 KB average, that's several MB of additional bandwidth per block. 10 MB incremental network I/O per block would be over 2 TB/month per validator: the kind of overhead that pushes solo stakers toward data centers.
+The problem is proof size. Each proof requires sibling hashes at every level: 15 siblings × 64 levels × 32 bytes ≈ 30 KB worst case, [\~3 KB on average](https://notes.ethereum.org/@vbuterin/verkle_tree_eip). With current blocks using [\~30M gas](https://etherscan.io/chart/gasused) and cold state reads costing [2100 gas each](https://eips.ethereum.org/EIPS/eip-2929),[^3] a block easily touches thousands of values. At \~3 KB average, that's several MB of additional bandwidth per block. 10 MB incremental per block would be over 2 TB/month in extra bandwidth per validator: the kind of overhead that pushes solo stakers toward data centers.
 
-So proof size is a binding constraint. Shrink the proofs, and stateless validation becomes more viable.
+So proof size is a binding constraint. Shrink the proofs, and stateless validation becomes viable.
 
-[^2]: EIP-2929 distinguishes cold reads (first access, 2100 gas) from warm reads (subsequent, 100 gas). Using cold cost here underestimates total accesses.
+[^3]: EIP-2929 distinguishes cold reads (first access, 2100 gas) from warm reads (subsequent, 100 gas). Using cold cost here underestimates total accesses.
 
 ## What's Next
 
 Enter Verkle trees, the structure proposed for the Hegota network upgrade. They replace sibling hashes with **polynomial commitments**, shrinking proofs from several KB to less than 150 bytes each.
 
-Part 2 will cover how Verkle trees work and the cryptography behind them: polynomial commitments, KZG proofs, and how they achieve small proofs without sacrificing security. The math builds on finite fields and elliptic curves, which I covered in [The Math Behind Your Private Key](@/blog/math-behind-private-key.md).
+Part 2 will cover how Verkle trees work and the cryptography behind them: polynomial commitments and how they achieve small proofs without sacrificing security. The math builds on finite fields and elliptic curves, which I covered in [The Math Behind Your Private Key](@/blog/math-behind-private-key.md).
 
 ---
 
