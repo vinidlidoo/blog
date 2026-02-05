@@ -152,11 +152,15 @@ Use `-m pro` for higher quality (Nano Banana Pro), default is `-m flash` (free t
 
 This prevents Gemini from over-indexing on one image. The Mermaid render provides exact topology; the style reference provides the aesthetic (e.g., hand-drawn Excalidraw look from a previous diagram).
 
-**Iterative refinement:** Pass Gemini's previous output back as `-i` to make targeted fixes. Be very specific about what to change and what to keep ("fix X, keep everything else exactly the same"). Gemini handles small corrections well but tends to drift on open-ended re-prompts.
+**Iterative refinement:** Pass Gemini's previous output back as `-i` to make targeted fixes. Be very specific about what to change and what to keep ("fix X, keep everything else exactly the same"). Gemini handles small corrections well but tends to drift on open-ended re-prompts. After 2-3 iterations with diminishing returns, accept minor cosmetic imperfections rather than risk regression on correct content.
+
+**Aspect ratio consistency:** Lock in the aspect ratio from the first generation and keep it for all iterations. Switching (e.g., 16:9 → 21:9) mid-iteration changes proportions and makes the result incompatible with the original image's dimensions when compressing.
 
 **Gemini quirks to avoid:**
 - Never mention color hex codes (e.g., `#f0b0a0`) or color names (e.g., `CORAL`) in the context of what a node should *contain* — Gemini will print them as visible text inside the node. Describe colors only as background fills.
 - When describing split/two-tone nodes, emphasize that the only text is the label — the colors are purely visual fills with no text labels.
+- **Sequential labels** (e.g., 16 hex digits 0-f) are unreliable — Gemini frequently duplicates or skips items. Spelling them out explicitly doesn't help. Accept minor label errors on non-critical background elements.
+- **Layout/padding fixes** (e.g., "move the legend left", "add white margins") are mostly ignored. Gemini locks onto the spatial layout from the reference image.
 
 After user approval, copy to `static/img/`.
 

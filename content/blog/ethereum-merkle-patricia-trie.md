@@ -23,10 +23,10 @@ Ethereum maintains a **world state**: a key-value store where each key is an add
 
 There are two account types. **Externally owned accounts** (EOAs) are controlled by private keys and can initiate transactions. **Contract accounts** hold code and are triggered by transactions. Both types share the same four data fields:
 
-- **nonce**: for EOAs, the number of transactions sent; for contracts, the number of contracts created
+- **nonce**: a counter that increments with each transaction
 - **balance**: native ETH held[^1]
-- **codeHash**: hash of the account's bytecode (hash of empty bytecode for EOAs)
-- **storageRoot**: hash pointing to the contract's storage (empty trie hash for EOAs)
+- **codeHash**: hash of the account's bytecode (empty for EOAs)
+- **storageRoot**: hash pointing to the contract's storage (empty for EOAs)
 
 Contracts separate storage from code. Storage (token balances, ownership records, configuration) lives in its own key-value store, nested within the world state via `storageRoot`. Code is stored on-chain but outside the world state, referenced by `codeHash`. We'll revisit this nested storage when we discuss proofs.
 
