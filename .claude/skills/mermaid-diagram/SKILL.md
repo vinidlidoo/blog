@@ -140,9 +140,44 @@ Use `-m pro` for higher quality (Nano Banana Pro), default is `-m flash` (free t
 .claude/skills/mermaid-diagram/gemini-image.py -m pro drafts/img/<name>.png "Description..."
 ```
 
+**Dual-reference technique:** When you need both a specific structure AND a specific visual style, pass two images — one for each concern:
+
+```bash
+.claude/skills/mermaid-diagram/gemini-image.py -m pro \
+  -i drafts/img/<name>-mermaid.png \
+  -i drafts/img/<style-reference>.png \
+  drafts/img/<name>.png \
+  "Generate a diagram. Image 1 is the TREE STRUCTURE to reproduce. Image 2 is the VISUAL STYLE to match. ..."
+```
+
+This prevents Gemini from over-indexing on one image. The Mermaid render provides exact topology; the style reference provides the aesthetic (e.g., hand-drawn Excalidraw look from a previous diagram).
+
+**Iterative refinement:** Pass Gemini's previous output back as `-i` to make targeted fixes. Be very specific about what to change and what to keep ("fix X, keep everything else exactly the same"). Gemini handles small corrections well but tends to drift on open-ended re-prompts.
+
+**Gemini quirks to avoid:**
+- Never mention color hex codes (e.g., `#f0b0a0`) or color names (e.g., `CORAL`) in the context of what a node should *contain* — Gemini will print them as visible text inside the node. Describe colors only as background fills.
+- When describing split/two-tone nodes, emphasize that the only text is the label — the colors are purely visual fills with no text labels.
+
 After user approval, copy to `static/img/`.
 
-### 8. Embed in Post
+### 8. Compress and Embed
+
+For Gemini-generated PNGs (typically 500 KB+), compress to WebP before embedding:
+
+```bash
+magick static/img/<name>.png -resize 1200x png:- | cwebp -q 90 -o static/img/<name>.webp -- -
+rm static/img/<name>.png
+```
+
+This typically achieves ~8x size reduction (e.g., 650 KB → 80 KB) with no visible quality loss on diagram-style images.
+
+Embed in the post:
+
+```markdown
+<img src="/img/<diagram-name>.webp" alt="Description of diagram">
+```
+
+For SVGs (from Mermaid directly), no compression needed — embed as-is:
 
 ```markdown
 <img src="/img/<diagram-name>.svg" alt="Description of diagram">
