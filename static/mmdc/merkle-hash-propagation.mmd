@@ -1,0 +1,28 @@
+flowchart TD
+    Root["State Root<br/>0x7d3f..."]
+
+    Root --> C1["0xa2b1.."]
+    Root --> C2["0x91c4.."]
+    Root --> C3["0x55e2.."]
+    Root --> C4["0xd4f7.."]
+    Root --> C5["0x8833.."]
+
+    C1 --> D1["0x8f7e.."]
+    C1 --> D2["0x2d91.."]
+    C1 --> D3["0x4bc0.."]
+
+    D1 --> L1["0xc1d2.."]
+    D1 --> L2["0xe3f4.."]
+    D1 --> L3["0x66a3.."]
+    D1 --> L4["0xf1b2.."]
+
+    classDef root fill:#f5a8a8,stroke:#c06060,color:#333
+    classDef mid fill:#a8d5ba,stroke:#5a9e6a,color:#333
+    classDef deep fill:#a8d4f5,stroke:#6090c0,color:#333
+    classDef leaf fill:#f5f5dc,stroke:#c9a020,color:#333
+    classDef muted fill:#e8e8e8,stroke:#aaa,color:#999
+
+    class Root root
+    class C1,C2,C3,C4,C5 mid
+    class D1,D2,D3 deep
+    class L1,L2,L3,L4 leaf

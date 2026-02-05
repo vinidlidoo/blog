@@ -82,33 +82,7 @@ In a plain trie, each node represents a hex digit in the key. In a Merkle trie, 
 
 How is each node's hash computed? For a branch node, combine references to all 16 children (empty for missing children) and hash the result with keccak256, Ethereum's hash function (a variant of SHA-3). The output is a single 32-byte hash.
 
-```
-                      ┌─────────────────┐
-                      │   Root Hash     │ ← in block header
-                      │   0x7d3f...     │
-                      └────────┬────────┘
-                               │
-         ┌─────────────────────┼─────────────────────┐
-         │                     │                     │
-    ┌────┴────┐           ┌────┴────┐           ┌────┴────┐
-    │    4    │           │    8    │           │    f    │
-    │ 0xa2b1..│           │ 0x91c4..│           │ 0x55e2..│
-    └────┬────┘           └─────────┘           └─────────┘
-         │
-    ┌────┴────────────────┐
-    │                     │
-┌───┴────┐           ┌────┴───┐
-│   4a   │           │   4c   │
-│0x8f7e..│           │0x2d91..│
-└───┬────┘           └────┬───┘
-    │                     │
-    ▼                     ▼
-┌────────────┐      ┌────────────┐
-│ 0x4a7b...  │      │ 0x4c2f...  │
-│ balance:   │      │ balance:   │
-│ 1.5 ETH    │      │ 3.2 ETH    │
-└────────────┘      └────────────┘
-```
+<img src="/img/merkle-hash-propagation.webp" alt="Merkle tree showing hash propagation: each parent's hash is computed from its children's hashes, with color-coded levels showing the recursive pattern">
 
 The root hash commits to the entire state, which goes into every block header. Any validator can compute the state root after executing a block's transactions and verify it matches. And because only the path from a changed leaf to the root needs rehashing, we get the O(log n) updates promised earlier—efficient commitment.
 
