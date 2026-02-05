@@ -13,7 +13,7 @@ social_media_card = "/img/merkle-patricia-trie-banner.webp"
 
 ![Ethereum's Merkle Patricia Trie](/img/merkle-patricia-trie-banner.webp)
 
-Ethereum is the second-largest blockchain by market cap, securing hundreds of billions of dollars in value. Everyone knows it's a distributed ledger. But how does it actually store all that data? Hundreds of millions of accounts. Smart contracts with their own persistent storage: token balances, NFT ownership records, DeFi positions. Over 100 GB of state, replicated across nearly a million validators worldwide, growing every day. The answer is a data structure called the Merkle Patricia Trie.
+Ethereum is the second-largest blockchain by market cap, securing hundreds of billions of dollars in value. Everyone knows it's a distributed ledger. But how does it actually store all that data? Hundreds of millions of accounts. Smart contracts with their own persistent storage: token balances, NFT ownership records, DeFi positions. Over 250 GB of state, replicated across nearly a million validators worldwide, growing every day. The answer is a data structure called the Merkle Patricia Trie.
 
 That may soon change. The [Hegota network upgrade](https://ethereum-magicians.org/t/eip-8081-hegota-network-upgrade-meta-thread/26876) (EIP-8081), currently in planning, proposes to migrate Ethereum's state to a new structure called Verkle trees. It would be the biggest change to how Ethereum represents state since genesis. But to understand why it's being considered, we first need to understand what's there today, and why it's hitting its limits.
 
@@ -42,19 +42,19 @@ This creates two key requirements that a flat key-value mapping can't satisfy.
 
 ### 1. Efficient commitment
 
-To compute a commitment from a flat mapping, you'd need to serialize all entries in some deterministic order and hash them together. Now every time you change one balance, you re-serialize and re-hash the entire state. That's O(n) work per block on 100+ GB of data.
+To compute a commitment from a flat mapping, you'd need to serialize all entries in some deterministic order and hash them together. Now every time you change one balance, you re-serialize and re-hash the entire state. That's O(n) work per block on 250+ GB of data.
 
 A tree fixes this. Each node's hash is computed from its children's hashes. Change a leaf, and only the hashes along the path to the root need updating. That's O(log n) operations instead of O(n).
 
 ### 2. Partial proofs
 
-Alice wants to check her balance without trusting anyone. She can't store 100+ GB of state. With a flat key-value store, the only way to verify a value is to recompute the commitment yourself, which requires having the entire state.
+Alice wants to check her balance without trusting anyone. She can't store 250+ GB of state. With a flat key-value store, the only way to verify a value is to recompute the commitment yourself, which requires having the entire state.
 
 A tree fixes this too. To prove a value exists, the prover provides the path from that leaf to the root, plus enough information (a proof) at each level to recompute the hashes. Alice (the verifier) can then reconstruct the root hash from this small proof and check it against the known root.
 
 ## Tries: Keys as Paths
 
-We've established that we need a tree. So we have a key-value store (addresses → accounts) to organize into a tree. How? By using a **trie** (pronounced "try," from re**trie**val).
+We've established that we have a key-value store (addresses → accounts) to organize into a tree. How? By using a **trie** (pronounced "try," from re**trie**val).
 
 **A trie uses the key itself as the path through the tree.** Each character in the key determines which branch to take. For a hex key like `4a7f...`, you start at the root, branch on `4`, then `a`, then `7`, then `f`, and so on until you reach the stored value. You don't store keys explicitly; the path *is* the key.
 
@@ -97,7 +97,7 @@ To look up a key, start from the root hash (in the block header), fetch the root
 
 We claimed earlier that a tree enables partial proofs: verifying a single value without the full state. Here's how.
 
-Alice wants to verify her Ethereum balance from her phone's wallet. The full state is 100+ GB; she can't store it. Her wallet might query a third-party node provider like [Infura](https://www.infura.io/) or [Alchemy](https://www.alchemy.com/) behind the scenes, but that provider could be compromised, or lying, or hacked. She'd have no way to know.
+Alice wants to verify her Ethereum balance from her phone's wallet. The full state is 250+ GB; she can't store it. Her wallet might query a third-party node provider like [Infura](https://www.infura.io/) or [Alchemy](https://www.alchemy.com/) behind the scenes, but that provider could be compromised, or lying, or hacked. She'd have no way to know.
 
 The Merkle structure offers an alternative. Alice (**the verifier**) stores just block headers (a few KB each). She asks *any* full node (**the prover**) for her balance *plus a proof*. She recomputes the root from the proof. If it matches the state root in the header, the balance is correct, mathematically guaranteed.
 
