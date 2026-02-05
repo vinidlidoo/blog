@@ -15,7 +15,7 @@ social_media_card = "/img/merkle-patricia-trie-banner.webp"
 
 Ethereum is the second-largest blockchain by market cap, securing hundreds of billions of dollars in value. Everyone knows it's a distributed ledger. But how does it actually store all that data? Hundreds of millions of accounts. Smart contracts with their own persistent storage: token balances, NFT ownership records, DeFi positions. Over 100 GB of state, replicated across nearly a million validators worldwide, growing every day. The answer is a data structure called the Merkle Patricia Trie.
 
-That may soon change. The [Hegota network upgrade](https://ethereum-magicians.org/t/eip-8081-hegota-network-upgrade-meta-thread/26876) (EIP-8081), currently in planning, aims to migrate Ethereum's state to a new structure called Verkle trees. It would be the biggest change to how Ethereum represents state since genesis. But to understand why it's being considered, we first need to understand what's there today, and why it's hitting its limits.
+That may soon change. The [Hegota network upgrade](https://ethereum-magicians.org/t/eip-8081-hegota-network-upgrade-meta-thread/26876) (EIP-8081), currently in planning, proposes to migrate Ethereum's state to a new structure called Verkle trees. It would be the biggest change to how Ethereum represents state since genesis. But to understand why it's being considered, we first need to understand what's there today, and why it's hitting its limits.
 
 ## The World State
 
@@ -153,9 +153,9 @@ So proof size is a binding constraint. Shrink the proofs, and stateless validati
 
 ## What's Next
 
-Enter Verkle trees, the structure proposed for the Hegota network upgrade. They replace sibling hashes with **polynomial commitments**, shrinking proofs from several KB to less than 150 bytes each.
+Enter Verkle trees, the leading proposal for the Hegota network upgrade. They replace sibling hashes with **polynomial commitments**, shrinking proofs from several KB to less than 150 bytes each.
 
-Part 2 will cover how Verkle trees work and the cryptography behind them: polynomial commitments and how they achieve small proofs without sacrificing security. The math builds on finite fields and elliptic curves, which I covered in [The Math Behind Your Private Key](@/blog/math-behind-private-key.md).
+Part 2 will cover how Verkle trees work and the cryptography behind them: polynomial commitments and how they achieve small proofs without sacrificing security. The math builds on finite fields and elliptic curves, which I covered in [The Math Behind Your Private Key](@/blog/math-behind-private-key.md). We'll also look at why Verkle trees may not be the final answer: their reliance on elliptic curve cryptography makes them vulnerable to quantum computers (spurring quantum-resistant alternatives), and scaling state may require [more than smaller proofs](https://ethresear.ch/t/hyper-scaling-state-by-creating-new-forms-of-state/24052).
 
 ---
 
