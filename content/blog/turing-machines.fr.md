@@ -16,8 +16,6 @@ Le mois dernier, le PDG de DeepMind Demis Hassabis a [répliqué](https://twitte
 
 J'ai entendu les expressions « machine de Turing » et « Turing-complet » des centaines de fois au fil des années, mais je dois admettre que je n'ai jamais vraiment compris ce qu'elles signifiaient. Voici mon essai d'explication : courte, dense, mais accessible. La partie 1 couvre ce qu'est réellement une machine de Turing. [La partie 2](@/blog/turing-completeness.md) expliquera ce que « Turing-complet » signifie et reviendra sur l'affirmation de Demis.
 
-[^1]: [Tweet complet à la fin de l'article](#tweet)
-
 ## Contexte historique
 
 Dans les années 1930, les mathématiciens cherchaient à formaliser ce que « calcul » veut vraiment dire. Avant l'existence des ordinateurs électroniques, un « calculateur » était littéralement un être humain effectuant des calculs à la main, suivant des règles et écrivant des résultats intermédiaires sur papier.
@@ -156,8 +154,6 @@ Les deux définissent des ensembles via un critère d'appartenance. La différen
 
 Notre machine « nombre pair de 1 » a six règles de transition, pourtant elle accepte une infinité de chaînes : $\epsilon$, `0`, `00`, `11`, `0000`, `1111`, `0110`... On ne pourrait jamais toutes les lister, mais donnez-moi n'importe quelle chaîne et je peux exécuter la machine pour vous dire si elle appartient à l'ensemble.
 
-[^2]: Avec un bémol : la machine pourrait tourner indéfiniment sans jamais s'arrêter. On en reparlera dans la partie 2.
-
 ## La suite
 
 Nous avons vu ce qu'est une machine de Turing : une abstraction minimale pour le calcul mécanique. Lire, écrire, se déplacer, changer d'état.
@@ -169,6 +165,10 @@ Mais pourquoi une machine si simple devrait-elle nous intéresser ? [La partie 2
 <a id="tweet"></a>
 <blockquote class="twitter-tweet" data-theme="dark" data-align="center"><p lang="en" dir="ltr">Yann is just plain incorrect here, he's confusing general intelligence with universal intelligence.<br><br>Brains are the most exquisite and complex phenomena we know of in the universe (so far), and they are in fact extremely general.<br><br>Obviously one can't circumvent the no free lunch… <a href="https://t.co/RjeqlaP7GO">https://t.co/RjeqlaP7GO</a></p>&mdash; Demis Hassabis (@demishassabis) <a href="https://twitter.com/demishassabis/status/2003097405026193809?ref_src=twsrc%5Etfw">December 22, 2025</a></blockquote>
 <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+[^1]: [Tweet complet à la fin de l'article](#tweet)
+
+[^2]: Avec un bémol : la machine pourrait tourner indéfiniment sans jamais s'arrêter. On en reparlera dans la partie 2.
 
 ---
 

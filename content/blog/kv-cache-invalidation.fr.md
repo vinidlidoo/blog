@@ -17,9 +17,6 @@ Pendant les fêtes, j'ai eu une conversation avec un ami à propos de la mise en
 
 Oui, mais il y a un piège. Supprimer des tokens au milieu d'une conversation invalide le **cache KV** — un mécanisme clé qui accélère l'inférence des LLM. On ne perd pas juste un peu de calcul mis en cache ; on perd **tout ce qui suit la modification**. C'est pourquoi claude.ai, ChatGPT ou Claude Code ne modifient ou ne suppriment pas fréquemment les messages précédents[^1]. Comme l'a exprimé un PM de Claude Code [sur Twitter](https://x.com/trq212/status/2004026126889320668) : « *Les agents de programmation seraient d'un coût prohibitif s'ils ne maintenaient pas le cache de prompt entre les tours.* » Cet article explique pourquoi.
 
-[^1]: La compaction se produit, mais rarement.
-
-
 ## Prédiction du prochain token
 
 Les LLM génèrent du texte un token à la fois. Étant donné une séquence de tokens $t_1, \ldots, t_i$, le modèle prédit une distribution de probabilité sur le prochain token :
@@ -37,12 +34,9 @@ Les LLM modernes utilisent l'architecture Transformer. Voici le fameux diagramme
 
 La boîte grise marquée « Nx » à droite est un **bloc décodeur** — il est répété $L$ fois. Chaque bloc contient une attention multi-têtes masquée et un réseau feed-forward.[^2]
 
-
 Chaque token $t_i$ commence comme un vecteur d'embedding $x_i$. En traversant les blocs, ce vecteur se transforme. Appelons le vecteur pour la position $i$ après le bloc $\ell$ l'**état caché** $z_i^{(\ell)}$.
 
 Chaque bloc alimente le suivant : $z_i^{(\ell)}$ devient l'entrée pour calculer $z_i^{(\ell+1)}$. Après $L$ blocs, l'état caché final $z_i^{(L)}$ sert à prédire $P(t_{i+1} | t_1, \ldots, t_i)$, c'est-à-dire la distribution de probabilité du début.
-
-[^2]: Le diagramme montre l'architecture encodeur-décodeur originale. Les LLM modernes comme GPT et Claude sont *décodeur uniquement* : ils omettent le côté gauche (encodeur) et la « Multi-Head Attention » du milieu qui prête attention aux sorties de l'encodeur.
 
 ## Le cache KV
 
@@ -161,6 +155,10 @@ La sortie à la position $i$ prédit le prochain token $t_{i+1}$, en utilisant u
 **Références :**
 - [Transformer Notes](https://johnthickstun.com/docs/transformers.pdf) par John Thickstun
 - [Attention Is All You Need](https://arxiv.org/abs/1706.03762) (Vaswani et al., 2017)
+
+[^1]: La compaction se produit, mais rarement.
+
+[^2]: Le diagramme montre l'architecture encodeur-décodeur originale. Les LLM modernes comme GPT et Claude sont *décodeur uniquement* : ils omettent le côté gauche (encodeur) et la « Multi-Head Attention » du milieu qui prête attention aux sorties de l'encodeur.
 
 ---
 

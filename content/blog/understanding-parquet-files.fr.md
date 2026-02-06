@@ -52,9 +52,6 @@ Le même principe s'applique au stockage objet cloud comme S3. Les disques d'AWS
 | S3 | ~100 ms (aller-retour HTTP) | 100+ Mo/s | Privilégier les grandes plages d'octets ; paralléliser entre chunks |
 {% end %}
 
-[^1]: Une simplification : les fichiers peuvent être fragmentés sur des blocs disque non contigus, et les systèmes de fichiers ajoutent des couches d'abstraction. Le modèle mental reste valide pour comprendre les compromis de disposition.
-[^2]: Les SSD éliminent les seeks mécaniques et sont plus tolérants, mais le principe reste : peu de grandes lectures séquentielles battent beaucoup de petites lectures.
-
 ## Orientation ligne vs colonne
 
 Les données analytiques sont typiquement tabulaires : lignes et colonnes. Quand on sérialise une table en séquence d'octets, il y a deux choix naturels. Considérons une simple table d'employés :
@@ -137,8 +134,6 @@ Ces techniques sont appliquées au niveau des pages dans chaque column chunk. Ch
 
 Il existe de nombreuses autres techniques (bit packing, divers codecs de compression), mais celles-ci illustrent l'idée centrale : **regrouper les valeurs par colonne expose des motifs qui se compressent bien**.
 
-[^3]: Parquet ne trie pas les données. Il faut trier avant l'écriture. La clé de tri principale bénéficie le plus ; les clés secondaires bénéficient moins, et seulement si elles sont de faible cardinalité.
-
 ### 3. Predicate Pushdown
 
 Le predicate pushdown permet de sauter des row groups entiers sans les lire.
@@ -188,6 +183,12 @@ De nombreux systèmes utilisent les deux. Postgres pour l'application en product
 Parquet a tellement dominé la catégorie de l'analytique en colonnes que l'innovation s'est déplacée vers des espaces adjacents : Arrow pour le traitement en mémoire, les lakehouses (Delta Lake, Iceberg, Hudi) pour les transactions et les ajouts par-dessus des fichiers immuables.
 
 Le principe sous-jacent est l'asymétrie de latence d'accès : que ce soit les seeks disque ou les allers-retours HTTP, le coût de *démarrer* une lecture domine le coût de *la poursuivre*. Organisez les données pour que les octets nécessaires soient contigus, et le tour est joué.
+
+[^1]: Une simplification : les fichiers peuvent être fragmentés sur des blocs disque non contigus, et les systèmes de fichiers ajoutent des couches d'abstraction. Le modèle mental reste valide pour comprendre les compromis de disposition.
+
+[^2]: Les SSD éliminent les seeks mécaniques et sont plus tolérants, mais le principe reste : peu de grandes lectures séquentielles battent beaucoup de petites lectures.
+
+[^3]: Parquet ne trie pas les données. Il faut trier avant l'écriture. La clé de tri principale bénéficie le plus ; les clés secondaires bénéficient moins, et seulement si elles sont de faible cardinalité.
 
 ---
 
