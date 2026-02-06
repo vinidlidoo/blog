@@ -157,6 +157,13 @@
 {"type":"mapping","en":"pain points","ja":"課題","avoid":"問題","notes":"課題 implies challenges to address; 問題 is more generic/negative"}
 {"type":"mapping","en":"study notes","ja":"復習ノート","avoid":"スタディノート","domain":"education"}
 {"type":"mapping","en":"Where AI Fits (title)","ja":"AIの出番はどこか","avoid":"AIはどこに位置するか","domain":"education"}
+{"type":"mapping","en":"slot into (position)","ja":"配置する","avoid":"スロットする","domain":"cs","notes":"スロットする is a calque; 配置する is the natural Japanese verb for placing an item into a position"}
+{"type":"mapping","en":"offers an alternative","ja":"なら別の方法がある","avoid":"代替手段を提供する","notes":"代替手段を提供する is a structural calque of the English; restructure naturally"}
+{"type":"mapping","en":"collision resistance","ja":"衝突耐性","domain":"cryptography"}
+{"type":"mapping","en":"binding constraint","ja":"律速制約","domain":"cs","notes":"律速 from chemistry/engineering; conveys rate-limiting/actively constraining"}
+{"type":"mapping","en":"sibling hashes (Merkle tree)","ja":"兄弟ハッシュ","domain":"cryptography"}
+{"type":"mapping","en":"hexary (trie)","ja":"16進","domain":"cs","notes":"16進トライ for hexary trie"}
+{"type":"mapping","en":"stateless validation","ja":"ステートレスバリデーション","domain":"cryptography"}
 {"type":"style","rule":"Use 「〜だ」 over 「〜である」 for most explanatory sentences to maintain a casual, blog-like tone.","avoid":"〜である"}
 {"type":"style","rule":"Keep technical explanations precise but avoid overly formal academic register."}
 {"type":"style","rule":"Do not use em dashes (— or ―) in Japanese text. Use parentheses （）, periods 。, conjunctive form 「〜で、」, or restructure (e.g., add 「つまり」 for 'that is').","en":"em dashes","avoid":"— ―"}

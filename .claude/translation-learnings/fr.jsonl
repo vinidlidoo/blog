@@ -103,3 +103,9 @@
 {"type":"style","rule":"Avoid redundant etymological pairs: don't use 'reconstruction' near 'reconstituer'."}
 {"type":"style","rule":"Avoid triple gerund chains ('en X, en Y, et en Z'). Fold two ideas together when possible."}
 {"type":"style","rule":"Avoid verb anglicisms like 'seeker'. Use native French verbs ('se positionner')."}
+{"type":"mapping","en":"commitment (cryptographic)","fr":"engagement","avoid":"commitment","domain":"cryptography","notes":"standard French crypto term; verb form 'engager' (le hash racine engage l'état)"}
+{"type":"mapping","en":"polynomial commitment","fr":"engagement polynomial","avoid":"polynomial commitment","domain":"cryptography"}
+{"type":"mapping","en":"verifier (crypto role)","fr":"vérificateur / vérificatrice","avoid":"vérifieur","domain":"cryptography","notes":"use feminine for female characters (Alice → la vérificatrice)"}
+{"type":"mapping","en":"stateless (validation)","fr":"sans état","avoid":"stateless","domain":"cryptography"}
+{"type":"style","rule":"Translate text labels inside KaTeX math blocks (where→où, if→si, otherwise→sinon). Math variable names stay as-is but natural-language words must be in the target language."}
+{"type":"style","rule":"Translate direct quotes from English sources into French. Keep the link to the original source. Do not leave quotes in English without translation."}
