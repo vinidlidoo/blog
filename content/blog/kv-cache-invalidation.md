@@ -17,9 +17,6 @@ Over the holiday break, I had a conversation with a friend about prompt caching.
 
 Yes, but there's a catch. Removing tokens from the middle of a conversation invalidates the **KV cache**—a key mechanism that speeds up LLM inference. You don't just lose a bit of cached work; you lose **everything after the edit**. This is why claude.ai, ChatGPT, or Claude Code don't frequently edit or delete earlier messages[^1]. As a Claude Code PM [put it](https://x.com/trq212/status/2004026126889320668): "*Coding agents would be cost prohibitive if they didn't maintain the prompt cache between turns.*" This post explains why.
 
-[^1]: Compaction does happen, but infrequently.
-
-
 ## Next-Token Prediction
 
 LLMs generate text one token at a time. Given a sequence of tokens $t_1, \ldots, t_i$, the model predicts a probability distribution over the next token:
@@ -37,12 +34,9 @@ Modern LLMs use the transformer architecture. Here's the famous diagram from "At
 
 The grey box marked "Nx" to the right is a **decoder block**—it's repeated $L$ times. Each block contains a masked multi-head attention and a feed-forward network.[^2]
 
-
 Each token $t_i$ starts as an embedding vector $x_i$. As it passes through the blocks, this vector gets transformed. Call the vector for position $i$ after block $\ell$ the **hidden state** $z_i^{(\ell)}$.
 
 Each block feeds into the next: $z_i^{(\ell)}$ becomes the input for computing $z_i^{(\ell+1)}$. After $L$ blocks, the final hidden state $z_i^{(L)}$ is used to predict $P(t_{i+1} | t_1, \ldots, t_i)$, that is, the probability distribution we started with.
-
-[^2]: The diagram shows the original encoder-decoder architecture. Modern LLMs like GPT and Claude are *decoder-only*: they omit the left side (encoder) and the middle "Multi-Head Attention" that attends to encoder outputs.
 
 ## The KV Cache
 
@@ -161,6 +155,10 @@ The output at position $i$ predicts the next token $t_{i+1}$, using only informa
 **References:**
 - [Transformer Notes](https://johnthickstun.com/docs/transformers.pdf) by John Thickstun
 - [Attention Is All You Need](https://arxiv.org/abs/1706.03762) (Vaswani et al., 2017)
+
+[^1]: Compaction does happen, but infrequently.
+
+[^2]: The diagram shows the original encoder-decoder architecture. Modern LLMs like GPT and Claude are *decoder-only*: they omit the left side (encoder) and the middle "Multi-Head Attention" that attends to encoder outputs.
 
 ---
 

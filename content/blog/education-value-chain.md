@@ -37,8 +37,6 @@ Consider a working professional pivoting from marketing to data science. She sta
 
 These stages are sequential but not strictly linear. A student might cycle between Learning and Assessment many times before reaching Credentialing. Or she might loop from Learning back to Discovery entirely: halfway through a data science curriculum, she encounters computer vision and realizes that's the subfield she actually wants to pursue. The value chain describes the logical progression, not a rigid pipeline.
 
-[^1]: The closest parallels are the learn-practice-certify progression common in professional certification and the seven-step transformative learning cycle from [De Witt et al. (2023)](https://journals.sagepub.com/doi/10.1177/15413446231220317).
-
 ## What's Broken: Stage by Stage
 
 Each stage breaks in its own way. Here's what learners, educators, and employers might run into.
@@ -124,6 +122,8 @@ Many actors participate across these stages, each with different incentives and 
 Future posts will pick a stage, consider these actors in context, and dig into the most pressing pain points and the most promising uses of technology within that stage.
 
 This is a starting framework. It may be missing a piece or two, or the boundaries may shift as I dig deeper. If you see a gap, [let me know](https://vinidlidoo.github.io/contact/).
+
+[^1]: The closest parallels are the learn-practice-certify progression common in professional certification and the seven-step transformative learning cycle from [De Witt et al. (2023)](https://journals.sagepub.com/doi/10.1177/15413446231220317).
 
 ---
 
