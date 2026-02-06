@@ -17,7 +17,15 @@ article details[open] summary {
 }
 
 /* Smaller footnote text */
-.footnote-definition{
+.footnotes-list {
+    font-size: 0.85rem;
+}
+
+.footnotes-list li p {
+    margin-bottom: 0;
+}
+
+.credit {
     font-size: 0.85rem;
 }
 

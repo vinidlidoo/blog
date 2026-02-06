@@ -179,6 +179,9 @@
             {{ processed_content | replace(from="<!-- toc -->", to=macros_toc::toc(page=page, header=false, language_strings=language_strings)) | safe }}
         </section>
 
+        {#- Credit line after content (and footnotes) -#}
+        <p class="credit"><em>{{ language_strings.credit | safe }}</em></p>
+
         {#- iine button -#}
         {%- if macros_settings::evaluate_setting_priority(setting="iine", page=page, default_global_value=false) == "true" -%}
             {% include "partials/iine_button.html" %}
