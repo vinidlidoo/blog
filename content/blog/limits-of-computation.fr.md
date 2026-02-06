@@ -90,11 +90,6 @@ Mais nous avons déjà prouvé que le problème de l'arrêt est indécidable. Do
 
 C'est la conclusion : **la vérité dépasse la démontrabilité.** Quels que soient les axiomes choisis, certaines affirmations seront *indépendantes* — ni prouvables ni réfutables au sein du système.
 
-[^1]: La seconde moitié — toute affirmation démontrable est vraie — s'appelle la *correction*, et nous la voulons absolument. Un système incorrect prouve des choses fausses, ce qui est inutile. La première moitié — toute affirmation vraie est démontrable — s'appelle la *complétude*. Gödel a montré que la complétude est impossible.
-
-[^2]: Pourquoi peut-on énumérer les théorèmes ? Une preuve est une séquence finie d'étapes, chacune découlant mécaniquement des axiomes ou des étapes précédentes. On énumère toutes les séquences finies, on vérifie la validité de chacune, on produit la conclusion des preuves valides. Toute affirmation démontrable finit par apparaître.
-[^3]: Le système doit aussi être *consistant* : il ne prouve jamais à la fois $P$ et $\neg P$. Un système inconsistant peut prouver n'importe quoi (y compris des contradictions), rendant la « complétude » trivialement atteignable mais dénuée de sens.
-
 ## À retenir
 
 Nous avons tracé une frontière entre ce qui est calculable et ce qui ne l'est pas. Dans la Partie 2, nous avons vu que la Turing-complétude est le plafond : on ne peut pas calculer plus qu'une machine de Turing. Mais maintenant nous avons vu que ce plafond a des trous. Certains problèmes n'ont pas de procédure qui s'arrête toujours avec la bonne réponse.
@@ -104,6 +99,12 @@ Nous avons tracé une frontière entre ce qui est calculable et ce qui ne l'est 
 **À l'extérieur** : le problème de l'arrêt n'est que le début. Le théorème de Rice nous dit que *toute* question intéressante sur le comportement d'un programme est indécidable. Ce code contient-il un bug ? Accédera-t-il un jour au réseau ? Est-il équivalent à cet autre programme ? Aucun algorithme général ne peut répondre à ces questions pour **tous les programmes**. Et Gödel nous dit que le problème est plus profond : certaines affirmations vraies sur les nombres ne peuvent jamais être prouvées à partir d'un ensemble fini d'axiomes.
 
 Cette frontière ne dépend pas de la technologie. Ordinateurs plus rapides, ordinateurs quantiques, quoi qu'il arrive ensuite : le problème de l'arrêt restera indécidable, et l'arithmétique restera incomplète. Il existe des vérités qu'aucune procédure mécanique ne peut découvrir. C'est un fait profond sur la nature même du calcul.
+
+[^1]: La seconde moitié — toute affirmation démontrable est vraie — s'appelle la *correction*, et nous la voulons absolument. Un système incorrect prouve des choses fausses, ce qui est inutile. La première moitié — toute affirmation vraie est démontrable — s'appelle la *complétude*. Gödel a montré que la complétude est impossible.
+
+[^2]: Pourquoi peut-on énumérer les théorèmes ? Une preuve est une séquence finie d'étapes, chacune découlant mécaniquement des axiomes ou des étapes précédentes. On énumère toutes les séquences finies, on vérifie la validité de chacune, on produit la conclusion des preuves valides. Toute affirmation démontrable finit par apparaître.
+
+[^3]: Le système doit aussi être *consistant* : il ne prouve jamais à la fois $P$ et $\neg P$. Un système inconsistant peut prouver n'importe quoi (y compris des contradictions), rendant la « complétude » trivialement atteignable mais dénuée de sens.
 
 ---
 

@@ -16,8 +16,6 @@ katex = true
 
 「チューリングマシン」や「チューリング完全」という言葉は、これまで何度も耳にしてきた。しかし正直なところ、本当の意味を理解していたかと言われると怪しい。この記事では、短く、密度高く、それでいてわかりやすい説明を目指す。第1回では、チューリングマシンが実際に*何であるか*を扱う。[第2回](@/blog/turing-completeness.md)では、「チューリング完全」の意味を説明し、Demisの主張を再検討する。
 
-[^1]: [完全なツイートは記事末尾に掲載](#tweet)
-
 ## 歴史的背景
 
 1930年代、数学者たちは「計算」とは何かを形式化しようとしていた。電子計算機が存在する以前、「computer」とは文字通り、規則に従い、紙に途中経過を書きながら手計算を行う人間のことだった。
@@ -156,8 +154,6 @@ $$\lbrace x : x > 5 \rbrace \quad \text{vs} \quad \lbrace w : M \text{が} w \te
 
 「1の個数が偶数」マシンは6つの遷移規則しかないが、無限個の文字列を受理する。$\epsilon$、`0`、`00`、`11`、`0000`、`1111`、`0110`...すべてを列挙することは不可能だが、任意の文字列を渡してくれれば、マシンを実行してそれが集合に属するかどうかを判定できる。
 
-[^2]: 1つ注意点がある。マシンは停止せずに永遠に動き続ける可能性がある。これについては第2回で詳しく述べる。
-
 ## 次回予告
 
 チューリングマシンとは何かを見てきた。機械的計算のための最小限の抽象化だ。読み、書き、移動し、状態を変える。
@@ -169,6 +165,10 @@ $$\lbrace x : x > 5 \rbrace \quad \text{vs} \quad \lbrace w : M \text{が} w \te
 <a id="tweet"></a>
 <blockquote class="twitter-tweet" data-theme="dark" data-align="center"><p lang="en" dir="ltr">Yann is just plain incorrect here, he's confusing general intelligence with universal intelligence.<br><br>Brains are the most exquisite and complex phenomena we know of in the universe (so far), and they are in fact extremely general.<br><br>Obviously one can't circumvent the no free lunch… <a href="https://t.co/RjeqlaP7GO">https://t.co/RjeqlaP7GO</a></p>&mdash; Demis Hassabis (@demishassabis) <a href="https://twitter.com/demishassabis/status/2003097405026193809?ref_src=twsrc%5Etfw">December 22, 2025</a></blockquote>
 <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+[^1]: [完全なツイートは記事末尾に掲載](#tweet)
+
+[^2]: 1つ注意点がある。マシンは停止せずに永遠に動き続ける可能性がある。これについては第2回で詳しく述べる。
 
 ---
 

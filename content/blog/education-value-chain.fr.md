@@ -38,8 +38,6 @@ Prenons une professionnelle en reconversion du marketing vers la data science. E
 
 Ces étapes sont séquentielles mais pas strictement linéaires. On peut boucler entre Apprentissage et Évaluation de nombreuses fois avant d'atteindre la Certification. Ou on peut revenir de l'Apprentissage à la Découverte : à mi-parcours d'un cursus en data science, on découvre la vision par ordinateur et on réalise que c'est le sous-domaine qu'on veut vraiment poursuivre. La chaîne de valeur décrit la progression logique, pas un pipeline rigide.
 
-[^1]: Les parallèles les plus proches sont la progression apprendre-pratiquer-certifier courante en certification professionnelle et le cycle d'apprentissage transformatif en sept étapes de [De Witt et al. (2023)](https://journals.sagepub.com/doi/10.1177/15413446231220317).
-
 ## Où ça casse : étape par étape
 
 Chaque étape a ses propres points de rupture. Voici ce que les élèves, les enseignants et les employeurs peuvent rencontrer.
@@ -126,6 +124,8 @@ De nombreux acteurs participent à ces étapes, chacun avec des incitatifs et de
 Dans les prochains articles, je choisirai une étape à la fois, replacerai ces acteurs en contexte, et creuserai les points de friction les plus urgents et les pistes technologiques les plus prometteuses.
 
 C'est un cadre de départ. Il manque peut-être une ou deux pièces, et les contours pourraient évoluer à mesure que j'approfondis. Si vous repérez un angle mort, [n'hésitez pas à me le signaler](https://vinidlidoo.github.io/fr/contact/).
+
+[^1]: Les parallèles les plus proches sont la progression apprendre-pratiquer-certifier courante en certification professionnelle et le cycle d'apprentissage transformatif en sept étapes de [De Witt et al. (2023)](https://journals.sagepub.com/doi/10.1177/15413446231220317).
 
 ---
 

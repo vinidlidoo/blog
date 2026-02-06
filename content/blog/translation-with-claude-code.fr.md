@@ -73,8 +73,6 @@ git diff "$baseline"..HEAD -- "kv-cache-invalidation.md"
 
 Toute sortie de diff signifie que la source anglaise a divergé et que la traduction nécessite une synchronisation.
 
-[^1]: Le script utilise des labels différents en interne : `NEEDS TRANSLATION`, `NEEDS SYNC` et `UP TO DATE`.
-
 ## Rédacteur et éditeur
 
 L'agent principal rédige les traductions, les écrit sur le disque, puis lance un [sous-agent éditeur](https://github.com/vinidlidoo/vinidlidoo.github.io/blob/main/.claude/agents/translation-editor.md) séparé pour les réviser. L'éditeur démarre avec un contexte vierge — il ne voit que la source anglaise, la traduction brouillon et un fichier d'apprentissage partagé (on en reparle plus loin). Il vérifie le naturel (a-t-on l'impression d'une traduction ou d'un texte original ?), l'adaptation des idiomes (les expressions anglaises ont-elles été traduites par le sens, pas littéralement ?), la terminologie technique (termes standards dans la langue cible ?) et la voix (est-ce que ça me ressemble toujours ?).
@@ -102,6 +100,8 @@ Les alternatives n'étaient pas géniales. La traduction manuelle prendrait 3-4 
 Cela change la donne. Les traductions ne sont pas parfaites, mais pas loin. Elles ne me coûtent rien qu'une minute d'attente. Je n'aurais pas pris la peine de traduire ce blog sans cette option à ma disposition. Je soupçonne qu'on verra beaucoup plus de contenu multilingue en ligne dans les mois à venir.
 
 Le système a pris quelques heures à construire. Maintenant j'écris en anglais, je commite et je lance `/sync-translations`. Cet article a été traduit avec ce système — si vous lisez la version française ou japonaise, vous en voyez le résultat. Si vous voulez construire quelque chose de similaire, suivez les liens tout au long de cet article ou explorez le [dépôt complet](https://github.com/vinidlidoo/vinidlidoo.github.io/tree/main/.claude).
+
+[^1]: Le script utilise des labels différents en interne : `NEEDS TRANSLATION`, `NEEDS SYNC` et `UP TO DATE`.
 
 ---
 
