@@ -71,5 +71,3 @@ Turing completeness tells us what's *possible*. But it doesn't tell us what's *i
 In [Part 3](@/blog/limits-of-computation.md), we'll open the ceiling and take a look above. Some problems are provably unsolvable: not just hard, but impossible for any Turing machine, any computer, any brain, any AI.
 
 ---
-
-*This post was written in collaboration with [Claude](https://claude.ai) (Opus 4.5).*

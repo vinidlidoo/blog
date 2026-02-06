@@ -156,10 +156,8 @@ The output at position $i$ predicts the next token $t_{i+1}$, using only informa
 - [Transformer Notes](https://johnthickstun.com/docs/transformers.pdf) by John Thickstun
 - [Attention Is All You Need](https://arxiv.org/abs/1706.03762) (Vaswani et al., 2017)
 
+---
+
 [^1]: Compaction does happen, but infrequently.
 
 [^2]: The diagram shows the original encoder-decoder architecture. Modern LLMs like GPT and Claude are *decoder-only*: they omit the left side (encoder) and the middle "Multi-Head Attention" that attends to encoder outputs.
-
----
-
-*This post was written in collaboration with [Claude](https://claude.ai) (Opus 4.5).*

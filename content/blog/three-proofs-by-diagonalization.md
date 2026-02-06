@@ -140,5 +140,3 @@ All three proofs share the same skeleton:
 Diagonalization reveals that certain collections are too large to be captured by any list or any set. It's a fundamental limit built into the structure of mathematics itself.
 
 ---
-
-*This post was written in collaboration with [Claude](https://claude.ai) (Opus 4.5).*

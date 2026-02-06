@@ -100,12 +100,10 @@ We've traced a boundary between what's computable and what isn't. In Part 2, we 
 
 This boundary doesn't depend on technology. Faster computers, quantum computers, whatever comes next: the halting problem will still be undecidable, and arithmetic will still be incomplete. There are truths that no mechanical procedure can discover. That's a deep fact about the nature of computation itself.
 
+---
+
 [^1]: The second half—every provable statement is true—is called *soundness*, and we definitely want it. An unsound system proves false things, which is useless. The first half—every true statement is provable—is called *completeness*. Gödel showed completeness is impossible.
 
 [^2]: Why can we enumerate theorems? A proof is a finite sequence of steps, each following mechanically from axioms or previous steps. Enumerate all finite sequences, check each for validity, output the conclusion of valid proofs. Every provable statement eventually appears.
 
 [^3]: The system must also be *consistent*: it never proves both $P$ and $\neg P$. An inconsistent system can prove anything (including contradictions), making "completeness" trivially achievable but meaningless.
-
----
-
-*This post was written in collaboration with [Claude](https://claude.ai) (Opus 4.5).*

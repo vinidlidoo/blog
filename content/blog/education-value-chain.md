@@ -123,8 +123,6 @@ Future posts will pick a stage, consider these actors in context, and dig into t
 
 This is a starting framework. It may be missing a piece or two, or the boundaries may shift as I dig deeper. If you see a gap, [let me know](https://vinidlidoo.github.io/contact/).
 
-[^1]: The closest parallels are the learn-practice-certify progression common in professional certification and the seven-step transformative learning cycle from [De Witt et al. (2023)](https://journals.sagepub.com/doi/10.1177/15413446231220317).
-
 ---
 
-*This post was written in collaboration with [Claude](https://claude.ai) (Opus 4.5).*
+[^1]: The closest parallels are the learn-practice-certify progression common in professional certification and the seven-step transformative learning cycle from [De Witt et al. (2023)](https://journals.sagepub.com/doi/10.1177/15413446231220317).

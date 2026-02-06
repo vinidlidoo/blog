@@ -146,5 +146,3 @@ The paradox dissolves because $R$ can't be constructed in the first place.
 Russell's paradox shows that naive set theory—where any property defines a set—is inconsistent. The fix isn't a patch; it's a complete rebuild. Modern mathematics constructs sets in stages, from the ground up, and this staged construction makes the paradoxical set impossible to form.
 
 ---
-
-*This post was written in collaboration with [Claude](https://claude.ai) (Opus 4.5).*

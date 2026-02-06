@@ -164,12 +164,10 @@ And the payoff isn't even that good. A binary trie needs only 1 sibling hash per
 
 </details>
 
+---
+
 [^1]: Other tokens like USDC are tracked in contract storage.
 
 [^2]: keccak256 is Ethereum's hash function; the pre-standardization version of what became SHA-3. Hashing prevents attackers from crafting addresses that create pathologically unbalanced branches.
 
 [^3]: EIP-2929 distinguishes cold reads (first access, 2100 gas) from warm reads (subsequent, 100 gas). Using cold cost here underestimates total accesses.
-
----
-
-*This post was written in collaboration with [Claude](https://claude.ai) (Opus 4.5).*

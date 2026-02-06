@@ -105,8 +105,6 @@ ECDH gives you secrecy: two parties derive a shared key over a public channel, t
 
 This shows how the abstract group theory from Part 1 isn't just elegant mathematics. It's the foundation securing your encrypted messages, your cryptocurrency transactions, and much of the internet's infrastructure.
 
-[^1]: This works elegantly for two parties. Group chats are harder: the naive approach requires $\binom{N}{2} = \frac{N(N-1)}{2}$ pairwise key exchanges for $N$ participants. Real messaging apps use more sophisticated protocols to avoid this quadratic scaling.
-
 ---
 
-*This post was written in collaboration with [Claude](https://claude.ai) (Opus 4.5).*
+[^1]: This works elegantly for two parties. Group chats are harder: the naive approach requires $\binom{N}{2} = \frac{N(N-1)}{2}$ pairwise key exchanges for $N$ participants. Real messaging apps use more sophisticated protocols to avoid this quadratic scaling.

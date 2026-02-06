@@ -185,12 +185,10 @@ Parquet won the columnar analytics category so thoroughly that innovation moved 
 
 The underlying principle is the access latency asymmetry: whether it's disk seeks or HTTP round-trips, the cost of *starting* a read dominates the cost of *continuing* it. Organize your data so the bytes you need are contiguous, and you win.
 
+---
+
 [^1]: A simplification: files can be fragmented across non-contiguous disk blocks, and filesystems add abstraction layers. The mental model still holds for understanding layout trade-offs.
 
 [^2]: SSDs eliminate mechanical seeks and are more forgiving, but the principle holds: few large sequential reads beat many small reads.
 
 [^3]: Parquet doesn't sort your data. You must sort before writing. The primary sort key benefits most; secondary keys benefit less, and only if low-cardinality.
-
----
-
-*This post was written in collaboration with [Claude](https://claude.ai) (Opus 4.5).*

@@ -85,5 +85,3 @@ AI is widening the gap between how we learn and how we could learn. Andrej Karpa
 Learn Your Way helps learners; their paper includes results to prove it. But the bigger opportunity isn't better augmentation. It's prompt-first: conversation as the path, study notes shaped by each learner's journey.
 
 ---
-
-*This post was written in collaboration with [Claude](https://claude.ai) (Opus 4.5).*

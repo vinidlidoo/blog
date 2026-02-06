@@ -153,5 +153,3 @@ The construction is elegant: pick a secret number $n$, multiply a known point $P
 </details>
 
 ---
-
-*This post was written in collaboration with [Claude](https://claude.ai) (Opus 4.5).*

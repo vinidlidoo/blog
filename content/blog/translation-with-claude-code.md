@@ -100,8 +100,6 @@ This changes the game. The translations aren't perfect, but darn close. They cos
 
 The system took a few hours to build. Now I just write in English, commit, and run `/sync-translations`. This post was translated using it—if you read the French or Japanese version, you're seeing the result. If you want to build something similar, follow the links throughout this post or explore the [full repo](https://github.com/vinidlidoo/vinidlidoo.github.io/tree/main/.claude).
 
-[^1]: The script uses different labels internally: `NEEDS TRANSLATION`, `NEEDS SYNC`, and `UP TO DATE`.
-
 ---
 
-*This post was written in collaboration with [Claude](https://claude.ai) (Opus 4.5).*
+[^1]: The script uses different labels internally: `NEEDS TRANSLATION`, `NEEDS SYNC`, and `UP TO DATE`.

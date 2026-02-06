@@ -166,10 +166,8 @@ But why should such a simple machine matter? [Part 2](@/blog/turing-completeness
 <blockquote class="twitter-tweet" data-theme="dark" data-align="center"><p lang="en" dir="ltr">Yann is just plain incorrect here, he's confusing general intelligence with universal intelligence.<br><br>Brains are the most exquisite and complex phenomena we know of in the universe (so far), and they are in fact extremely general.<br><br>Obviously one can't circumvent the no free lunch… <a href="https://t.co/RjeqlaP7GO">https://t.co/RjeqlaP7GO</a></p>&mdash; Demis Hassabis (@demishassabis) <a href="https://twitter.com/demishassabis/status/2003097405026193809?ref_src=twsrc%5Etfw">December 22, 2025</a></blockquote>
 <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 
+---
+
 [^1]: [Full tweet at the end of the post](#tweet)
 
 [^2]: With one caveat: the machine might run forever without halting. More on that in Part 2.
-
----
-
-*This post was written in collaboration with [Claude](https://claude.ai) (Opus 4.5).*
