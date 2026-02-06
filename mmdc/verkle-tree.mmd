@@ -1,0 +1,23 @@
+flowchart TD
+    Root["Root"]
+
+    Root --> Inner4["Inner node<br/>Prefix: 4"]
+    Root --> DOG["Key: 66666<br/>Value: DOG"]
+    Root --> InnerB["Inner node<br/>Prefix: b"]
+
+    Inner4 --> CAT["Key: 420<br/>Value: CAT"]
+    Inner4 --> Inner4c["Inner node<br/>Prefix: 4c"]
+
+    InnerB --> AIRPLANE["Key: bb2<br/>Value: AIRPLANE"]
+    InnerB --> SHEEP["Key: baaa<br/>Value: SHEEP"]
+
+    Inner4c --> SPOON["Key: 4cc<br/>Value: SPOON"]
+    Inner4c --> HORSE["Key: 4ce<br/>Value: HORSE"]
+
+    classDef root fill:#4a9ad9,stroke:#2c6fa0,color:#fff
+    classDef inner fill:#f5c842,stroke:#c9a020,color:#333
+    classDef leaf fill:#b8e6b8,stroke:#6ab06a,color:#333
+
+    class Root root
+    class Inner4,InnerB,Inner4c inner
+    class DOG,CAT,AIRPLANE,SHEEP,SPOON,HORSE leaf

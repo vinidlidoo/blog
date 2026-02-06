@@ -1,0 +1,76 @@
+/* Style details blocks in post content only, not header dropdowns */
+article details {
+    border-left: 4px solid var(--primary-color);
+    background-color: var(--bg-1);
+    padding: 0.75rem 1rem;
+    margin: 1rem 0;
+    border-radius: 4px;
+}
+
+article details summary {
+    cursor: pointer;
+    font-weight: 500;
+}
+
+article details[open] summary {
+    margin-bottom: 0.5rem;
+}
+
+/* Smaller footnote text */
+.footnotes-list {
+    font-size: 0.85rem;
+}
+
+.footnotes-list li p {
+    margin-bottom: 0;
+}
+
+.credit {
+    font-size: 0.85rem;
+}
+
+/* Fix language switcher double-tap issue on iOS */
+/* On touch devices, disable hover and rely on native <details> toggle */
+@media (pointer: coarse) {
+    .dropdown:hover .dropdown-content,
+    .dropdown:focus-within .dropdown-content {
+        display: none !important;
+    }
+
+    .dropdown[open] .dropdown-content {
+        display: block !important;
+    }
+}
+
+/* Centered content */
+.centered {
+    text-align: center;
+}
+
+/* Responsive tables: font and padding scale with viewport */
+.table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.table-wrapper th,
+.table-wrapper td {
+    font-size: clamp(0.75rem, 2.5vw + 0.3rem, 1rem);
+    padding: clamp(0.25rem, 1vw, 0.75rem);
+}
+
+.table-wide td {
+    min-width: 8rem;
+    white-space: nowrap
+}
+
+/* Space between headings and immediately following images */
+h1 + img, h2 + img, h3 + img, h4 + img, h5 + img, h6 + img {
+    margin-top: 1rem;
+}
+
+/* Narrower images after subheadings (e.g., solution sections) */
+h3 + img {
+    max-width: 80%;
+    display: block;
+}
