@@ -41,6 +41,9 @@ title = "vinidlidoo"
 description = "個人ブログ"
 taxonomies = [{ name = "tags" }]
 
+[markdown]
+bottom_footnotes = true
+
 [markdown.highlighting]
 style = "class"
 theme = "catppuccin-frappe"
