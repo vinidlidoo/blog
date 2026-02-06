@@ -107,5 +107,3 @@ Cette frontière ne dépend pas de la technologie. Ordinateurs plus rapides, ord
 [^3]: Le système doit aussi être *consistant* : il ne prouve jamais à la fois $P$ et $\neg P$. Un système inconsistant peut prouver n'importe quoi (y compris des contradictions), rendant la « complétude » trivialement atteignable mais dénuée de sens.
 
 ---
-
-*Cet article a été écrit en collaboration avec [Claude](https://claude.ai) (Opus 4.5).*

@@ -104,5 +104,3 @@ Le système a pris quelques heures à construire. Maintenant j'écris en anglais
 [^1]: Le script utilise des labels différents en interne : `NEEDS TRANSLATION`, `NEEDS SYNC` et `UP TO DATE`.
 
 ---
-
-*Cet article a été écrit en collaboration avec [Claude](https://claude.ai) (Opus 4.5).*

@@ -171,5 +171,3 @@ Mais pourquoi une machine si simple devrait-elle nous intéresser ? [La partie 2
 [^2]: Avec un bémol : la machine pourrait tourner indéfiniment sans jamais s'arrêter. On en reparlera dans la partie 2.
 
 ---
-
-*Cet article a été écrit en collaboration avec [Claude](https://claude.ai) (Opus 4.5).*

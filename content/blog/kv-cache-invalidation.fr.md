@@ -161,5 +161,3 @@ La sortie à la position $i$ prédit le prochain token $t_{i+1}$, en utilisant u
 [^2]: Le diagramme montre l'architecture encodeur-décodeur originale. Les LLM modernes comme GPT et Claude sont *décodeur uniquement* : ils omettent le côté gauche (encodeur) et la « Multi-Head Attention » du milieu qui prête attention aux sorties de l'encodeur.
 
 ---
-
-*Cet article a été écrit en collaboration avec [Claude](https://claude.ai) (Opus 4.5).*

@@ -127,5 +127,3 @@ stylesheets = ["css/details.css"]
 [^1]: 最も近い類似例は、専門資格でよく見られる「学ぶ・実践する・認定される」の進行と、[De Witt et al. (2023)](https://journals.sagepub.com/doi/10.1177/15413446231220317)による7段階の変容的学習サイクルだ。
 
 ---
-
-*この記事は[Claude](https://claude.ai)（Opus 4.5）と協力して書いた。*

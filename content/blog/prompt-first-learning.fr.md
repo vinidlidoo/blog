@@ -86,5 +86,3 @@ L'IA creuse l'écart entre comment on apprend et comment on pourrait apprendre. 
 Learn Your Way aide à apprendre ; leur article scientifique inclut des résultats qui le prouvent. Mais la grande opportunité n'est pas une meilleure augmentation. C'est le prompt-first : la conversation comme voie principale, des notes de révision façonnées par le parcours de chacun.
 
 ---
-
-*Cet article a été écrit en collaboration avec [Claude](https://claude.ai) (Opus 4.5).*

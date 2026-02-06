@@ -191,5 +191,3 @@ Le principe sous-jacent est l'asymétrie de latence d'accès : que ce soit les s
 [^3]: Parquet ne trie pas les données. Il faut trier avant l'écriture. La clé de tri principale bénéficie le plus ; les clés secondaires bénéficient moins, et seulement si elles sont de faible cardinalité.
 
 ---
-
-*Cet article a été écrit en collaboration avec [Claude](https://claude.ai) (Opus 4.5).*

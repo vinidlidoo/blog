@@ -146,5 +146,3 @@ Le paradoxe se dissout parce que $R$ ne peut tout simplement pas être construit
 Le paradoxe de Russell montre que la théorie naïve des ensembles — où toute propriété définit un ensemble — est inconsistante. La solution n'est pas un correctif : c'est une reconstruction complète. Les mathématiques modernes construisent les ensembles par étapes, depuis la base, et cette construction par étapes rend l'ensemble paradoxal impossible à former.
 
 ---
-
-*Cet article a été écrit en collaboration avec [Claude](https://claude.ai) (Opus 4.5).*

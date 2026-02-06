@@ -128,5 +128,3 @@ C'est un cadre de départ. Il manque peut-être une ou deux pièces, et les cont
 [^1]: Les parallèles les plus proches sont la progression apprendre-pratiquer-certifier courante en certification professionnelle et le cycle d'apprentissage transformatif en sept étapes de [De Witt et al. (2023)](https://journals.sagepub.com/doi/10.1177/15413446231220317).
 
 ---
-
-*Cet article a été écrit en collaboration avec [Claude](https://claude.ai) (Opus 4.5).*

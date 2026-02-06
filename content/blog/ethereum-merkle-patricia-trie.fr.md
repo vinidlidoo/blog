@@ -171,5 +171,3 @@ Et le gain n'est même pas si intéressant. Un trie binaire ne nécessite qu'un 
 [^3]: EIP-2929 distingue les lectures cold (premier accès, 2100 gas) des lectures warm (accès suivants, 100 gas). Utiliser le coût cold ici sous-estime le nombre total d'accès.
 
 ---
-
-*Cet article a été écrit en collaboration avec [Claude](https://claude.ai) (Opus 4.5).*

@@ -171,5 +171,3 @@ $$\lbrace x : x > 5 \rbrace \quad \text{vs} \quad \lbrace w : M \text{が} w \te
 [^2]: 1つ注意点がある。マシンは停止せずに永遠に動き続ける可能性がある。これについては第2回で詳しく述べる。
 
 ---
-
-*この記事は[Claude](https://claude.ai)（Opus 4.5）と協力して執筆しました。*

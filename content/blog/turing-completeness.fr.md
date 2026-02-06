@@ -71,5 +71,3 @@ La Turing-complétude nous dit ce qui est *possible*. Mais elle ne nous dit pas 
 Dans la [Partie 3](@/blog/limits-of-computation.md), nous ouvrirons le plafond et regarderons au-dessus. Certains problèmes sont *démontrablement* insolubles : pas simplement difficiles, mais impossibles pour toute machine de Turing, tout ordinateur, tout cerveau, toute IA.
 
 ---
-
-*Cet article a été écrit en collaboration avec [Claude](https://claude.ai) (Opus 4.5).*

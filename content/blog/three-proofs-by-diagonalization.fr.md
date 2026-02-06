@@ -140,5 +140,3 @@ Les trois preuves partagent le même squelette :
 La diagonalisation révèle que certaines collections sont trop grandes pour être capturées par une liste ou un ensemble quelconque. C'est une limite fondamentale inscrite dans la structure même des mathématiques.
 
 ---
-
-*Cet article a été écrit en collaboration avec [Claude](https://claude.ai) (Opus 4.5).*

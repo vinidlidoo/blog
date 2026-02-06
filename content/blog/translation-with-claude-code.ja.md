@@ -104,5 +104,3 @@ diffの出力があれば、英語のソースが分岐しており、翻訳の�
 [^1]: スクリプトは内部で異なるラベルを使用している。`NEEDS TRANSLATION`、`NEEDS SYNC`、`UP TO DATE`。
 
 ---
-
-*この記事は[Claude](https://claude.ai)（Opus 4.5）と協力して書きました。*

@@ -108,5 +108,3 @@ Cela montre comment la théorie abstraite des groupes de la 1re partie n'est pas
 [^1]: Cela fonctionne bien pour deux parties. Les conversations de groupe sont plus complexes : l'approche naïve nécessite $\binom{N}{2} = \frac{N(N-1)}{2}$ échanges de clés pour $N$ participants. Les vraies applications de messagerie utilisent des protocoles plus sophistiqués pour éviter cette croissance quadratique.
 
 ---
-
-*Cet article a été écrit en collaboration avec [Claude](https://claude.ai) (Opus 4.5).*

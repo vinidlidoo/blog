@@ -161,5 +161,3 @@ $$P(t_{i+1} | t_1, \dots, t_i) = \text{softmax}(\text{logits}_i)$$
 [^2]: この図はオリジナルのエンコーダ・デコーダアーキテクチャを示している。GPTやClaudeのような現代のLLMは*デコーダのみ*：左側（エンコーダ）とエンコーダ出力に対するアテンションを行う中央の「Multi-Head Attention」を省略している。
 
 ---
-
-*この記事は[Claude](https://claude.ai)（Opus 4.5）と協力して書きました。*
