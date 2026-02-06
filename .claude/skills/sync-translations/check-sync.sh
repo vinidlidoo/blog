@@ -13,7 +13,7 @@ set -e
 BLOG_DIR="content/blog"
 
 # Parse languages from config.toml (looks for [languages.XX] sections)
-LANGUAGES=$(grep -E '^\[languages\.' config.toml 2>/dev/null | sed 's/\[languages\.\(.*\)\]/\1/' | tr '\n' ' ')
+LANGUAGES=$(grep -E '^\[languages\.[a-z]+\]$' config.toml 2>/dev/null | sed 's/\[languages\.\(.*\)\]/\1/' | tr '\n' ' ')
 if [[ -z "$LANGUAGES" ]]; then
     echo "Error: No languages found in config.toml"
     exit 1
@@ -91,7 +91,7 @@ for en_file in "$BLOG_DIR"/*.md; do
         # Report if translation doesn't exist
         if [[ ! -f "$trans_file" ]]; then
             echo -e "${BLUE}[NEEDS TRANSLATION]${NC} $en_file → $lang"
-            ((needs_translation++))
+            needs_translation=$((needs_translation + 1))
             continue
         fi
 
@@ -112,9 +112,9 @@ for en_file in "$BLOG_DIR"/*.md; do
             echo "  Changes:"
             git diff "$baseline_commit"..HEAD --stat -- "$en_file" | sed 's/^/    /'
             echo ""
-            ((needs_sync++))
+            needs_sync=$((needs_sync + 1))
         else
-            ((up_to_date++))
+            up_to_date=$((up_to_date + 1))
         fi
     done
 done
