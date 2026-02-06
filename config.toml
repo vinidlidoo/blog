@@ -9,9 +9,16 @@ minify_html = true
 generate_feeds = true
 feed_filenames = ["atom.xml"]
 
-build_search_index = false
+build_search_index = true
 
 taxonomies = [{ name = "tags" }]
+
+[search]
+index_format = "elasticlunr_json"
+include_title = true
+include_description = true
+include_path = true
+include_content = true
 
 [link_checker]
 skip_prefixes = ["https://journals.sagepub.com/"]
@@ -19,7 +26,15 @@ skip_prefixes = ["https://journals.sagepub.com/"]
 [languages.fr]
 title = "vinidlidoo"
 description = "Un blog personnel"
+build_search_index = true
 taxonomies = [{ name = "tags" }]
+
+[languages.fr.search]
+index_format = "elasticlunr_json"
+include_title = true
+include_description = true
+include_path = true
+include_content = true
 
 [languages.ja]
 title = "vinidlidoo"
