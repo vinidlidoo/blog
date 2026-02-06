@@ -72,8 +72,6 @@ git diff "$baseline"..HEAD -- "kv-cache-invalidation.md"
 
 Any diff output means the English source diverged and the translation needs syncing.
 
-[^1]: The script uses different labels internally: `NEEDS TRANSLATION`, `NEEDS SYNC`, and `UP TO DATE`.
-
 ## Drafter and Editor
 
 The main agent drafts translations, writes them to disk, then spawns a separate [editor subagent](https://github.com/vinidlidoo/vinidlidoo.github.io/blob/main/.claude/agents/translation-editor.md) to review them. The editor starts with a clean context—it sees only the English source, the draft translation, and a shared learnings file (more on that below). It checks for naturalness (does this sound translated or native?), idiom adaptation (were English expressions translated by meaning, not literally?), technical terminology (standard terms in the target language?), and voice (does it still sound like me?).
@@ -101,6 +99,8 @@ The alternatives weren't great. Manual translation would take 3-4 hours per post
 This changes the game. The translations aren't perfect, but darn close. They cost me nothing but a minute of waiting. I wouldn't have bothered translating this blog without that option available to me. I suspect we'll see a lot more multilingual content online in the months to come.
 
 The system took a few hours to build. Now I just write in English, commit, and run `/sync-translations`. This post was translated using it—if you read the French or Japanese version, you're seeing the result. If you want to build something similar, follow the links throughout this post or explore the [full repo](https://github.com/vinidlidoo/vinidlidoo.github.io/tree/main/.claude).
+
+[^1]: The script uses different labels internally: `NEEDS TRANSLATION`, `NEEDS SYNC`, and `UP TO DATE`.
 
 ---
 

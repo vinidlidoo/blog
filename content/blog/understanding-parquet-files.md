@@ -52,9 +52,6 @@ The same principle applies to cloud object storage like S3. AWS's disks still ha
 | S3 | ~100ms (HTTP round-trip) | 100+ MB/s | Large byte ranges per request; parallelize across chunks |
 {% end %}
 
-[^1]: A simplification: files can be fragmented across non-contiguous disk blocks, and filesystems add abstraction layers. The mental model still holds for understanding layout trade-offs.
-[^2]: SSDs eliminate mechanical seeks and are more forgiving, but the principle holds: few large sequential reads beat many small reads.
-
 ## Row vs Column Orientation
 
 Analytics data is typically tabular: rows and columns. When you serialize a table into a byte sequence, there are two natural choices. Consider a simple employee table:
@@ -138,8 +135,6 @@ These techniques are applied at the page level within each column chunk. Each ch
 
 There are many other techniques (bit packing, various compression codecs), but these illustrate the core idea: **grouping values by column exposes patterns that compress well**.
 
-[^3]: Parquet doesn't sort your data. You must sort before writing. The primary sort key benefits most; secondary keys benefit less, and only if low-cardinality.
-
 ### 3. Predicate Pushdown
 
 Predicate pushdown lets you skip entire row groups without reading them.
@@ -189,6 +184,12 @@ Many systems use both. Postgres for the live app, Parquet files (or a columnar w
 Parquet won the columnar analytics category so thoroughly that innovation moved to adjacent spaces: Arrow for in-memory processing, lakehouses (Delta Lake, Iceberg, Hudi) for transactions and appends on top of immutable files.
 
 The underlying principle is the access latency asymmetry: whether it's disk seeks or HTTP round-trips, the cost of *starting* a read dominates the cost of *continuing* it. Organize your data so the bytes you need are contiguous, and you win.
+
+[^1]: A simplification: files can be fragmented across non-contiguous disk blocks, and filesystems add abstraction layers. The mental model still holds for understanding layout trade-offs.
+
+[^2]: SSDs eliminate mechanical seeks and are more forgiving, but the principle holds: few large sequential reads beat many small reads.
+
+[^3]: Parquet doesn't sort your data. You must sort before writing. The primary sort key benefits most; secondary keys benefit less, and only if low-cardinality.
 
 ---
 

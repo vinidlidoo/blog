@@ -30,8 +30,6 @@ There are two account types. **Externally owned accounts** (EOAs) are controlled
 
 Contracts separate storage from code. Storage (token balances, ownership records, configuration) lives in its own key-value store, nested within the world state via `storageRoot`. Code is stored on-chain but outside the world state, referenced by `codeHash`. We'll revisit this nested storage when we discuss Merkle proofs.
 
-[^1]: Other tokens like USDC are tracked in contract storage.
-
 ## Why a Tree?
 
 If you were building this at your typical tech company, you'd probably use a *flat key-value mapping*: address as the key, account data as the value. Lookups are fast, updates are straightforward, and the tooling is mature. Why does Ethereum need anything more complex?
@@ -61,8 +59,6 @@ We've established that we have a key-value store (addresses → accounts) to org
 <img src="/img/trie-structure.webp" alt="A hexary trie where hashed addresses become paths: the root branches on hex digits, and following the digits of a hashed address leads to the account data at the leaves. An extension node compresses a chain of single-child branches into one node (the Patricia optimization).">
 
 Ethereum uses a **hexary** trie: one child per hex digit (0-F), giving a maximum **width** of 16. The **depth** depends on key length. Before insertion, each address is hashed with keccak256, producing a 32-byte key (64 hex digits).[^2] Contract storage keys are hashed the same way. Both tries have a maximum depth of 64. The **Patricia** variant used by Ethereum compresses the trie by collapsing branch nodes with only one child into an extension node (purple in the figure above).
-
-[^2]: keccak256 is Ethereum's hash function; the pre-standardization version of what became SHA-3. Hashing prevents attackers from crafting addresses that create pathologically unbalanced branches.
 
 ## Merkle Patricia Tries
 
@@ -149,8 +145,6 @@ The problem is proof size. Each proof requires sibling hashes at every level: 15
 
 So proof size is a binding constraint. Shrink the proofs, and stateless validation becomes viable.
 
-[^3]: EIP-2929 distinguishes cold reads (first access, 2100 gas) from warm reads (subsequent, 100 gas). Using cold cost here underestimates total accesses.
-
 ## What's Next
 
 Enter Verkle trees, the leading proposal for the Hegota network upgrade. They replace sibling hashes with **polynomial commitments**, shrinking proofs from several KB to less than 150 bytes each.
@@ -169,6 +163,12 @@ You could by reducing tree width, but it wouldn't be worth it. Each level of tri
 And the payoff isn't even that good. A binary trie needs only 1 sibling hash per level instead of 15, but it's 4× deeper (since $\log_2 n = 4 \log_{16} n$). Net effect: 15× fewer siblings per level, 4× more levels, so proofs shrink by roughly 15/4 ≈ 4×. If hexary proofs run \~10 MB per block, binary gets you to \~2.5 MB... still a significant network overhead.
 
 </details>
+
+[^1]: Other tokens like USDC are tracked in contract storage.
+
+[^2]: keccak256 is Ethereum's hash function; the pre-standardization version of what became SHA-3. Hashing prevents attackers from crafting addresses that create pathologically unbalanced branches.
+
+[^3]: EIP-2929 distinguishes cold reads (first access, 2100 gas) from warm reads (subsequent, 100 gas). Using cold cost here underestimates total accesses.
 
 ---
 

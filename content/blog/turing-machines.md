@@ -16,8 +16,6 @@ Last month, DeepMind CEO Demis Hassabis [fired back](https://twitter.com/demisha
 
 I've heard the expressions "Turing machine" and "Turing complete" a hundred times over the years, but I have to admit I never truly understood what they meant. This is my attempt at a short, dense, yet accessible explanation. Part 1 covers what a Turing machine actually *is*. [Part 2](@/blog/turing-completeness.md) will explain what "Turing complete" means and return to Demis's claim.
 
-[^1]: [Full tweet at the end of the post](#tweet)
-
 ## Historical Context
 
 In the 1930s, mathematicians were trying to formalize what "computation" actually means. Before electronic computers existed, a "computer" was literally a human being performing calculations by hand, following rules and writing intermediate results on paper.
@@ -156,8 +154,6 @@ Both define sets via a membership criterion. The difference: set-builder notatio
 
 Our even-1s machine has six transition rules, yet it accepts infinitely many strings: $\epsilon$, `0`, `00`, `11`, `0000`, `1111`, `0110`... You could never list them all, but hand me any string and I can run the machine to tell you if it's in the set.
 
-[^2]: With one caveat: the machine might run forever without halting. More on that in Part 2.
-
 ## What's Next
 
 We've seen what a Turing machine is: a minimal abstraction for mechanical computation. Read, write, move, change state.
@@ -169,6 +165,10 @@ But why should such a simple machine matter? [Part 2](@/blog/turing-completeness
 <a id="tweet"></a>
 <blockquote class="twitter-tweet" data-theme="dark" data-align="center"><p lang="en" dir="ltr">Yann is just plain incorrect here, he's confusing general intelligence with universal intelligence.<br><br>Brains are the most exquisite and complex phenomena we know of in the universe (so far), and they are in fact extremely general.<br><br>Obviously one can't circumvent the no free lunch… <a href="https://t.co/RjeqlaP7GO">https://t.co/RjeqlaP7GO</a></p>&mdash; Demis Hassabis (@demishassabis) <a href="https://twitter.com/demishassabis/status/2003097405026193809?ref_src=twsrc%5Etfw">December 22, 2025</a></blockquote>
 <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+[^1]: [Full tweet at the end of the post](#tweet)
+
+[^2]: With one caveat: the machine might run forever without halting. More on that in Part 2.
 
 ---
 

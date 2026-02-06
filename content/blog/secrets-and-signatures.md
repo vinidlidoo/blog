@@ -48,7 +48,6 @@ Why is this secure? An eavesdropper sees $A$, $B$, and $G$, but computing $abG$ 
 What happens next: Alice and Bob hash the x-coordinate of $S$ to derive a symmetric key, then use it with a symmetric cipher like AES (the standard for same-key encryption). ECDH doesn't encrypt anything itself; it bootstraps the shared key that makes symmetric encryption possible.[^1]
 
 If you've used PGP or GPG with a modern key, you've used this. The hybrid structure is the same: ECDH establishes the session key, AES encrypts the message.
-[^1]: This works elegantly for two parties. Group chats are harder: the naive approach requires $\binom{N}{2} = \frac{N(N-1)}{2}$ pairwise key exchanges for $N$ participants. Real messaging apps use more sophisticated protocols to avoid this quadratic scaling.
 
 ## ECDSA: Digital Signatures
 
@@ -105,6 +104,8 @@ One elliptic curve, one hard problem, two protocols.
 ECDH gives you secrecy: two parties derive a shared key over a public channel, then use it for symmetric encryption. ECDSA gives you authenticity: prove you authorized something without revealing your private key.
 
 This shows how the abstract group theory from Part 1 isn't just elegant mathematics. It's the foundation securing your encrypted messages, your cryptocurrency transactions, and much of the internet's infrastructure.
+
+[^1]: This works elegantly for two parties. Group chats are harder: the naive approach requires $\binom{N}{2} = \frac{N(N-1)}{2}$ pairwise key exchanges for $N$ participants. Real messaging apps use more sophisticated protocols to avoid this quadratic scaling.
 
 ---
 
