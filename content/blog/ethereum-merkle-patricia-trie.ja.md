@@ -110,7 +110,7 @@ $$H_d = \text{hash}(v)$$
 
 $$H_{i-1} = \text{hash}(h_{i,0} \| h_{i,1} \| \cdots \| h_{i,15})$$
 
-$$\text{where } h_{i,j} = \left\lbrace \begin{array}{ll} H_i & \text{if } j = k_{i-1} \\\ S_i[j] & \text{otherwise} \end{array} \right.$$
+$$\text{ただし } h_{i,j} = \left\lbrace \begin{array}{ll} H_i & j = k_{i-1} \text{ のとき} \\\ S_i[j] & \text{それ以外} \end{array} \right.$$
 
 $H_0$ がステートルートと一致すれば、証明は有効だ。証明者は完全なアカウントを提供しなければならない（いずれかのフィールドが間違っていればリーフハッシュが変わり、証明は失敗する）。しかし検証者は状態の残りを見ることはない。パスに沿った兄弟ハッシュだけだ。
 

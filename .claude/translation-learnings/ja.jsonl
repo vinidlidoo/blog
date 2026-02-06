@@ -176,3 +176,4 @@
 {"type":"style","rule":"Avoid 僕. Use 私 when first-person is absolutely necessary, but prefer omitting pronouns entirely. Japanese naturally omits pronouns when subject is clear from context.","avoid":"僕 and overuse of 私/あなた"}
 {"type":"style","rule":"When emphasis on 'you' is needed (contrasting with generic readers), use *あなた* with italics sparingly."}
 {"type":"style","rule":"When listing technical items inline, use 「〜向けだ」 rather than 「〜に使う」 for variety."}
+{"type":"style","rule":"Translate text labels inside KaTeX math blocks (where→ただし, if X→X のとき, otherwise→それ以外). Math variable names stay as-is but natural-language words must be in the target language.","en":"KaTeX text labels"}
