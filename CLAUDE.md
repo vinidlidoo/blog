@@ -75,6 +75,7 @@ git submodule update --remote themes/tabi
 - Homepage uses `[extra] section_path = "blog/_index.md"` to show recent posts
 - Taxonomies must be declared in `config.toml` before use in posts
 - `social_media_card` in frontmatter must be a local file path (not external URLs)
+- **Hero/banner images** must be added in TWO places: `social_media_card` in frontmatter AND as the first element in the post body using markdown image syntax (`![alt](/img/banner.webp)`)
 
 ## Syntax Highlighting (Zola 0.22+)
 

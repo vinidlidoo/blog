@@ -175,16 +175,16 @@ rm static/img/<name>.png
 
 This typically achieves ~8x size reduction (e.g., 650 KB → 80 KB) with no visible quality loss on diagram-style images.
 
-Embed in the post:
+Embed in the post using **markdown image syntax** (not `<img>` tags — the tabi theme renders them differently, and markdown images integrate better with the content layout):
 
 ```markdown
-<img src="/img/<diagram-name>.webp" alt="Description of diagram">
+![Description of diagram](/img/<diagram-name>.webp)
 ```
 
 For SVGs (from Mermaid directly), no compression needed — embed as-is:
 
 ```markdown
-<img src="/img/<diagram-name>.svg" alt="Description of diagram">
+![Description of diagram](/img/<diagram-name>.svg)
 ```
 
 ## Alternative: Manual ASCII + Gemini Image Generation

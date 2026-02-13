@@ -60,7 +60,7 @@ $$L_j(x) = \prod_{\substack{m=0 \\\ m \neq j}}^{n-1} \frac{x - m}{j - m}$$
 
 $L_j(j) = 1$ and $L_j(m) = 0$ for all $m \neq j$. The full polynomial is their weighted sum:
 
-$$P(x) = \sum_{i=0}^{n-1} v_i \, L_i(x)$$
+$$P(x) = \sum_{i=0}^{n-1} v_i L_i(x)$$
 
 For example, with 4 points, the selector for position 0 is:
 
@@ -74,7 +74,7 @@ So far this is just algebra. We have a polynomial that encodes the children (Ali
 
 ## One Curve Point for an Entire Polynomial
 
-All arithmetic from here on (the polynomial's coefficients, its evaluations, the Lagrange interpolation, and the elliptic curve's scalars) happens over the same [**finite field**](@/blog/math-behind-private-key.md#fields-numbers-with-arithmetic) $\mathbb{F}_p$. 
+All arithmetic from here on (the polynomial's coefficients, its evaluations, the elliptic curve's scalars) happens over the same [**finite field**](@/blog/math-behind-private-key.md#fields-numbers-with-arithmetic) $\mathbb{F}_p$.
 
 Suppose there's a secret scalar $s$ that nobody knows, but everyone has access to the following public curve points:
 
@@ -139,7 +139,7 @@ The verifier knows every variable in this equation: $C$ and $\pi$ came from the 
 Let's trace a complete proof through the tree. Alice wants to verify her ETH balance. A Verkle tree has width 256 and depth \~3 for Ethereum's state.[^6] Her hashed address maps to a path: root $\to$ $C_1$ $\to$ $C_2$ $\to$ leaf $v$. The prover sends Alice the leaf value $v$, the intermediate commitments $C_1$ and $C_2$, and an opening proof $\pi_i$ at each level. Alice verifies bottom-up:
 
 1. Does $C_2$ open at position $k_2$ to $v$? Check $\pi_2$.
-2. Does $C_1$ open at position $k_1$ to $C_2$? Check $\pi_1$.
+2. Does $C_1$ open at position $k_1$ to $C_2$?[^7] Check $\pi_1$.
 3. Does $C_0$ open at position $k_0$ to $C_1$? Check $\pi_0$.
 4. Does $C_0$ match the state root in the block header? Done.
 
@@ -193,5 +193,7 @@ Ethereum ran exactly this kind of ceremony for [EIP-4844](https://eips.ethereum.
 [^4]: If $P \neq Q$, then $D = P - Q$ is a non-zero polynomial of degree at most $d$, so it has at most $d$ roots in $\mathbb{F}_p$. For the commitments to collide, $s$ would have to be one of those $\leq d$ values out of $p$ total. That probability is at most $d/p$, which is negligible since $p \sim 2^{255}$ and $d = 255$.
 
 [^5]: Pairing-friendly curves have special structure that enables this. Not all elliptic curves support pairings. BLS12-381, used in Ethereum today, was designed specifically for efficient pairings.
+
+[^7]: Polynomial evaluations must be scalars, but $C_2$ and $C_1$ are curve points. Branch nodes handle this by mapping each child commitment to a field element (e.g., its serialized x-coordinate) before interpolating the polynomial. The same applies to step 3.
 
 [^6]: With 256 children per node, $256^3 \approx 16.7$ million and $256^4 \approx 4.3$ billion. Ethereum has roughly 250 million accounts plus contract storage slots, so depth 3-4 covers the current state.
