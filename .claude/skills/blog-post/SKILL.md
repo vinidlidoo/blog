@@ -1,23 +1,13 @@
 ---
 name: blog-post
-description: Write or edit blog posts for Vincent's Zola blog. Use when asked to edit an existing or create a new blog post, or when helping with blog content.
+description: Create blog post outlines and drafts for Vincent's Zola blog. Orchestrates agent teams for research, outline creation, and style review. Use when asked to create a new outline, write or edit a blog post, or help with blog content.
 ---
 
 # Blog Post Skill
 
-Write or edit blog posts matching Vincent's established style, tone, and complexity.
+Orchestrate blog post creation using agent teams. The primary workflow spins up parallel research agents, synthesizes their output into an outline, and runs a critique-revise loop before presenting to the user.
 
-## Before Writing
-
-Find the most recent English posts (exclude translations like `.fr.md`, `.ja.md`):
-
-```bash
-/bin/ls -t content/blog/*.md | rg -v '\.(fr|ja)\.md$' | rg -v '_index' | head -3
-```
-
-Read them to absorb the current style—they are your ground truth.
-
-For long/complex topics, propose splitting into multiple posts before writing.
+For long/complex topics, propose splitting into multiple posts before outlining.
 
 ## Workflows
 
@@ -25,41 +15,24 @@ For long/complex topics, propose splitting into multiple posts before writing.
 
 Use when: User provides a transcript (from Claude conversation) or a brief describing what they want to write about.
 
-**Steps:**
+**Steps:** Use agent teams (`TeamCreate`) to orchestrate the workflow. All teammates persist across phases (no respawning).
 
-1. **Absorb style** — Read 2-3 recent posts (see "Before Writing")
+1. **Create team and spin up research phase** — Create a team with `TeamCreate`, then spawn teammates in parallel:
+   - **Transcript researcher** — Use the `transcript-researcher` agent (`.claude/agents/transcript-researcher.md`). Reads source material, extracts key ideas, technical claims, and structural suggestions. Writes a structured brief to `drafts/briefs/<topic>-transcript-brief.md`. Skip if source material is short enough to fit in the outline writer's context.
+   - **Web researcher** — Spawn as an ad-hoc `general-purpose` Task agent with per-session instructions. Proactively researches the topic: finds relevant papers, blog posts, specs, and prior art. Also fetches any specific references provided by the user or found in source material. Writes findings to `drafts/briefs/<topic>-web-research.md`.
+   - **Style critic** — Use the `style-critic` agent (`.claude/agents/style-critic.md`). Reads recent posts (by recency and by tag) and the Style/Learnings sections of this skill. Internalizes patterns for the critique phase.
 
-2. **Draft outline** — Create outline in `drafts/` folder with:
-   - Working title and target audience
-   - Hook summary
-   - Numbered sections with **Main message** for each
-   - Key points/examples per section
-   - Planned diagrams, tables, or code blocks
+2. **Outline writing** — Spawn an ad-hoc `general-purpose` Task agent as the outline writer. Instruct it to read this skill file for style guidance, check memory files for series context (notation, scope boundaries from prior sessions), and synthesize all research briefs from `drafts/briefs/` into a draft outline in `drafts/outlines/`, following the outline template at `.claude/skills/blog-post/outline-template.md`.
 
-3. **First sub-agent review** — Spin up a Plan agent to critically review for:
-   - Technical accuracy (are claims correct? examples valid?)
-   - Pedagogical flow (concepts introduced before used? logical progression?)
-   - Gaps and missing connections
-   - Balance (benefits vs tradeoffs, not overselling)
+3. **Critique-revise loop** — The style critic (same agent from step 1) reviews the outline, the outline writer revises. Coordinate via `SendMessage`. Repeat once (two critique rounds max).
 
-   The agent should NOT read the source transcript—review the outline on its own merits.
+4. **Present to user** — Final outline with a summary of what the critics flagged and what was addressed. Shut down teammates.
 
-4. **Prioritize feedback** — Present reviewer feedback to user as a prioritized task list (use your judgment on priority). User decides what to implement.
-
-5. **Iterate with user** — Address selected feedback through back-and-forth. User may leave `<!-- FEEDBACK: ... -->` comments directly in the outline file.
-
-6. **Second sub-agent review** — Spin up another Plan agent, providing context:
-   - Summary of what first reviewer said
-   - What was implemented
-   - What was intentionally deferred (and why)
-
-   Focus: Do the changes work? Any new issues introduced? Ready for drafting?
-
-7. **Final outline** — Outline is approved when user is satisfied after second review.
+Note: For simple posts with short source material, the transcript researcher can be skipped, but the web researcher and style critic should always run.
 
 ### Workflow 2: Writing from Outline
 
-Use when: User has an approved outline in `drafts/` and wants the full post written.
+Use when: User has an approved outline in `drafts/outlines/` and wants the full post written.
 
 **Steps:**
 
@@ -93,7 +66,13 @@ Use when: User wants targeted changes to a published or draft post.
 
 ## After Writing
 
-If Vincent made style corrections or expressed preferences during the session, append them to the "Learnings" section at the bottom of this file. Keep entries concise (1-2 lines each).
+If Vincent made style corrections or expressed preferences during the session, append them to the "Learnings" section at the bottom of this file. Keep entries concise (1-2 lines each). All learnings are valid immediately.
+
+**Consolidation** happens separately, when the style-critic agent runs at the start of a new outline session. It reads both sections and:
+
+- Moves Learnings entries into the appropriate Style subsections (Voice, Structure, Formatting, etc.)
+- Combines related entries and removes duplicates with existing Style rules
+- Only removes a Learning if Vincent has explicitly contradicted it with a newer preference
 
 ## Style
 
@@ -114,7 +93,7 @@ If Vincent made style corrections or expressed preferences during the session, a
 - **Examples before definitions**: Build intuition first, then formalize
 - **Footnotes for asides**: Keep tangents out of the main flow
 - **Closing section**: "Takeaway", "Bottom Line", or "What's Next" (for series)
-- **Footer**: `*This post was written in collaboration with [Claude](https://claude.ai) (Opus 4.5).*`
+- **Footer**: Auto-generated by the site template. Do not add manually.
 
 ### Technical Content
 
@@ -169,7 +148,7 @@ katex = true  # only if using math
 
 ## Output
 
-- **Outlines** go to `drafts/topic-name.md`
+- **Outlines** go to `drafts/outlines/topic-name.md`
 - **Final posts** go to `content/blog/slug-matching-title.md`
 
 Don't run `zola serve` or `zola check` during editing; Vincent prefers to run these himself. Batch validation at the end if needed.
