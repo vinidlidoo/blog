@@ -1,6 +1,7 @@
 base_url = "https://vinidlidoo.github.io"
 title = "vinidlidoo"
 description = "A personal blog"
+author = "Vincent"
 default_language = "en"
 theme = "tabi"
 
@@ -49,6 +50,7 @@ style = "class"
 theme = "catppuccin-frappe"
 
 [extra]
+full_content_in_feed = true
 newsletter_action = "https://buttondown.com/api/emails/embed-subscribe/vinidlidoo"
 contact_form_action = "https://formspree.io/f/xeekqdav"
 author = "Vincent"
