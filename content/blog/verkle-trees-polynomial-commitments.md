@@ -15,7 +15,7 @@ social_media_card = "/img/verkle-tree-banner.webp"
 
 [Part 1](@/blog/ethereum-merkle-patricia-trie.md) ended with a problem: Merkle proofs in Ethereum's state trie are too large for stateless validation. At several MB per block, the bandwidth cost of including proofs would push solo validators toward data centers.
 
-The solution: replace hash-based commitments with **polynomial commitments**. Each node stores a curve point instead of a hash. Instead of proving a leaf by providing every sibling hash (\~3 KB) on the path to the root, the prover sends a small proof at each level (\~150 bytes), roughly 20x smaller. By the end of this post, you'll understand how.
+The solution: replace hash-based commitments with **polynomial commitments**. Each node stores a curve point instead of a hash, and nodes widen from 16 children to 256. Instead of proving a leaf by providing every sibling hash on the path to the root (\~3 KB), the prover sends a small proof at each level (\~150 bytes), roughly 20x smaller. By the end of this post, you'll understand how.
 
 ## From Values to a Polynomial
 
