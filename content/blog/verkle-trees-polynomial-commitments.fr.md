@@ -1,7 +1,7 @@
 +++
 title = "Verkle Trees : Engagements Polynomiaux (Partie 2/2)"
 date = 2026-02-13
-updated = 2026-02-14
+updated = 2026-02-15
 description = "Comment un seul point de courbe peut engager 256 enfants, et pourquoi les preuves passent de kilo-octets à octets"
 
 [taxonomies]
@@ -16,7 +16,7 @@ social_media_card = "/img/verkle-tree-banner.webp"
 
 La [Partie 1](@/blog/ethereum-merkle-patricia-trie.fr.md) s'est terminée sur un problème : les preuves de Merkle dans le state trie d'Ethereum sont trop volumineuses pour la validation sans état. À plusieurs Mo par bloc, le coût en bande passante de l'inclusion des preuves pousserait les validateurs individuels vers les data centers.
 
-La solution : remplacer les engagements par hachage par des **engagements polynomiaux**. Chaque noeud stocke un point de courbe au lieu d'un hash. Au lieu de prouver une feuille en fournissant tous les hashs des noeuds frères (~3 Ko) sur le chemin jusqu'à la racine, le prouveur envoie une petite preuve à chaque niveau (~150 octets), environ 20× plus compacte. À la fin de cet article, vous comprendrez comment.
+La solution : remplacer les engagements par hachage par des **engagements polynomiaux**. Chaque noeud stocke un point de courbe au lieu d'un hash, et les noeuds passent de 16 enfants à 256. Au lieu de prouver une feuille en fournissant tous les hashs des noeuds frères sur le chemin jusqu'à la racine (\~3 Ko), le prouveur envoie une petite preuve à chaque niveau (\~150 octets), environ 20× plus compacte. À la fin de cet article, vous comprendrez comment.
 
 ## Des valeurs à un polynôme
 
