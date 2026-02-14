@@ -109,3 +109,13 @@
 {"type":"mapping","en":"stateless (validation)","fr":"sans état","avoid":"stateless","domain":"cryptography"}
 {"type":"style","rule":"Translate text labels inside KaTeX math blocks (where→où, if→si, otherwise→sinon). Math variable names stay as-is but natural-language words must be in the target language."}
 {"type":"style","rule":"Translate direct quotes from English sources into French. Keep the link to the original source. Do not leave quotes in English without translation."}
+{"type":"style","en":"puts the X in Y (idiom)","rule":"Do not calque 'met le X dans Y'. Use 'c'est de là que vient le X de Y' or restructure.","avoid":"met le X dans Y"}
+{"type":"mapping","en":"pairing (cryptographic)","fr":"couplage","domain":"cryptography"}
+{"type":"mapping","en":"bilinearity","fr":"bilinéarité","domain":"cryptography"}
+{"type":"mapping","en":"quotient polynomial","fr":"polynôme quotient","domain":"cryptography"}
+{"type":"mapping","en":"opening proof","fr":"preuve d'ouverture","domain":"cryptography"}
+{"type":"mapping","en":"trusted setup","fr":"cérémonie de confiance","domain":"cryptography","notes":"use parenthetical '(Trusted Setup)' on first mention if helpful"}
+{"type":"mapping","en":"multi-party computation","fr":"calcul multipartite","domain":"cryptography"}
+{"type":"mapping","en":"zero-knowledge proofs","fr":"preuves à connaissance nulle","domain":"cryptography"}
+{"type":"mapping","en":"Lagrange interpolation","fr":"interpolation de Lagrange","domain":"math"}
+{"type":"style","en":"logarithmic in N","rule":"Use 'logarithmique par rapport à N' or 'logarithmique en $n$' (with bare variable). Never 'logarithmique en le N' (article after 'en' is ungrammatical).","avoid":"logarithmique en le"}

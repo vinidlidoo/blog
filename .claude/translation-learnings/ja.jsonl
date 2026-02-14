@@ -144,6 +144,16 @@
 {"type":"mapping","en":"navigable decision space","ja":"自分で探れる意思決定空間","avoid":"ナビゲーション可能な意思決定空間"}
 {"type":"mapping","en":"remaining artifact","ja":"最終的に残るのは","avoid":"残る成果物は","notes":"成果物 is corporate jargon"}
 {"type":"mapping","en":"transparent container (metaphorical)","ja":"中身の見える器","avoid":"透明なコンテナ"}
+{"type":"mapping","en":"binding (commitment property)","ja":"束縛性","avoid":"束縛的","domain":"cryptography","notes":"noun form 束縛性 preferred over adjective 束縛的; pair with 秘匿性 for hiding"}
+{"type":"mapping","en":"bilinearity","ja":"双線形性","domain":"cryptography"}
+{"type":"mapping","en":"pairing (elliptic curve)","ja":"ペアリング","domain":"cryptography"}
+{"type":"mapping","en":"quotient polynomial","ja":"商多項式","domain":"cryptography"}
+{"type":"mapping","en":"opening proof","ja":"開示証明","domain":"cryptography"}
+{"type":"mapping","en":"vector commitment","ja":"ベクトルコミットメント","domain":"cryptography"}
+{"type":"mapping","en":"Lagrange interpolation","ja":"ラグランジュ補間","domain":"math"}
+{"type":"mapping","en":"trusted setup ceremony","ja":"トラステッドセットアップ・セレモニー","domain":"cryptography","notes":"use middle dot between words"}
+{"type":"mapping","en":"multi-party computation","ja":"マルチパーティ計算","domain":"cryptography"}
+{"type":"mapping","en":"scheme (cryptographic)","ja":"方式","avoid":"スキーム","domain":"cryptography","notes":"スキーム is unnecessary loanword; 方式 is used consistently with コミットメント方式"}
 {"type":"mapping","en":"actors (stakeholders)","ja":"関係者","avoid":"アクター"}
 {"type":"mapping","en":"intervene (technology helping)","ja":"役立つ","avoid":"介入","notes":"介入 has negative/forceful connotation"}
 {"type":"mapping","en":"let me know (closing)","ja":"教えてください","avoid":"教えてほしい","notes":"ほしい feels too demanding; slight politeness appropriate for reader address"}
