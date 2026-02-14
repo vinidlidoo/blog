@@ -183,3 +183,9 @@ Don't run `zola serve` or `zola check` during editing; Vincent prefers to run th
 - Build up to key equations: show the derivation step by step, then present the clean formula as the payoff. Don't drop an equation first and justify it after.
 - Late sections should shed complexity, not add it. The reader is fatigued after hard technical content. Closing/future-looking sections should use plain language, avoid new jargon, and strip optional details (tables, details blocks) when the main text already covers the point.
 - When mentioning technology that supersedes what the post teaches, frame the current content as foundational, not obsolete. Don't undercut the reader's investment.
+- Link on the concept, not the container. `[finite field](@/blog/...)` beats `my post on [X](@/blog/...)` or `[post](@/blog/...)`. The link text should be the most informative word.
+- Don't repeat formulas or expressions within a few lines. If $C = P(s) \cdot G$ just appeared, use "this $C$" or prose instead of restating it.
+- Introduce terminology through action, not definition. "Alice wants to **open** the commitment" beats "In cryptography, revealing a value is called **opening**." Show the term in use; the reader absorbs the definition from context.
+- When introducing unfamiliar terms in late/closing sections, frame them as variants or swaps, not prerequisites. "Swaps in different building blocks: a different X, Y, and Z" reassures the reader they don't need to understand each one.
+- Use `\tag{N}` for important equations referenced later. Refer back with "equation $(N)$", not bare "$(N)$".
+- Consistent terminology: pick one term for a concept (e.g., "public parameters" not sometimes "public points" or "public curve points") and bold it on first use.
