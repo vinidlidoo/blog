@@ -1,0 +1,23 @@
+flowchart TD
+    Root["Merkle Root<br/>H(H_AB + H_CD)"]
+
+    Root --> HAB["H_AB<br/>H(H_A + H_B)"]
+    Root --> HCD["H_CD<br/>H(H_C + H_D)"]
+
+    HAB --> HA["H_A<br/>hash(A)"]
+    HAB --> HB["H_B<br/>hash(B)"]
+    HCD --> HC["H_C<br/>hash(C)"]
+    HCD --> HD["H_D<br/>hash(D)"]
+
+    HA --> A["Tx A<br/>Alice → Bob: $50"]
+    HB --> B["Tx B<br/>Bob → Carol: $30"]
+    HC --> C["Tx C<br/>Carol → Dave: $20"]
+    HD --> D["Tx D<br/>Dave → Eve: $10"]
+
+    classDef root fill:#4a9ad9,stroke:#2c6fa0,color:#fff
+    classDef hash fill:#a8d5ba,stroke:#5a9e6a,color:#333
+    classDef leaf fill:#f5f5dc,stroke:#c9a020,color:#333
+
+    class Root root
+    class HAB,HCD,HA,HB,HC,HD hash
+    class A,B,C,D leaf

@@ -1,0 +1,22 @@
+flowchart TD
+    Root["Root Hash<br/>0x7d3f..."]
+
+    Root --> N4["4<br/>0xa2b1.."]
+    Root --> N8["8<br/>0x91c4.."]
+    Root --> Nf["f<br/>0x55e2.."]
+
+    N4 --> N4a["4a<br/>0x8f7e.."]
+    N4 --> N4c["4c<br/>0x2d91.."]
+
+    N4a --> Leaf1["0x4a7b...<br/>balance: 1.5 ETH"]
+    N4c --> Leaf2["0x4c2f...<br/>balance: 3.2 ETH"]
+
+    classDef root fill:#4a9ad9,stroke:#2c6fa0,color:#fff
+    classDef branch fill:#a8d5ba,stroke:#5a9e6a,color:#333
+    classDef extension fill:#f5c842,stroke:#c9a020,color:#333
+    classDef leaf fill:#f5f5dc,stroke:#c9a020,color:#333
+
+    class Root root
+    class N4,N8,Nf branch
+    class N4a,N4c extension
+    class Leaf1,Leaf2 leaf

@@ -1,0 +1,4 @@
+/* Fix for iOS Safari giscus theme mismatch when system and site themes differ */
+.giscus-frame {
+    color-scheme: normal;
+}

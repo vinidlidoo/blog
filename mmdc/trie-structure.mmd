@@ -1,0 +1,27 @@
+flowchart TD
+    Root["Root"]
+
+    Root --> N4["4"]
+    Root --> Ext8["8 → e → 2 → f"]
+    Root --> Nf["f"]
+
+    N4 --> N4a["a"]
+
+    N4a --> Leaf1["0x4a7..."]
+    N4a --> Leaf2["0x4ac..."]
+
+    Ext8 --> Leaf3["0x8e2f..."]
+
+    Nf --> Nf3["3"]
+    Nf3 --> Leaf4["0xf3a..."]
+    Nf3 --> Leaf5["0xf3d..."]
+
+    classDef root fill:#4a9ad9,stroke:#2c6fa0,color:#fff
+    classDef branch fill:#a8d5ba,stroke:#5a9e6a,color:#333
+    classDef ext fill:#d4b8e8,stroke:#8a5cb0,color:#333
+    classDef leaf fill:#f5f5dc,stroke:#c9a020,color:#333
+
+    class Root root
+    class N4,N4a,Nf,Nf3 branch
+    class Ext8 ext
+    class Leaf1,Leaf2,Leaf3,Leaf4,Leaf5 leaf
