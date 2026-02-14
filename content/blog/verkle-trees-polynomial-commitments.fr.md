@@ -1,6 +1,7 @@
 +++
 title = "Verkle Trees : Engagements Polynomiaux (Partie 2/2)"
 date = 2026-02-13
+updated = 2026-02-14
 description = "Comment un seul point de courbe peut engager 256 enfants, et pourquoi les preuves passent de kilo-octets à octets"
 
 [taxonomies]
@@ -13,35 +14,15 @@ social_media_card = "/img/verkle-tree-banner.webp"
 
 ![Verkle tree : des courbes polynomiales lisses convergent depuis de nombreux noeuds feuilles vers un seul point d'engagement lumineux](/img/verkle-tree-banner.webp)
 
-La [Partie 1](@/blog/ethereum-merkle-patricia-trie.fr.md) s'est terminée sur un problème : les preuves de Merkle dans le state trie d'Ethereum sont trop volumineuses pour la validation sans état. À plusieurs Mo par bloc, le coût en bande passante de l'inclusion des preuves dans les blocs pousserait les validateurs individuels vers les data centers.
+La [Partie 1](@/blog/ethereum-merkle-patricia-trie.fr.md) s'est terminée sur un problème : les preuves de Merkle dans le state trie d'Ethereum sont trop volumineuses pour la validation sans état. À plusieurs Mo par bloc, le coût en bande passante de l'inclusion des preuves pousserait les validateurs individuels vers les data centers.
 
-Une solution consiste à remplacer les engagements par hachage par des **engagements polynomiaux** : chaque noeud stocke un point de courbe au lieu d'un hash. La différence se manifeste dans les preuves : au lieu de fournir tous les hashs des noeuds frères (~3 Ko), le prouveur envoie une seule petite preuve (~150 octets), environ 20× plus compacte. À la fin de cet article, vous comprendrez comment.
-
-## Pourquoi les engagements polynomiaux ?
-
-Dans un arbre de Merkle, chaque noeud engage ses enfants en les hachant ensemble :
-
-$$H = \text{hash}(\text{child}\_{0}, \text{child}\_{1}, \ldots, \text{child}\_{15})$$
-
-Pour vérifier qu'un enfant appartient bien au noeud, on recalcule $H$ depuis zéro, ce qui signifie qu'il faut disposer de tous les frères. En cryptographie, c'est ce qu'on appelle **ouvrir** un engagement : révéler une valeur et prouver qu'elle correspond. Avec les hashs, ouvrir un enfant exige de fournir tous les autres : 15 hashs de noeuds frères par niveau, sur ~8-10 niveaux de la valeur jusqu'à la racine.
-
-Et si on disposait d'un schéma d'engagement dans lequel :
-
-1. L'engagement lui-même reste compact (comparable à un hash)
-2. La preuve pour un seul enfant en position $i$ est beaucoup plus petite que l'ensemble des frères
-3. La taille de la preuve ne croît pas avec le nombre d'enfants
-
-On pourrait alors élargir les noeuds bien au-delà de 16, disons à 256, obtenant un arbre moins profond avec moins de niveaux à prouver :
-
-$$C \leftarrow \text{commit}(v\_0, v\_1, \ldots, v\_{255})$$
-
-Le vérificateur contrôle une petite preuve $\pi_i$ par rapport à $C$ sans voir aucun autre enfant. C'est un **engagement vectoriel**, et c'est de là que vient le « V » de Verkle : **V**ector commitment + M**erkle**.[^1] Même structure d'arbre, mais un engagement différent à chaque noeud.
-
-Quand j'ai découvert cette idée pour la première fois, cela m'a semblé magique : comment un seul point peut-il engager 256 valeurs *et* permettre de prouver n'importe laquelle sans avoir besoin des autres ? La réponse tient aux polynômes. Voyons comment.
+La solution : remplacer les engagements par hachage par des **engagements polynomiaux**. Chaque noeud stocke un point de courbe au lieu d'un hash. Au lieu de prouver une feuille en fournissant tous les hashs des noeuds frères (~3 Ko) sur le chemin jusqu'à la racine, le prouveur envoie une petite preuve à chaque niveau (~150 octets), environ 20× plus compacte. À la fin de cet article, vous comprendrez comment.
 
 ## Des valeurs à un polynôme
 
-L'idée est de représenter les 256 enfants comme les évaluations d'un seul polynôme. Un polynôme se présente ainsi :
+L'idée centrale est de construire un **engagement vectoriel** : un schéma qui engage plusieurs valeurs et permet de prouver n'importe laquelle sans révéler les autres. C'est de là que vient le « V » de Verkle (**V**ector commitment + M**erkle**).[^1] Même structure d'arbre, mais un engagement différent à chaque noeud.
+
+On y parvient avec des polynômes. On représente les 256 enfants d'un noeud comme les évaluations d'un seul polynôme :
 
 $$P(x) = a_0 + a_1 x + a_2 x^2 + \cdots + a_{255} x^{255}$$
 
@@ -49,12 +30,12 @@ On choisit les positions $0, 1, \ldots, 255$ et on détermine les coefficients $
 
 $$P(i) = v_i \quad \text{pour } i = 0, 1, \ldots, 255$$
 
-On obtient un polynôme de degré 255 qui passe par chaque valeur enfant. Un tel polynôme existe toujours et est unique : $n$ paires point-valeur déterminent exactement un polynôme de degré $n - 1$.[^2] L'algorithme qui trouve ce polynôme s'appelle l'**interpolation de Lagrange**.
+On obtient un polynôme de degré 255 qui passe par chaque valeur enfant. Un tel polynôme existe toujours et est unique : $n$ paires position-valeur déterminent exactement un polynôme de degré $n - 1$.[^2] L'algorithme qui trouve ce polynôme s'appelle l'**interpolation de Lagrange**.
 
 <details>
 <summary>Comment fonctionne l'interpolation de Lagrange</summary>
 
-L'idée : construire des polynômes « sélecteurs » qui valent 1 en un point et 0 en tous les autres, puis les pondérer par les valeurs souhaitées. Pour $n$ points, le polynôme de base pour la position $j$ est :
+L'idée : construire des polynômes de base qui valent chacun 1 en un point et 0 en tous les autres, puis prendre leur somme pondérée. Pour $n$ points, le polynôme de la **base de Lagrange** pour la position $j$ est :
 
 $$L_j(x) = \prod_{\substack{m=0 \\\ m \neq j}}^{n-1} \frac{x - m}{j - m}$$
 
@@ -62,7 +43,7 @@ $L_j(j) = 1$ et $L_j(m) = 0$ pour tout $m \neq j$. Le polynôme complet est leur
 
 $$P(x) = \sum_{i=0}^{n-1} v_i L_i(x)$$
 
-Par exemple, avec 4 points, le sélecteur pour la position 0 est :
+Par exemple, avec 4 points, le polynôme de base pour la position 0 est :
 
 $$L_0(x) = \frac{(x-1)(x-2)(x-3)}{(0-1)(0-2)(0-3)}$$
 
@@ -70,45 +51,50 @@ Il vaut 1 quand $x = 0$ et 0 pour $x = 1, 2, 3$. Le polynôme complet $P(x) = v_
 
 </details>
 
-Jusqu'ici, c'est de l'algèbre pure. On a un polynôme qui encode les enfants (les données du compte d'Alice se trouvent à une certaine position, disons $P(3) = v_{\text{Alice}}$), mais partager $P$ directement signifierait transmettre les 256 coefficients, pas mieux qu'envoyer les enfants eux-mêmes. Il faut un moyen de comprimer $P$ en un engagement court. C'est là qu'interviennent les courbes elliptiques.
+Jusqu'ici, c'est de l'algèbre pure. On a un polynôme qui encode les enfants, mais partager $P$ directement signifierait transmettre les 256 coefficients, pas mieux qu'envoyer les enfants eux-mêmes. Il faut un moyen de comprimer $P$ en un engagement court. C'est là qu'interviennent les courbes elliptiques.
 
 ## Un point de courbe pour un polynôme entier
 
-Toute l'arithmétique à partir d'ici (les coefficients du polynôme, ses évaluations, les scalaires de la courbe elliptique) se fait dans le même [**corps fini**](@/blog/math-behind-private-key.fr.md) $\mathbb{F}_p$.
+Petit avertissement : toute l'arithmétique à partir d'ici (les coefficients du polynôme, ses évaluations, les scalaires de la courbe elliptique) se fait dans le même [**corps fini**](@/blog/math-behind-private-key.fr.md) $\mathbb{F}_p$.
 
-Supposons qu'il existe un scalaire secret $s$ que personne ne connaît, mais que tout le monde ait accès aux points de courbe publics suivants :
+Supposons qu'il existe un scalaire secret $s$ que personne ne connaît, mais que tout le monde ait accès aux **paramètres publics** suivants :
 
 $$G, \ sG, \ s^2G, \ \ldots, \ s^dG$$
 
 La façon dont $s$ est généré et détruit est traitée dans l'[Annexe](#trusted-setup). Pour l'instant, considérons ces points comme donnés. Pour engager $P(x)$, le prouveur calcule :
 
-$$C = a_0 \cdot G + a_1 \cdot sG + \cdots + a_d \cdot s^dG = P(s) \cdot G$$
+$$\begin{aligned}
+C &= a_0 \cdot G + a_1 \cdot sG + \cdots + a_d \cdot s^dG \\\\
+  &= P(s) \cdot G
+\end{aligned}$$
 
-Le prouveur ne connaît pas $s$ ; il combine simplement les coefficients de son polynôme avec les points publics.[^3] Le résultat est un seul point de courbe (48 octets compressés sur BLS12-381) qui engage le polynôme entier. Il est **liant** (l'analogue de la résistance aux collisions pour les schémas d'engagement) : deux polynômes distincts $P \neq Q$ vérifient $P(s) \neq Q(s)$ avec une probabilité écrasante.[^4]
+Le prouveur n'a pas besoin de connaître $s$ pour calculer $C$ : il combine simplement les coefficients de son polynôme avec les paramètres publics.[^3]
 
-Le noeud Verkle stocke désormais $C = P(s) \cdot G$ au lieu d'un hash keccak256 de ses enfants. Mais comment prouver un seul enfant sans révéler les autres ?
+Le résultat est un seul point de courbe (48 octets compressés) qui engage le polynôme entier. De la même manière qu'un hash résistant aux collisions ne produit pas la même sortie pour deux entrées différentes, cet engagement est **liant** : deux polynômes distincts $P \neq Q$ vérifient $P(s) \neq Q(s)$ avec une probabilité écrasante, donc leurs engagements $C = P(s) \cdot G$ sont distincts.[^4]
+
+Chaque noeud Verkle stocke désormais ce $C$ au lieu d'un hash. On a l'engagement ; il faut maintenant un moyen de prouver ce qu'il contient.
 
 ## Preuves d'ouverture : prouver une seule valeur
 
-Les données d'Alice se trouvent en position $z$ dans le noeud. Puisque les enfants sont encodés comme des évaluations du polynôme, prouver que l'enfant en position $z$ a la valeur $y$ revient à prouver $P(z) = y$. Le vérificateur possède l'engagement $C$ mais ne connaît ni $P$ ni aucun autre enfant. Comment le prouveur le convainc-t-il ?
+Alice veut **ouvrir** l'engagement $C$ en position $z$ pour vérifier qu'il contient la valeur $y$. Le prouveur doit la convaincre que $P(z) = y$ sans révéler $P$ ni aucun autre enfant. Comment ?
 
 Le point essentiel vient de l'algèbre des polynômes : si $P(z) = y$, alors $P(x) - y$ a une racine en $x = z$, donc $(x - z)$ le divise exactement. On définit le **polynôme quotient** :
 
 $$Q(x) = \frac{P(x) - y}{x - z}$$
 
-$Q$ est un polynôme valide si et seulement si $P(z) = y$. Une affirmation fausse laisse un reste, et le prouveur ne peut pas produire un $Q$ valide.
+Cette division est exacte si et seulement si $P(z) = y$. Une affirmation fausse laisse un reste, et le prouveur ne peut pas produire un $Q$ valide.
 
-**La preuve est simplement un engagement sur $Q$ au lieu de $P$ :**
+La **preuve d'ouverture** $\pi$ est simplement un engagement sur $Q$ :
 
 $$\pi = Q(s) \cdot G$$
 
-Ce seul point de courbe $\pi$ est la **preuve d'ouverture**. Pas besoin de noeuds frères.
+Un seul point de courbe. Pas besoin de noeuds frères.
 
-Le vérificateur doit maintenant s'assurer que $Q$ est légitime. Si la division est exacte, alors $P(x) - y = Q(x) \cdot (x - z)$ est une identité polynomiale, donc elle est vraie en tout point, y compris $x = s$ :
+Le vérificateur doit maintenant s'assurer que $Q$ est légitime. Si la division est exacte, en remultipliant on obtient une identité polynomiale vraie en tout point, y compris $x = s$ :
 
-$$P(s) - y = Q(s) \cdot (s - z)$$
+$$P(s) - y = Q(s) \cdot (s - z) \tag{1}$$
 
-Le vérificateur dispose de deux points de courbe : $C = P(s) \cdot G$ et $\pi = Q(s) \cdot G$. Ceux-ci masquent respectivement $P(s)$ et $Q(s)$ : déduire les scalaires à partir des points est le [problème du logarithme discret](@/blog/math-behind-private-key.fr.md). Et $(s - z)$ nécessite de connaître $s$, que personne ne possède.
+Le vérificateur ne peut pas vérifier cette équation directement. Il dispose de $C = P(s) \cdot G$ et $\pi = Q(s) \cdot G$, mais les points de courbe **masquent** leurs scalaires : extraire $P(s)$ ou $Q(s)$ à partir de ces points est le [problème du logarithme discret](@/blog/math-behind-private-key.fr.md). Et $(s - z)$ nécessite de connaître $s$, que personne ne possède.
 
 ## Vérification de la preuve par couplage
 
@@ -116,42 +102,53 @@ Un **couplage** $e$ est une fonction qui prend un point d'un groupe de courbe ($
 
 $$e(aG_1, bG_2) = e(G_1, G_2)^{ab}$$
 
-On donne en entrée un point masquant $a$ et un point masquant $b$, et la sortie capture leur produit. On ne peut pas extraire $a$ ou $b$, mais on peut vérifier si deux produits sont égaux en comparant les sorties des couplages.[^5] Les couplages nécessitent deux groupes de courbe distincts ; le $G$ que nous avons utilisé vit dans $\mathbb{G}_1$ (devenant $G_1$), et $G_2$ est un générateur de $\mathbb{G}_2$. Les paramètres publics incluent également $sG_2$.
+On donne en entrée un point masquant un scalaire $a$ et un autre masquant $b$, et la sortie capture leur produit. On ne peut pas extraire $a$ ou $b$, mais on peut vérifier si **deux produits sont égaux** en comparant les sorties des couplages.[^5] Les couplages nécessitent deux groupes de courbe distincts ; le $G$ que l'on a utilisé vit dans $\mathbb{G}_1$ (devenant $G_1$), et $G_2$ est un générateur de $\mathbb{G}_2$. Les paramètres publics incluent également $sG_2$.
 
-La stratégie : placer le côté gauche de notre équation, $P(s) - y$, dans un couplage, et les deux facteurs du côté droit, $Q(s)$ et $(s - z)$, dans l'autre.
+La stratégie : exprimer chaque côté de l'équation $(1)$ comme un produit de deux scalaires, puis placer un facteur dans $\mathbb{G}_1$ et l'autre dans $\mathbb{G}_2$. Le côté droit se factorise naturellement en $Q(s) \cdot (s - z)$. Le côté gauche est simplement $(P(s) - y) \cdot 1$, donc on le couple avec le générateur $G_2$ :
 
-Pour le côté gauche : $(P(s) - y)G_1 = C - yG_1$, donc
+**Côté gauche** : $(P(s) - y)G_1 = C - yG_1$, donc
 
 $$e(C - yG_1, G_2) = e(G_1, G_2)^{P(s) - y}$$
 
-Pour le côté droit : $Q(s) \cdot G_1 = \pi$ et $(s - z)G_2 = sG_2 - zG_2$, donc
+**Côté droit** : $Q(s) \cdot G_1 = \pi$ et $(s - z)G_2 = sG_2 - zG_2$, donc
 
 $$e(\pi, sG_2 - zG_2) = e(G_1, G_2)^{Q(s)(s-z)} $$
 
-Les deux sont égaux si et seulement si $P(s) - y = Q(s)(s - z)$, ce qui est exactement ce qu'on voulait prouver. L'**équation de vérification** :
+Ces deux membres sont égaux si et seulement si l'équation $(1)$ est vérifiée, donc la vérification se réduit à un seul test :
 
-$$e(C - yG_1, G_2) = e(\pi, sG_2 - zG_2)$$
+$$e(C - yG_1, G_2) = e(\pi, sG_2 - zG_2) \tag{2}$$
 
 Le vérificateur connaît chaque variable de cette équation : $C$ et $\pi$ proviennent du prouveur, $y$ et $z$ sont la valeur annoncée et la position, et $G_1$, $G_2$, $sG_2$ sont des paramètres publics. Un seul couplage, pas de noeuds frères.
 
-## Preuve Verkle pas à pas
+## Vue d'ensemble
 
-Suivons une preuve complète à travers l'arbre. Alice veut vérifier son solde en ETH. Un arbre Verkle a une largeur de 256 et une profondeur d'environ 3 pour l'état d'Ethereum.[^6] Son adresse hashée correspond à un chemin : racine → $C_1$ → $C_2$ → feuille $v$. Le prouveur envoie à Alice la valeur de la feuille $v$, les engagements intermédiaires $C_1$ et $C_2$, et une preuve d'ouverture $\pi_i$ à chaque niveau. Alice vérifie de bas en haut :
+Prenons du recul et considérons ce que l'on vient de construire. Un noeud avec 256 enfants est encodé en un polynôme, condensé en un seul point de courbe, et à partir de ce point seul, un prouveur peut vous convaincre qu'un enfant donné a une valeur précise, sans rien révéler d'autre sur le polynôme. Deux points de courbe, un couplage, terminé. Cela semble trop beau pour être vrai, presque magique.
+
+Ce schéma engagement-ouverture-vérification s'appelle **[KZG](https://en.wikipedia.org/wiki/Commitment_scheme#KZG_commitment)** (Kate-Zaverucha-Goldberg) : un engagement par noeud, une preuve d'ouverture par niveau. Un arbre de Merkle de largeur 16 nécessite ~8-10 niveaux et 15 hashs de noeuds frères (480 octets) à chacun. Un arbre Verkle de largeur 256 couvre le même état en seulement ~3 niveaux,[^6] avec une seule preuve d'environ 48 octets à chacun :
+
+<img src="/img/merkle-vs-verkle-comparison.webp" alt="Comparaison côte à côte de la structure de preuve Merkle vs Verkle : Merkle nécessite 15 hashs de noeuds frères par niveau tandis que Verkle ne nécessite qu'une preuve par niveau, résultant en des preuves ~20× plus petites">
+
+<details>
+<summary>Exemple pas à pas</summary>
+
+Alice veut vérifier son solde en ETH. Son adresse hashée donne les positions $k_0, k_1, k_2$ qui tracent un chemin : racine $\to$ $C_1$ $\to$ $C_2$ $\to$ feuille $v$. Le prouveur envoie à Alice la valeur de la feuille $v$, les engagements intermédiaires $C_1$ et $C_2$, et une preuve d'ouverture $\pi_i$ à chaque niveau. Alice vérifie de bas en haut :
 
 1. $C_2$ ouvre-t-il en position $k_2$ sur la valeur $v$ ? Vérifier $\pi_2$.
 2. $C_1$ ouvre-t-il en position $k_1$ sur $C_2$ ?[^7] Vérifier $\pi_1$.
 3. $C_0$ ouvre-t-il en position $k_0$ sur $C_1$ ? Vérifier $\pi_0$.
 4. $C_0$ correspond-il au state root dans le block header ? Terminé.
 
-Trois vérifications de couplage, trois points de courbe (~48 octets chacun), environ 150 octets au total. À comparer avec 15 hashs de noeuds frères à 32 octets chacun (480 octets) par niveau dans un arbre de Merkle. Ce schéma engagement-ouverture-vérification s'appelle **[KZG](https://en.wikipedia.org/wiki/Commitment_scheme#KZG_commitment)** (Kate-Zaverucha-Goldberg). Ethereum utilise une variante appelée IPA (détaillée ci-dessous), mais l'architecture est la même : un engagement par noeud, une preuve par niveau. En chiffres :
+Trois preuves d'ouverture (~48 octets chacune), environ 150 octets au total.
 
-<img src="/img/merkle-vs-verkle-comparison.webp" alt="Comparaison côte à côte de la structure de preuve Merkle vs Verkle : Merkle nécessite 15 hashs de noeuds frères par niveau tandis que Verkle ne nécessite qu'une preuve par niveau, résultant en des preuves ~20× plus petites">
+</details>
 
-Les engagements polynomiaux **suppriment aussi un compromis auquel les arbres de Merkle étaient confrontés.** Dans un arbre de Merkle, un arbre plus étroit signifie des preuves plus petites (moins de frères par niveau), mais un arbre plus profond implique davantage de lectures disque aléatoires par recherche (le goulot d'étranglement de l'[annexe de la Partie 1](@/blog/ethereum-merkle-patricia-trie.fr.md#annexe)). La taille des preuves Verkle ne croît pas avec la largeur, donc il n'y a pas de raison de garder les arbres étroits. Avec 256 enfants par noeud, l'arbre est suffisamment peu profond pour que les recherches ne touchent que 3-4 niveaux : des preuves compactes *et* un accès disque rapide.
+Les engagements polynomiaux **suppriment aussi un compromis auquel les arbres de Merkle étaient confrontés.** Dans un arbre de Merkle, réduire la largeur donne des preuves plus petites (moins de frères par niveau), mais un arbre plus profond implique davantage de lectures disque aléatoires par recherche (le goulot d'étranglement de l'[annexe de la Partie 1](@/blog/ethereum-merkle-patricia-trie.fr.md#annexe)). Puisque la taille des preuves Verkle ne croît pas avec la largeur, on peut rendre les noeuds larges et l'arbre peu profond : des preuves compactes *et* un accès disque rapide.
 
 ## La proposition Verkle d'Ethereum : IPA
 
-Les chiffres ci-dessus reflètent les tailles de preuves KZG. La [proposition de Verkle tree d'Ethereum](https://notes.ethereum.org/@vbuterin/verkle_tree_eip) utilise un schéma différent : des **engagements de Pedersen** ouverts avec **IPA** (Inner Product Arguments) sur la courbe **Bandersnatch**. Les preuves individuelles sont plus volumineuses (~544 octets), et la vérification est plus lente (logarithmique par rapport au nombre d'enfants, contre constante). Le compromis : pas de cérémonie de confiance. Si le secret $s$ d'une cérémonie KZG était un jour reconstitué, l'ensemble du schéma s'effondre. Pour le state tree, qui sécurise toute la valeur d'Ethereum de manière permanente, la communauté a préféré éliminer entièrement cette hypothèse. Au niveau des blocs, le [schéma multiproof](https://dankradfeist.de/ethereum/2021/06/18/pcs-multiproofs.html) de Dankrad Feist fusionne toutes les preuves d'ouverture en une seule preuve de taille constante, ramenant la surcharge par bloc dans la fourchette de ~100-200 Ko.
+Les chiffres ci-dessus reflètent les tailles de preuves KZG. La [proposition de Verkle tree d'Ethereum](https://notes.ethereum.org/@vbuterin/verkle_tree_eip) substitue d'autres briques : un engagement **Pedersen**, une technique de preuve **IPA**, et une courbe **Bandersnatch**. L'architecture est la même ; les preuves individuelles sont plus volumineuses (~544 octets) et la vérification est plus lente, mais le compromis en vaut la peine : pas de cérémonie de confiance. Si le secret $s$ d'une cérémonie KZG était un jour reconstitué, l'ensemble du schéma s'effondre. Pour un state tree sécurisant toute la valeur d'Ethereum, la communauté a préféré éliminer entièrement ce risque.
+
+Au niveau des blocs, le [schéma multiproof](https://dankradfeist.de/ethereum/2021/06/18/pcs-multiproofs.html) de Dankrad Feist fusionne toutes les preuves d'ouverture d'un bloc en une seule preuve de taille constante (~200 octets), quel que soit le nombre d'accès à l'état dans le bloc.
 
 ## Et ensuite
 

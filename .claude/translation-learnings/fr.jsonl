@@ -119,3 +119,7 @@
 {"type":"mapping","en":"zero-knowledge proofs","fr":"preuves à connaissance nulle","domain":"cryptography"}
 {"type":"mapping","en":"Lagrange interpolation","fr":"interpolation de Lagrange","domain":"math"}
 {"type":"style","en":"logarithmic in N","rule":"Use 'logarithmique par rapport à N' or 'logarithmique en $n$' (with bare variable). Never 'logarithmique en le N' (article after 'en' is ungrammatical).","avoid":"logarithmique en le"}
+{"type":"mapping","en":"mapped to (math, loose)","fr":"condensé en / converti en","avoid":"projeté sur","domain":"math","notes":"'projeté' implies a projection operation; use 'condensé en' when the mapping compresses information"}
+{"type":"mapping","en":"Lagrange basis","fr":"base de Lagrange","domain":"math","notes":"'sélecteur' was used in earlier versions but 'base de Lagrange' is the standard term"}
+{"type":"mapping","en":"multiplying back (algebra)","fr":"en remultipliant","avoid":"la multiplication inverse","domain":"math","notes":"'multiplication inverse' reads as 'inverse multiplication' (division); use verbal form instead"}
+{"type":"mapping","en":"binding (commitment property)","fr":"liant","domain":"cryptography","notes":"standard term for commitment schemes; the commitment is 'liant'"}
