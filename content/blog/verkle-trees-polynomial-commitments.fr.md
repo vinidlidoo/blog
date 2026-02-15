@@ -122,7 +122,7 @@ Le vérificateur connaît chaque variable de cette équation : $C$ et $\pi$ prov
 
 ## Vue d'ensemble
 
-Prenons du recul et considérons ce que l'on vient de construire. Un noeud avec 256 enfants est encodé en un polynôme, condensé en un seul point de courbe, et à partir de ce point seul, un prouveur peut vous convaincre qu'un enfant donné a une valeur précise, sans rien révéler d'autre sur le polynôme. Deux points de courbe, un couplage, terminé. Cela semble trop beau pour être vrai, presque magique.
+Prenons du recul et considérons ce que l'on vient de construire. Un noeud avec 256 enfants est encodé en un polynôme et condensé en un seul point de courbe. Pour ouvrir un enfant, le prouveur divise par la racine correspondante pour obtenir un polynôme quotient, et le condense en un second point de courbe. Un couplage traverse alors les deux groupes de courbes et, par bilinéarité, confirme que la division est exacte à partir des seuls points de courbe. Deux points, une vérification, terminé. On a presque l'impression d'avoir percé un secret de l'univers.
 
 Ce schéma engagement-ouverture-vérification s'appelle **[KZG](https://en.wikipedia.org/wiki/Commitment_scheme#KZG_commitment)** (Kate-Zaverucha-Goldberg) : un engagement par noeud, une preuve d'ouverture par niveau. Un arbre de Merkle de largeur 16 nécessite ~8-10 niveaux et 15 hashs de noeuds frères (480 octets) à chacun. Un arbre Verkle de largeur 256 couvre le même état en seulement ~3 niveaux,[^6] avec une seule preuve d'environ 48 octets à chacun :
 
