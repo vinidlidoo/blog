@@ -121,7 +121,7 @@ The verifier knows every variable in this equation: $C$ and $\pi$ came from the 
 
 ## Putting It All Together
 
-Step back and consider what we just built. A node with 256 children gets encoded as a polynomial and mapped to a single curve point. To open one child, the prover divides out the corresponding root, producing a quotient polynomial, and maps it to a second curve point. A pairing function then reaches across two curve groups and, through bilinearity, confirms the division was exact from the curve points alone. Two points, one check, done. That this works at all feels like reaching through a crack in the universe.
+Step back and consider what we just built. A node with 256 children gets encoded as a polynomial and mapped to a single curve point. To open one child, the prover divides out the corresponding root, producing a quotient polynomial, and maps it to a second curve point. A pairing function then reaches across two curve groups and, through bilinearity, verifies the division was exact from the curve points alone. Two points, one check, done. That this works at all feels like reaching through a crack in the universe.
 
 This commit-open-verify scheme is called **[KZG](https://en.wikipedia.org/wiki/Commitment_scheme#KZG_commitment)** (Kate-Zaverucha-Goldberg): produce one commitment per node, one opening proof per level. A Merkle tree with width 16 needs \~8-10 levels and 15 sibling hashes (480 bytes) at each one. A Verkle tree with width 256 covers the same state in just \~3 levels,[^6] with a single \~48-byte proof at each:
 
