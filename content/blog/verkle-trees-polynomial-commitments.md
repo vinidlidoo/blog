@@ -103,7 +103,7 @@ $$e(aG_1, bG_2) = e(G_1, G_2)^{ab}$$
 
 Feed in a point hiding some scalar $a$ and another hiding $b$, and the output captures their product. We can't extract $a$ or $b$, but we can check whether **two products are equal** by comparing pairing outputs.[^5] Pairings require two distinct curve groups; the $G$ we've been using lives in $\mathbb{G}_1$ (becoming $G_1$), and $G_2$ is a generator in $\mathbb{G}_2$. The public parameters also include $sG_2$.
 
-The strategy is: express each side of equation $(1)$ as a product of two scalars, then feed one factor into $\mathbb{G}_1$ and the other into $\mathbb{G}_2$. The right side naturally factors as $Q(s) \cdot (s - z)$. The left side is just $(P(s) - y) \cdot 1$, so we pair it with the plain generator $G_2$:
+The strategy: express each side of equation $(1)$ as a product of two scalars, then feed one factor into $\mathbb{G}_1$ and the other into $\mathbb{G}_2$. The right side naturally factors as $Q(s) \cdot (s - z)$. The left side is just $(P(s) - y) \cdot 1$, so we pair it with the plain generator $G_2$:
 
 **Left side**: $(P(s) - y)G_1 = C - yG_1$, so
 
