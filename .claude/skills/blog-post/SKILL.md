@@ -189,3 +189,7 @@ Don't run `zola serve` or `zola check` during editing; Vincent prefers to run th
 - When introducing unfamiliar terms in late/closing sections, frame them as variants or swaps, not prerequisites. "Swaps in different building blocks: a different X, Y, and Z" reassures the reader they don't need to understand each one.
 - Use `\tag{N}` for important equations referenced later. Refer back with "equation $(N)$", not bare "$(N)$".
 - Consistent terminology: pick one term for a concept (e.g., "public parameters" not sometimes "public points" or "public curve points") and bold it on first use.
+- Don't state the same fact in multiple sections. If the intro and closing both mention a shift or development, consolidate to where it has the most impact and use a pronoun or brief reference elsewhere.
+- When noting a directional shift, state why. "X is unlikely" is less satisfying than "X is unlikely because Y." Give the reader the reason, not just the conclusion.
+- Avoid punchy slogans in closing sections. "The direction is clear: prove more, store less" reads as stiff after dense technical content. Plain language beats sound bites.
+- Don't reference terms before the reader has context for them. Even casual mentions (e.g., "trie" in an intro) can confuse if the concept hasn't been explained yet.
