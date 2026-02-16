@@ -68,6 +68,11 @@ socials = [
   { name = "github", url = "https://github.com/vinidlidoo", icon = "github" },
   { name = "x", url = "https://x.com/vinidlidoo", icon = "x" },
 ]
+remote_repository_url = "https://github.com/vinidlidoo/vinidlidoo.github.io"
+remote_repository_git_platform = "auto"
+remote_repository_branch = "main"
+show_remote_changes = true
+show_remote_source = false
 copyright = "© $CURRENT_YEAR Vincent Ethier"
 allowed_domains = [
   { directive = "font-src", domains = [
