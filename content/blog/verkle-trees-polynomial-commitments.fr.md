@@ -55,7 +55,7 @@ Jusqu'ici, c'est de l'algèbre pure. On a un polynôme qui encode les enfants, m
 
 ## Un point de courbe pour un polynôme entier
 
-Petit avertissement : toute l'arithmétique à partir d'ici (les coefficients du polynôme, ses évaluations, les scalaires de la courbe elliptique) se fait dans le même [**corps fini**](@/blog/math-behind-private-key.fr.md) $\mathbb{F}_p$.
+Petit avertissement : toute l'arithmétique à partir d'ici (les coefficients du polynôme, ses évaluations, les scalaires de la courbe elliptique) se fait dans le même [**corps fini**](@/blog/math-behind-private-key.fr.md#les-corps-des-nombres-avec-de-l-arithmetique) $\mathbb{F}_p$.
 
 Supposons qu'il existe un scalaire secret $s$ que personne ne connaît, mais que tout le monde ait accès aux **paramètres publics** suivants :
 
