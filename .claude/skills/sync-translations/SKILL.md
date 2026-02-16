@@ -81,6 +81,8 @@ Example for French translation:
 
 - `[Three Proofs](@/blog/three-proofs.md)` → `[Trois preuves](@/blog/three-proofs.fr.md)` (if `.fr.md` exists)
 
+**Anchor fragments** (`#section-name`): When the English link has an anchor (e.g., `post.md#some-section`), translate the anchor to match the target post's heading slug. Zola generates slugs by lowercasing, replacing spaces with hyphens, and stripping accents. For Latin-script languages (FR), look up the translated heading and derive the slug. For CJK languages (JA), Zola's auto-romanization of headings produces fragile slugs; omit the anchor rather than guessing.
+
 ## Pre-Translation Checklist
 
 Before translating or updating, do these steps:
