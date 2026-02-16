@@ -159,9 +159,11 @@ La croissance de l'état pose un autre problème : la validation sans état peut
 <details>
   <summary>Pourrait-on réduire les preuves de Merkle en modifiant la forme de l'arbre ?</summary>
 
-On pourrait en réduisant la largeur de l'arbre, mais cela n'en vaudrait pas la peine. Chaque niveau de traversée du trie est une lecture disque aléatoire : le noeud racine pointe vers un enfant à un emplacement, qui pointe vers un autre enfant ailleurs. Un trie hexaire avec une profondeur effective d'environ 8-10 signifie 8-10 lectures aléatoires par recherche. Un trie binaire aurait une profondeur d'environ 30-40. Même sur NVMe, les lectures aléatoires coûtent des dizaines de microsecondes chacune. Multipliez par des milliers d'accès d'état par bloc, et passer en binaire ferait exploser le temps de slot de 12 secondes. Le branchement hexaire était un choix naturel pour les clés encodées en hexadécimal, tout en gardant le trie suffisamment peu profond pour des recherches rapides.
+On pourrait en réduisant la largeur de l'arbre, mais dans l'architecture actuelle les compromis sont lourds. Chaque niveau de traversée du trie est une lecture disque aléatoire : le noeud racine pointe vers un enfant à un emplacement, qui pointe vers un autre enfant ailleurs. Un trie hexaire avec une profondeur effective d'environ 8-10 signifie 8-10 lectures aléatoires par recherche. Un trie binaire aurait une profondeur d'environ 30-40. Même sur NVMe, les lectures aléatoires coûtent des dizaines de microsecondes chacune. Multipliez par des milliers d'accès d'état par bloc, et passer en binaire ferait exploser le temps de slot de 12 secondes. Le branchement hexaire était un choix naturel pour les clés encodées en hexadécimal, tout en gardant le trie suffisamment peu profond pour des recherches rapides.
 
 Et le gain n'est même pas si intéressant. Un trie binaire ne nécessite qu'un seul hash de noeud frère par niveau au lieu de 15, mais il est 4× plus profond (puisque $\log_2 n = 4 \log_{16} n$). Effet net : 15× moins de frères par niveau, 4× plus de niveaux, donc les preuves se réduisent d'environ 15/4 ≈ 4×. Si les preuves hexaires font environ 10 Mo par bloc, le binaire ramène à environ 2,5 Mo... toujours une surcharge réseau significative.
+
+Avec la validation sans état, où les validateurs vérifient des preuves au lieu de parcourir le trie, la profondeur cesse d'être un goulot d'étranglement, mais la surcharge liée à la taille des preuves demeure.
 
 </details>
 

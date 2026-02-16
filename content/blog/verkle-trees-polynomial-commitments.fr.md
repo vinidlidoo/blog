@@ -142,7 +142,7 @@ Trois preuves d'ouverture (~48 octets chacune), environ 150 octets au total.
 
 </details>
 
-Les engagements polynomiaux **suppriment aussi un compromis auquel les arbres de Merkle étaient confrontés.** Dans un arbre de Merkle, réduire la largeur donne des preuves plus petites (moins de frères par niveau), mais un arbre plus profond implique davantage de lectures disque aléatoires par recherche (le goulot d'étranglement de l'[annexe de la Partie 1](@/blog/ethereum-merkle-patricia-trie.fr.md#annexe)). Puisque la taille des preuves Verkle ne croît pas avec la largeur, on peut rendre les noeuds larges et l'arbre peu profond : des preuves compactes *et* un accès disque rapide.
+Les engagements polynomiaux **suppriment aussi un compromis auquel les preuves de Merkle par hachage sont confrontées.** Dans un arbre de Merkle, réduire la largeur donne des preuves plus petites (moins de frères par niveau), mais un arbre plus profond implique davantage de lectures disque par recherche (le goulot d'étranglement de l'[annexe de la Partie 1](@/blog/ethereum-merkle-patricia-trie.fr.md#annexe)). La validation sans état atténue le problème de profondeur, mais la taille des preuves croît toujours avec la largeur. Avec les engagements polynomiaux, ce n'est plus le cas : les noeuds peuvent être larges et l'arbre peu profond.
 
 ## La proposition Verkle d'Ethereum : IPA
 
