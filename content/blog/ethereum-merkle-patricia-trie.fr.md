@@ -1,6 +1,7 @@
 +++
 title = "Le Merkle Patricia Trie d'Ethereum (Partie 1/2)"
 date = 2026-02-03
+updated = 2026-02-16
 description = "Comment Ethereum stocke son état, le condense en un seul hash, et pourquoi cette architecture atteint ses limites"
 
 [taxonomies]
@@ -15,7 +16,7 @@ social_media_card = "/img/merkle-patricia-trie-banner.webp"
 
 Ethereum est la deuxième blockchain par capitalisation boursière, sécurisant des centaines de milliards de dollars de valeur. Tout le monde sait que c'est un registre distribué. Mais comment stocke-t-elle réellement toutes ces données ? Des centaines de millions de comptes. Des smart contracts avec leur propre stockage persistant : soldes de tokens, registres de propriété de NFTs, positions DeFi. Plus de 250 Go d'état, répliqués sur près d'un million de validateurs dans le monde entier, et en croissance chaque jour. La réponse est une structure de données appelée le Merkle Patricia Trie.
 
-Cela pourrait bientôt changer. La [mise à jour réseau Hegota](https://ethereum-magicians.org/t/eip-8081-hegota-network-upgrade-meta-thread/26876) (EIP-8081), actuellement en phase de conception, propose de migrer l'état d'Ethereum vers une nouvelle structure appelée Verkle trees. Ce serait le plus grand changement dans la représentation de l'état d'Ethereum depuis le genesis. Pour comprendre pourquoi cette migration est envisagée, il faut d'abord voir ce qui existe aujourd'hui, et pourquoi cela atteint ses limites.
+Cela pourrait bientôt changer. La feuille de route d'Ethereum prévoit de le remplacer pour permettre la **validation sans état** : vérifier les blocs sans stocker l'état complet. Ce serait le plus grand changement structurel depuis la genèse du réseau. Pour comprendre pourquoi, il faut d'abord voir ce qui existe aujourd'hui, et pourquoi cela atteint ses limites.
 
 ## Le World State
 
@@ -147,9 +148,9 @@ La taille des preuves est donc une contrainte bloquante. En réduisant les preuv
 
 ## Et ensuite
 
-Entrent en scène les Verkle trees, la proposition phare pour la mise à jour réseau Hegota. Ils remplacent les hashs de noeuds frères par des **engagements polynomiaux**, réduisant les preuves de plusieurs Ko à moins de 150 octets chacune.
+Une approche pour réduire les preuves : remplacer les engagements basés sur les hashs par des **engagements polynomiaux**. C'est exactement ce que font les Verkle trees, réduisant les preuves de plusieurs Ko à moins de 150 octets chacune. L'arbre d'état d'Ethereum prend en réalité une autre direction (un [trie binaire](https://eips.ethereum.org/EIPS/eip-7864) avec des engagements basés sur des hashs résistants au quantique), mais la cryptographie sous-jacente reste très pertinente : les engagements polynomiaux sont le fondement des **preuves à connaissance nulle**, un domaine en plein essor dont les applications parcourent toute la feuille de route de mise à l'échelle d'Ethereum et bien au-delà. La [Partie 2](@/blog/verkle-trees-polynomial-commitments.fr.md) explique le fonctionnement des Verkle trees, en s'appuyant sur les [corps finis et les courbes elliptiques](@/blog/math-behind-private-key.fr.md).
 
-La partie 2 couvrira le fonctionnement des Verkle trees et la cryptographie sous-jacente : les engagements polynomiaux et comment ils permettent des preuves compactes sans sacrifier la sécurité. Les mathématiques s'appuient sur les corps finis et les courbes elliptiques, que j'ai couverts dans [Les mathématiques derrière votre clé privée](@/blog/math-behind-private-key.fr.md). Nous verrons aussi pourquoi les Verkle trees ne sont peut-être pas la réponse définitive : leur dépendance à la cryptographie sur courbes elliptiques les rend vulnérables aux ordinateurs quantiques (stimulant les alternatives résistantes au quantique), et la mise à l'échelle de l'état pourrait nécessiter [plus que des preuves plus petites](https://ethresear.ch/t/hyper-scaling-state-by-creating-new-forms-of-state/24052).
+La croissance de l'état pose un autre problème : la validation sans état peut dispenser les validateurs de stocker l'état, mais l'état complet doit tout de même exister quelque part pour construire les blocs. De [nouvelles primitives de stockage](https://ethresear.ch/t/hyper-scaling-state-by-creating-new-forms-of-state/24052) comme le stockage expirant et les enregistrements de type UTXO sont actuellement en discussion et pourraient empêcher ces 250+ Go de croître indéfiniment.
 
 ---
 

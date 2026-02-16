@@ -123,3 +123,8 @@
 {"type":"mapping","en":"Lagrange basis","fr":"base de Lagrange","domain":"math","notes":"'sélecteur' was used in earlier versions but 'base de Lagrange' is the standard term"}
 {"type":"mapping","en":"multiplying back (algebra)","fr":"en remultipliant","avoid":"la multiplication inverse","domain":"math","notes":"'multiplication inverse' reads as 'inverse multiplication' (division); use verbal form instead"}
 {"type":"mapping","en":"binding (commitment property)","fr":"liant","domain":"cryptography","notes":"standard term for commitment schemes; the commitment is 'liant'"}
+{"type":"mapping","en":"since genesis (blockchain)","fr":"depuis la genèse du réseau","avoid":"depuis le genesis","domain":"cryptography","notes":"'le genesis' is an unadapted anglicism; 'la genèse du réseau' is natural French"}
+{"type":"style","en":"rapidly advancing field","rule":"Use 'en plein essor' not 'en pleine avancée'. 'Avancée' implies forward motion (military); 'essor' implies growth and momentum.","avoid":"en pleine avancée"}
+{"type":"style","en":"applications across X's roadmap","rule":"Use 'dont les applications parcourent toute la feuille de route' or 'présent dans toute la feuille de route'. Avoid 'à travers' as calque of 'across'.","avoid":"avec des applications à travers"}
+{"type":"style","en":"swapped in / substituted","rule":"Avoid 'substituer' without explicit complement (substituer X à Y). Use 'opter pour' or 'adopter' when describing a choice of building blocks.","avoid":"substituait d'autres briques"}
+{"type":"style","en":"ever-growing (adjective)","rule":"Use 'qui ne cesse de croître' rather than 'en croissance permanente', which sounds clinical.","avoid":"en croissance permanente"}

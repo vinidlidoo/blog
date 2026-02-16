@@ -191,3 +191,4 @@
 {"type":"mapping","en":"walkthrough","ja":"具体的な流れ","avoid":"ウォークスルー","notes":"unnecessary loanword; 具体的な流れ or 手順 is more natural"}
 {"type":"mapping","en":"mapped to (commitment encoding)","ja":"変換される","avoid":"射影される","domain":"cryptography","notes":"射影 implies projective mapping in math; 変換 is more general and accurate for commitment encoding"}
 {"type":"style","en":"pairing verification sentence","rule":"For pairing-based verification across two groups, avoid double conjunctions like 「～にまたがり、～を通じて」. Instead use 「～をつないで」 for connecting groups, then 「～で」 for the method. Prefer 「～の正確さを検証する」over 「～であったことを確認する」 for cryptographic verification steps.","domain":"cryptography","notes":"Reduces redundancy and improves flow in technical explanations"}
+{"type":"mapping","en":"post-quantum","ja":"耐量子","domain":"cryptography","notes":"as in 耐量子暗号 (post-quantum cryptography); when compounding with other terms, insert の for readability (e.g., 耐量子ハッシュベースのコミットメント)"}

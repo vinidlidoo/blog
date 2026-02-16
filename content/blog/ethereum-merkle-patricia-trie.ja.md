@@ -1,6 +1,7 @@
 +++
 title = "EthereumのMerkle Patricia Trie（第1回/全2回）"
 date = 2026-02-03
+updated = 2026-02-16
 description = "Ethereumが状態をどう保存し、1つのハッシュにコミットし、なぜその設計が限界に達しつつあるのか"
 
 [taxonomies]
@@ -15,7 +16,7 @@ social_media_card = "/img/merkle-patricia-trie-banner.webp"
 
 Ethereumは時価総額で2番目に大きいブロックチェーンで、数千億ドル規模の価値を保全している。分散型台帳であることは誰もが知っている。しかし、実際にそのデータをどう保存しているのだろうか。数億のアカウント。独自の永続ストレージを持つスマートコントラクト。トークン残高、NFTの所有記録、DeFiのポジション。250 GBを超える状態が世界中の約100万のバリデータに複製され、日々増え続けている。その答えがMerkle Patricia Trieというデータ構造だ。
 
-これはまもなく変わるかもしれない。現在計画中の[Hegotaネットワークアップグレード](https://ethereum-magicians.org/t/eip-8081-hegota-network-upgrade-meta-thread/26876)（EIP-8081）は、Ethereumの状態をVerkle木という新しい構造に移行することを提案している。ジェネシス以来、Ethereumの状態表現において最大の変更になるだろう。しかし、なぜそれが検討されているのかを理解するには、まず今日のしくみと、それがなぜ限界に達しつつあるのかを理解する必要がある。
+これはまもなく変わるかもしれない。Ethereumのロードマップは、**ステートレスバリデーション**（完全な状態を保存せずにブロックを検証すること）を実現するために、この構造を置き換えることを目指している。ジェネシス以来最大の構造的変更になるだろう。その理由を理解するには、まず今日のしくみと、それがなぜ限界に達しつつあるのかを知る必要がある。
 
 ## ワールドステート
 
@@ -117,7 +118,7 @@ $H_0$ がステートルートと一致すれば、証明は有効だ。証明�
 <img src="/img/merkle-proof.webp" alt="Merkle proof verification: Alice's account is hashed bottom-up through three levels of the hexary trie. At each level, the computed hash (orange) is combined with 15 sibling hashes (green, provided by the prover) to produce the next hash. Gray subtree hints show the rest of the tree that the verifier never needs to see.">
 
 <details>
-<summary>ウォークスルー</summary>
+<summary>具体的な流れ</summary>
 
 Aliceのアドレスをハッシュすると `7a4...` で始まるキーが得られるとする。簡略化された3レベルのトライでは、パスは $k = (7, a, 4)$ だ。証明にはAliceのアカウントデータと最大45個の兄弟ハッシュ（3レベルそれぞれ15個）が含まれる。検証はボトムアップで進む。
 
@@ -147,9 +148,9 @@ Ethereumの核心的な理念は分散化だ。Vitalik Buterinが[述べたよ�
 
 ## 次回予告
 
-ここでVerkle木の登場だ。Hegotaネットワークアップグレードの有力提案だ。兄弟ハッシュを**多項式コミットメント**に置き換え、証明を数KBからそれぞれ150バイト未満に縮小する。
+証明を縮小する一つのアプローチは、ハッシュベースのコミットメントを**多項式コミットメント**に置き換えることだ。Verkle木はまさにこれを行い、証明を数KBからそれぞれ150バイト未満に縮小する。Ethereumの状態木は実際には別の方向（耐量子ハッシュベースのコミットメントを用いた[バイナリトライ](https://eips.ethereum.org/EIPS/eip-7864)）に進んでいるが、その背後にある暗号技術はきわめて重要だ。多項式コミットメントは**ゼロ知識証明**の基盤であり、ゼロ知識証明は急速に発展中の分野で、Ethereumのスケーリングロードマップをはじめ、その先にも幅広い応用が進んでいる。[第2回](@/blog/verkle-trees-polynomial-commitments.ja.md)では、[有限体と楕円曲線](@/blog/math-behind-private-key.ja.md)の上に構築されるVerkle木の仕組みを扱う。
 
-第2回では、Verkle木の仕組みとその背後にある暗号技術（多項式コミットメントと、セキュリティを犠牲にせずに小さな証明を実現する方法）を扱う。数学は有限体と楕円曲線の上に構築されており、これらは[秘密鍵の背後にある数学](@/blog/math-behind-private-key.ja.md)で取り上げた。また、Verkle木が最終的な答えではないかもしれない理由も見ていく。楕円曲線暗号への依存は量子コンピュータに対する脆弱性をもたらし（耐量子代替案を促進）、状態のスケーリングには[より小さな証明以上のもの](https://ethresear.ch/t/hyper-scaling-state-by-creating-new-forms-of-state/24052)が必要かもしれない。
+状態の増大はもう一つの問題も引き起こす。ステートレスバリデーションによってバリデータは状態の保存を省略できるかもしれないが、ブロックを構築するためには完全な状態がどこかに存在しなければならない。期限付きストレージやUTXOスタイルのレコードといった[新しいストレージプリミティブ](https://ethresear.ch/t/hyper-scaling-state-by-creating-new-forms-of-state/24052)が現在議論されており、250 GB超の状態が無限に増え続けるのを食い止められる可能性がある。
 
 ---
 

@@ -1,7 +1,7 @@
 +++
 title = "Verkle Trees : Engagements Polynomiaux (Partie 2/2)"
 date = 2026-02-13
-updated = 2026-02-15
+updated = 2026-02-16
 description = "Comment un seul point de courbe peut engager 256 enfants, et pourquoi les preuves passent de kilo-octets à octets"
 
 [taxonomies]
@@ -16,7 +16,7 @@ social_media_card = "/img/verkle-tree-banner.webp"
 
 La [Partie 1](@/blog/ethereum-merkle-patricia-trie.fr.md) s'est terminée sur un problème : les preuves de Merkle dans le state trie d'Ethereum sont trop volumineuses pour la validation sans état. À plusieurs Mo par bloc, le coût en bande passante de l'inclusion des preuves pousserait les validateurs individuels vers les data centers.
 
-La solution : remplacer les engagements par hachage par des **engagements polynomiaux**. Chaque noeud stocke un point de courbe au lieu d'un hash, et les noeuds passent de 16 enfants à 256. Au lieu de prouver une feuille en fournissant tous les hashs des noeuds frères sur le chemin jusqu'à la racine (\~3 Ko), le prouveur envoie une petite preuve à chaque niveau (\~150 octets), environ 20× plus compacte. À la fin de cet article, vous comprendrez comment.
+Les Verkle trees proposent une réponse : remplacer les engagements par hachage par des **engagements polynomiaux**. Chaque noeud stocke un point de courbe au lieu d'un hash, et les noeuds passent de 16 enfants à 256. Au lieu de prouver une feuille en fournissant tous les hashs des noeuds frères sur le chemin jusqu'à la racine (\~3 Ko), le prouveur envoie une petite preuve à chaque niveau (\~150 octets), environ 20× plus compacte. À la fin de cet article, vous comprendrez comment.
 
 ## Des valeurs à un polynôme
 
@@ -146,13 +146,13 @@ Les engagements polynomiaux **suppriment aussi un compromis auquel les arbres de
 
 ## La proposition Verkle d'Ethereum : IPA
 
-Les chiffres ci-dessus reflètent les tailles de preuves KZG. La [proposition de Verkle tree d'Ethereum](https://notes.ethereum.org/@vbuterin/verkle_tree_eip) substitue d'autres briques : un engagement **Pedersen**, une technique de preuve **IPA**, et une courbe **Bandersnatch**. L'architecture est la même ; les preuves individuelles sont plus volumineuses (~544 octets) et la vérification est plus lente, mais le compromis en vaut la peine : pas de cérémonie de confiance. Si le secret $s$ d'une cérémonie KZG était un jour reconstitué, l'ensemble du schéma s'effondre. Pour un state tree sécurisant toute la valeur d'Ethereum, la communauté a préféré éliminer entièrement ce risque.
+Les chiffres ci-dessus reflètent les tailles de preuves KZG. La [proposition de Verkle tree d'Ethereum](https://notes.ethereum.org/@vbuterin/verkle_tree_eip) a opté pour d'autres briques : un engagement **Pedersen**, une technique de preuve **IPA**, et une courbe **Bandersnatch**. L'architecture est la même ; les preuves individuelles sont plus volumineuses (~544 octets) et la vérification plus lente, mais le compromis en valait la peine : pas de cérémonie de confiance. Si le secret $s$ d'une cérémonie KZG était un jour reconstitué, l'ensemble du schéma s'effondrerait. Pour un state tree sécurisant toute la valeur d'Ethereum, la communauté a préféré éliminer entièrement ce risque.
 
 Au niveau des blocs, le [schéma multiproof](https://dankradfeist.de/ethereum/2021/06/18/pcs-multiproofs.html) de Dankrad Feist fusionne toutes les preuves d'ouverture d'un bloc en une seule preuve de taille constante (~200 octets), quel que soit le nombre d'accès à l'état dans le bloc.
 
 ## Et ensuite
 
-Au moment où j'écris, la question de savoir si les Verkle trees seront intégrés à Ethereum reste [ouverte](https://eips.ethereum.org/EIPS/eip-6800). Quoi qu'il en soit, les idées que nous avons construites ici (engager des données avec des polynômes, prouver des propriétés sans tout révéler) sont fondamentales pour quelque chose de plus grand : les **preuves à connaissance nulle**. Elles permettent de prouver non seulement l'accès à l'état, mais que l'exécution d'un bloc entier est correcte en une seule preuve compacte. Des preuves plus petites ne résolvent pas tout (par exemple, quelqu'un doit toujours stocker l'état en croissance permanente pour construire les blocs), mais la direction est claire : prouver plus, stocker moins.
+Les Verkle trees semblent désormais peu susceptibles d'être intégrés à Ethereum ([EIP-7864](https://eips.ethereum.org/EIPS/eip-7864)) : leur dépendance à la cryptographie sur courbes elliptiques ne résiste pas aux attaques quantiques, et la communauté s'oriente plutôt vers des alternatives basées sur les fonctions de hachage. Les idées qu'on a construites ici, cependant (engager des données avec des polynômes, prouver des propriétés sans tout révéler), sont fondamentales pour quelque chose de plus grand : les **preuves à connaissance nulle**. Elles permettent de prouver non seulement l'accès à l'état, mais que l'exécution d'un bloc entier est correcte, le tout en une seule preuve compacte. Des preuves plus petites ne résolvent pas tout (par exemple, quelqu'un doit toujours stocker l'état, qui ne cesse de croître, pour construire les blocs), mais de plus en plus, l'objectif est de prouver davantage et stocker moins.
 
 La cryptographie derrière les preuves à connaissance nulle, des circuits arithmétiques aux différences entre systèmes de preuve, est un sujet que j'explorerai bientôt sur ce blog. À suivre.
 
