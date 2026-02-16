@@ -152,7 +152,7 @@ At block level, Dankrad Feist's [multiproof scheme](https://dankradfeist.de/ethe
 
 ## What's Next
 
-Verkle trees now look [unlikely to make it into Ethereum](https://eips.ethereum.org/EIPS/eip-7864): their reliance on elliptic curve cryptography isn't quantum-resistant, and the community is leaning toward hash-based alternatives instead. The ideas we built here, though (committing to data with polynomials, proving properties without revealing everything), are foundational to something bigger: **zero-knowledge proofs**. They provide a way to prove not only state access, but that an entire block's execution was correct in a single, compact proof. Smaller proofs don't solve every problem (e.g., someone still has to store the ever-growing state to construct blocks), but increasingly, the goal is to prove more and store less.
+Verkle trees now look unlikely to make it into Ethereum: their reliance on elliptic curve cryptography isn't quantum-resistant, and the community is leaning toward a [hash-based binary state tree](https://eips.ethereum.org/EIPS/eip-7864) instead. The ideas we built here (committing to data with polynomials, proving properties without revealing everything), though, are foundational to something bigger: **zero-knowledge proofs**. They provide a way to prove not only state access, but that an entire block's execution was correct in a single, compact proof. Smaller proofs don't solve every problem (e.g., someone still has to store the ever-growing state to construct blocks), but increasingly, the goal is to prove more and store less.
 
 The cryptography behind zero-knowledge proofs, from arithmetic circuits to the difference between proof systems, is something I'll explore on this blog soon. Stay tuned.
 
