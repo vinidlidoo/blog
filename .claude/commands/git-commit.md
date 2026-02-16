@@ -18,3 +18,12 @@ Look at the diffs and decide how many commits to do. Commits should be atomic. T
 **Note:** If changes are small and belong to the last commit, use `git commit --amend` instead.
 
 Use simple git commands (e.g., `git add`, `git commit`) without the `-C` flag.
+
+## Auto-update `updated` date in blog posts
+
+Before committing, check if any **modified** (not newly created) blog post files in `content/blog/` are staged. For each one, update the `updated` field in its TOML frontmatter to today's date (`YYYY-MM-DD`).
+
+- If the post already has `updated = ...`, replace the date.
+- If the post has no `updated` field, add `updated = YYYY-MM-DD` on the line after `date = ...`.
+- **Skip new posts** (files not yet tracked by git before this commit).
+- Apply to all blog post files (`*.md` in `content/blog/`), including translations.
