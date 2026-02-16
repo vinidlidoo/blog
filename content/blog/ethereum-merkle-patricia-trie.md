@@ -1,6 +1,7 @@
 +++
 title = "Ethereum's Merkle Patricia Trie (Part 1/2)"
 date = 2026-02-03
+updated = 2026-02-16
 description = "How Ethereum stores its state, commits it to a single hash, and why that design is hitting its limits"
 
 [taxonomies]
@@ -15,7 +16,7 @@ social_media_card = "/img/merkle-patricia-trie-banner.webp"
 
 Ethereum is the second-largest blockchain by market cap, securing hundreds of billions of dollars in value. Everyone knows it's a distributed ledger. But how does it actually store all that data? Hundreds of millions of accounts. Smart contracts with their own persistent storage: token balances, NFT ownership records, DeFi positions. Over 250 GB of state, replicated across nearly a million validators worldwide, growing every day. The answer is a data structure called the Merkle Patricia Trie.
 
-That may soon change. The [Hegota network upgrade](https://ethereum-magicians.org/t/eip-8081-hegota-network-upgrade-meta-thread/26876) (EIP-8081), currently in planning, proposes to migrate Ethereum's state to a new structure called Verkle trees. It would be the biggest change to how Ethereum represents state since genesis. But to understand why it's being considered, we first need to understand what's there today, and why it's hitting its limits.
+That may soon change. Ethereum's roadmap calls for replacing it to enable **stateless validation**: verifying blocks without storing the full state. It would be the biggest structural change since genesis. To understand why, we need to understand what's there today, and why it's hitting its limits.
 
 ## The World State
 
@@ -147,9 +148,9 @@ So proof size is a binding constraint. Shrink the proofs, and stateless validati
 
 ## What's Next
 
-Enter Verkle trees, the leading proposal for the Hegota network upgrade. They replace sibling hashes with **polynomial commitments**, shrinking proofs from several KB to less than 150 bytes each.
+One approach to shrinking proofs: replace hash-based commitments with **polynomial commitments**. Verkle trees do exactly this, reducing proofs from several KB to less than 150 bytes each. Ethereum's state tree is actually now headed a different way (a [binary trie](https://eips.ethereum.org/EIPS/eip-7864) with post-quantum hash-based commitments), but the underlying cryptography is very relevant: polynomial commitments are the foundation of **zero-knowledge proofs**, a rapidly advancing field with applications across Ethereum's scaling roadmap and well beyond. [Part 2](@/blog/verkle-trees-polynomial-commitments.md) covers how Verkle trees work, building on [finite fields and elliptic curves](@/blog/math-behind-private-key.md).
 
-Part 2 will cover how Verkle trees work and the cryptography behind them: polynomial commitments and how they achieve small proofs without sacrificing security. The math builds on finite fields and elliptic curves, which I covered in [The Math Behind Your Private Key](@/blog/math-behind-private-key.md). We'll also look at why Verkle trees may not be the final answer: their reliance on elliptic curve cryptography makes them vulnerable to quantum computers (spurring quantum-resistant alternatives), and scaling state may require [more than smaller proofs](https://ethresear.ch/t/hyper-scaling-state-by-creating-new-forms-of-state/24052).
+State growth adds another problem: stateless validation may let validators skip storing state, but the full state must still exist somewhere to construct blocks. [New storage primitives](https://ethresear.ch/t/hyper-scaling-state-by-creating-new-forms-of-state/24052) like expiring storage and UTXO-style records are currently being discussed and could keep that 250+ GB from growing indefinitely.
 
 ---
 

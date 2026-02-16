@@ -1,6 +1,7 @@
 +++
 title = "Verkle Trees: Polynomial Commitments (Part 2/2)"
 date = 2026-02-13
+updated = 2026-02-16
 description = "How a single curve point can commit to 256 children, and why proofs shrink from kilobytes to bytes"
 
 [taxonomies]
@@ -15,7 +16,7 @@ social_media_card = "/img/verkle-tree-banner.webp"
 
 [Part 1](@/blog/ethereum-merkle-patricia-trie.md) ended with a problem: Merkle proofs in Ethereum's state trie are too large for stateless validation. At several MB per block, the bandwidth cost of including proofs would push solo validators toward data centers.
 
-The solution: replace hash-based commitments with **polynomial commitments**. Each node stores a curve point instead of a hash, and nodes widen from 16 children to 256. Instead of proving a leaf by providing every sibling hash on the path to the root (\~3 KB), the prover sends a small proof at each level (\~150 bytes), roughly 20x smaller. By the end of this post, you'll understand how.
+Verkle trees offer an answer: replace hash-based commitments with **polynomial commitments**. Each node stores a curve point instead of a hash, and nodes widen from 16 children to 256. Instead of proving a leaf by providing every sibling hash on the path to the root (\~3 KB), the prover sends a small proof at each level (\~150 bytes), roughly 20x smaller. By the end of this post, you'll understand how.
 
 ## From Values to a Polynomial
 
@@ -145,13 +146,13 @@ Polynomial commitments also **remove a tradeoff that Merkle trees were stuck wit
 
 ## Ethereum's Verkle Proposal: IPA
 
-The figures above reflect KZG proof sizes. Ethereum's actual [Verkle tree proposal](https://notes.ethereum.org/@vbuterin/verkle_tree_eip) swaps in different building blocks: a different commitment type (**Pedersen**), proof technique (**IPA**), and curve (**Bandersnatch**). The architecture is the same; individual proofs are larger (\~544 bytes) and verification is slower, but the tradeoff is worth it: no trusted setup. If the secret $s$ in a KZG ceremony were ever reconstructed, the entire scheme breaks. For a state tree securing all of Ethereum's value, the community preferred eliminating that risk entirely.
+The figures above reflect KZG proof sizes. Ethereum's [Verkle tree proposal](https://notes.ethereum.org/@vbuterin/verkle_tree_eip) swapped in different building blocks: a different commitment type (**Pedersen**), proof technique (**IPA**), and curve (**Bandersnatch**). The architecture is the same; individual proofs are larger (\~544 bytes) and verification slower, but the tradeoff worth it: no trusted setup. If the secret $s$ in a KZG ceremony were ever reconstructed, the entire scheme would break. For a state tree securing all of Ethereum's value, the community preferred eliminating that risk entirely.
 
 At block level, Dankrad Feist's [multiproof scheme](https://dankradfeist.de/ethereum/2021/06/18/pcs-multiproofs.html) merges all opening proofs across a block into a single constant-size proof (\~200 bytes), regardless of how many state accesses the block contains.
 
 ## What's Next
 
-As of this writing, whether Verkle trees make it into Ethereum remains an [open question](https://eips.ethereum.org/EIPS/eip-6800). Either way, the ideas we built here (committing to data with polynomials, proving properties without revealing everything) are foundational to something bigger: **zero-knowledge proofs**. They provide a way to prove not only state access, but that an entire block's execution was correct in a single, compact proof. Smaller proofs don't solve every problem (e.g., someone still has to store the ever-growing state to build blocks), but the direction is clear: prove more, store less.
+Verkle trees now look [unlikely to make it into Ethereum](https://eips.ethereum.org/EIPS/eip-7864): their reliance on elliptic curve cryptography isn't quantum-resistant, and the community is leaning toward hash-based alternatives instead. The ideas we built here, though (committing to data with polynomials, proving properties without revealing everything), are foundational to something bigger: **zero-knowledge proofs**. They provide a way to prove not only state access, but that an entire block's execution was correct in a single, compact proof. Smaller proofs don't solve every problem (e.g., someone still has to store the ever-growing state to construct blocks), but increasingly, the goal is to prove more and store less.
 
 The cryptography behind zero-knowledge proofs, from arithmetic circuits to the difference between proof systems, is something I'll explore on this blog soon. Stay tuned.
 
