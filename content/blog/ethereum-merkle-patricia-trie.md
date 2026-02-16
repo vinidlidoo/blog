@@ -159,9 +159,11 @@ State growth adds another problem: stateless validation may let validators skip 
 <details>
   <summary>Could we shrink Merkle proofs by reshaping the tree?</summary>
 
-You could by reducing tree width, but it wouldn't be worth it. Each level of trie traversal is a random disk read: the root node points to a child at one location, which points to another child elsewhere. A hexary trie with effective depth ~8-10 means 8-10 random reads per lookup. A binary trie would have depth ~30-40. Even on NVMe, random reads cost tens of microseconds each. Multiply by thousands of state accesses per block, and going binary would blow through the 12-second slot time. Hexary branching was a natural fit for hex-encoded keys, while keeping the trie shallow enough for fast lookups.
+You could by reducing tree width, but in the current architecture the tradeoffs are steep. Each level of trie traversal is a random disk read: the root node points to a child at one location, which points to another child elsewhere. A hexary trie with effective depth ~8-10 means 8-10 random reads per lookup. A binary trie would have depth ~30-40. Even on NVMe, random reads cost tens of microseconds each. Multiply by thousands of state accesses per block, and going binary would blow through the 12-second slot time. Hexary branching was a natural fit for hex-encoded keys, while keeping the trie shallow enough for fast lookups.
 
 And the payoff isn't even that good. A binary trie needs only 1 sibling hash per level instead of 15, but it's 4× deeper (since $\log_2 n = 4 \log_{16} n$). Net effect: 15× fewer siblings per level, 4× more levels, so proofs shrink by roughly 15/4 ≈ 4×. If hexary proofs run \~10 MB per block, binary gets you to \~2.5 MB... still a significant network overhead.
+
+Under stateless validation, where validators verify proofs rather than traverse the trie, depth stops being a bottleneck, but the proof-size overhead remains.
 
 </details>
 

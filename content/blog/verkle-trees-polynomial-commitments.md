@@ -142,7 +142,7 @@ That's three opening proofs (\~48 bytes each), about 150 bytes total.
 
 </details>
 
-Polynomial commitments also **remove a tradeoff that Merkle trees were stuck with.** In a Merkle tree, narrower means smaller proofs (fewer siblings per level), but deeper trees mean more random disk reads per lookup (the bottleneck from [Part 1's appendix](@/blog/ethereum-merkle-patricia-trie.md#appendix)). Since Verkle proof size doesn't grow with width, we can make nodes wide and the tree shallow: small proofs *and* fast disk access.
+Polynomial commitments also **remove a tradeoff that hash-based Merkle proofs face.** In a Merkle tree, narrower means smaller proofs (fewer siblings per level), but deeper means more disk reads per lookup (the bottleneck from [Part 1's appendix](@/blog/ethereum-merkle-patricia-trie.md#appendix)). Stateless validation eases the depth side, but proof size still grows with width. With polynomial commitments, it doesn't: nodes can be wide and the tree shallow.
 
 ## Ethereum's Verkle Proposal: IPA
 
