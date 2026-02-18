@@ -1,6 +1,7 @@
 +++
 title = "When Parquet Files Beat CSV"
 date = 2026-01-23
+updated = 2026-02-18
 description = "The physical reality that makes file layout matter"
 draft = false
 
@@ -123,9 +124,9 @@ Using the footer from our earlier example: name is at offset 0 (2.1MB), salary i
 
 ### 2. Compression
 
-Fewer bytes means faster I/O. Compression amplifies the projection efficiency gains.
+Fewer bytes means *even* faster I/O. The columns you do read can be made smaller still.
 
-These techniques are applied at the page level within each column chunk. Each chunk contains values from a single column, so all values share the same type. And in practice, values within a column often follow patterns (repeated categories, sequential timestamps, sorted keys). Parquet exploits both:
+Within each column chunk, all values share the same type, and in practice they often follow patterns: repeated categories, sequential timestamps, sorted keys. Parquet exploits these patterns through **encoding**: column-aware transformations applied at the page level.
 
 **Dictionary encoding** for low-cardinality strings (few unique values). Consider 8 department names repeated across 1M rows. Instead of storing "Engineering" 200k times (~12 bytes each), build a dictionary mapping each unique value to a small integer: `{0: "Design", 1: "Engineering", ...}`. Then store just the integer codes (1 byte each) instead of the full strings. ~12:1 compression.
 
@@ -133,7 +134,7 @@ These techniques are applied at the page level within each column chunk. Each ch
 
 **Run-length encoding (RLE)** for consecutive repeated values. If data is sorted, you get long runs:[^3] `Design, Design, ...(50k times)..., Engineering, ...`. Instead of repeating the value, store it once with a count: `(Design, 50000), (Engineering, 200000), ...`. Compression scales with run length; a 50k run becomes a single (value, count) pair.
 
-There are many other techniques (bit packing, various compression codecs), but these illustrate the core idea: **grouping values by column exposes patterns that compress well**.
+After encoding, generic **compression** (Snappy, Zstd, or others) is applied to the result for further reduction. Both benefit from columnar layout: **grouping values by column exposes patterns that shrink file size**.
 
 ### 3. Predicate Pushdown
 
