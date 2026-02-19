@@ -124,7 +124,7 @@ Using the footer from our earlier example: name is at offset 0 (2.1MB), salary i
 
 ### 2. Compression
 
-Fewer bytes means *even* faster I/O. The columns you do read can be made smaller still.
+Fewer bytes means even faster I/O. The columns you do read can be made smaller still.
 
 Within each column chunk, all values share the same type, and in practice they often follow patterns: repeated categories, sequential timestamps, sorted keys. Parquet exploits these patterns through **encoding**: column-aware transformations applied at the page level.
 

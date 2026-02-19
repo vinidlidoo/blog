@@ -1,7 +1,7 @@
 +++
 title = "Quand Parquet supplante CSV"
 date = 2026-01-23
-updated = 2026-01-25
+updated = 2026-02-18
 description = "La réalité physique qui rend la disposition des fichiers déterminante"
 draft = false
 
@@ -45,6 +45,7 @@ Passer de 10 octets à 1 Mo (100 000 fois plus de données) ne double même pas 
 Le même principe s'applique au stockage objet cloud comme S3. Les disques d'AWS ont toujours une surcharge de seek, mais de notre point de vue le goulot d'étranglement est la surcharge des requêtes HTTP (TCP, TLS, aller-retour). Le batching ici signifie demander de grandes plages d'octets par requête HTTP. Contrairement au disque (une seule tête de lecture), S3 permet d'émettre plusieurs requêtes en parallèle, mais la concurrence est limitée donc l'objectif reste le même : **moins de requêtes avec des plages d'octets plus grandes**.
 
 {% table(wide=true) %}
+
 | Stockage | Latence d'accès | Débit | Implication |
 |----------|-----------------|-------|-------------|
 | HDD | ~10 ms (seek mécanique) | 150 Mo/s | La latence domine ; le batching est essentiel |
@@ -57,6 +58,7 @@ Le même principe s'applique au stockage objet cloud comme S3. Les disques d'AWS
 Les données analytiques sont typiquement tabulaires : lignes et colonnes. Quand on sérialise une table en séquence d'octets, il y a deux choix naturels. Considérons une simple table d'employés :
 
 {% table() %}
+
 | name  | age | salary | dept |
 |-------|-----|--------|------|
 | Alice | 32  | 95000  | Eng  |
@@ -122,9 +124,9 @@ En utilisant le footer de notre exemple précédent : name est à l'offset 0 (2,
 
 ### 2. Compression
 
-Moins d'octets signifie des E/S plus rapides. La compression amplifie les gains d'efficacité de projection.
+Moins d'octets signifie des E/S encore plus rapides. Les colonnes effectivement lues peuvent être rendues plus compactes encore.
 
-Ces techniques sont appliquées au niveau des pages dans chaque column chunk. Chaque chunk contient des valeurs d'une seule colonne, donc toutes les valeurs partagent le même type. Et en pratique, les valeurs d'une colonne suivent souvent des motifs (catégories répétées, timestamps séquentiels, clés triées). Parquet exploite les deux :
+Dans chaque column chunk, toutes les valeurs partagent le même type, et en pratique elles suivent souvent des motifs : catégories répétées, timestamps séquentiels, clés triées. Parquet exploite ces motifs via l'**encodage** : des transformations propres à chaque colonne, appliquées au niveau des pages.
 
 **L'encodage par dictionnaire** pour les chaînes de caractères à faible cardinalité (peu de valeurs uniques). Considérons 8 noms de départements répétés sur 1 million de lignes. Au lieu de stocker « Engineering » 200 000 fois (~12 octets chacun), on construit un dictionnaire associant chaque valeur unique à un petit entier : `{0: "Design", 1: "Engineering", ...}`. Puis on stocke juste les codes entiers (1 octet chacun) au lieu des chaînes complètes. Compression d'environ 12:1.
 
@@ -132,7 +134,7 @@ Ces techniques sont appliquées au niveau des pages dans chaque column chunk. Ch
 
 **L'encodage par plages (RLE)** pour les valeurs répétées consécutives. Si les données sont triées, on obtient de longues séquences :[^3] `Design, Design, ...(50k fois)..., Engineering, ...`. Au lieu de répéter la valeur, on la stocke une fois avec un compteur : `(Design, 50000), (Engineering, 200000), ...`. La compression augmente avec la longueur de la séquence ; une séquence de 50 000 devient une seule paire (valeur, compteur).
 
-Il existe de nombreuses autres techniques (bit packing, divers codecs de compression), mais celles-ci illustrent l'idée centrale : **regrouper les valeurs par colonne expose des motifs qui se compressent bien**.
+Après l'encodage, une **compression** générique (Snappy, Zstd ou autres) est appliquée au résultat pour un gain supplémentaire. Les deux bénéficient de la disposition en colonnes : **regrouper les valeurs par colonne expose des motifs qui réduisent la taille du fichier**.
 
 ### 3. Predicate Pushdown
 
