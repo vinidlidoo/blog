@@ -1,0 +1,1395 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet href="https://vinidlidoo.github.io/feed_style.xsl" type="text/xsl"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <tabi:metadata xmlns:tabi="https://github.com/welpo/tabi">
+        <tabi:base_url>https:&#x2F;&#x2F;vinidlidoo.github.io</tabi:base_url>
+        <tabi:separator>
+            •
+        </tabi:separator>
+        <tabi:about_feeds>This is a web feed, also known as an Atom feed. Subscribe by copying the URL from the address bar into your newsreader</tabi:about_feeds>
+        <tabi:visit_the_site>Visit website</tabi:visit_the_site>
+        <tabi:recent_posts>Recent posts</tabi:recent_posts>
+        <tabi:last_updated_on>Updated on $DATE</tabi:last_updated_on>
+        <tabi:default_theme></tabi:default_theme>
+        <tabi:post_listing_date>date</tabi:post_listing_date>
+        <tabi:current_section>vinidlidoo</tabi:current_section>
+    </tabi:metadata><link rel="extra-stylesheet" href="https://vinidlidoo.github.io/skins/indigo_ingot.css?h=d429472afbb246441b1a" /><title>vinidlidoo</title>
+        <subtitle>A personal blog</subtitle>
+    <link href="https://vinidlidoo.github.io/atom.xml" rel="self" type="application/atom+xml"/>
+    <link href="https://vinidlidoo.github.io" rel="alternate" type="text/html"/>
+    <generator uri="https://www.getzola.org/">Zola</generator><updated>2026-02-18T00:00:00+00:00</updated><id>https://vinidlidoo.github.io/atom.xml</id><entry xml:lang="en">
+        <title>Verkle Trees: Polynomial Commitments (Part 2&#x2F;2)</title>
+        <published>2026-02-13T00:00:00+00:00</published>
+        <updated>2026-02-16T00:00:00+00:00</updated>
+        <author>
+            <name>Vincent</name>
+        </author>
+        <link rel="alternate" href="https://vinidlidoo.github.io/blog/verkle-trees-polynomial-commitments/" type="text/html"/>
+        <id>https://vinidlidoo.github.io/blog/verkle-trees-polynomial-commitments/</id>
+        
+            <content type="html">&lt;p&gt;&lt;img src=&quot;&#x2F;img&#x2F;verkle-tree-banner.webp&quot; alt=&quot;Verkle tree: smooth polynomial curves converging from many leaf nodes to a single glowing commitment point&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;a href=&quot;https:&#x2F;&#x2F;vinidlidoo.github.io&#x2F;blog&#x2F;ethereum-merkle-patricia-trie&#x2F;&quot;&gt;Part 1&lt;&#x2F;a&gt; ended with a problem: Merkle proofs in Ethereum&#x27;s state trie are too large for stateless validation. At several MB per block, the bandwidth cost of including proofs would push solo validators toward data centers.&lt;&#x2F;p&gt;
+&lt;p&gt;Verkle trees offer an answer: replace hash-based commitments with &lt;strong&gt;polynomial commitments&lt;&#x2F;strong&gt;. Each node stores a curve point instead of a hash, and nodes widen from 16 children to 256. Instead of proving a leaf by providing every sibling hash on the path to the root (~3 KB), the prover sends a small proof at each level (~150 bytes), roughly 20x smaller. By the end of this post, you&#x27;ll understand how.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;from-values-to-a-polynomial&quot;&gt;From Values to a Polynomial&lt;&#x2F;h2&gt;
+&lt;p&gt;The central idea is to build a &lt;strong&gt;vector commitment&lt;&#x2F;strong&gt;: a scheme that commits to many values and lets you prove any single one without revealing the others. This is what puts the &quot;V&quot; in Verkle (&lt;strong&gt;V&lt;&#x2F;strong&gt;ector commitment + M&lt;strong&gt;erkle&lt;&#x2F;strong&gt;).&lt;sup class=&quot;footnote-reference&quot; id=&quot;fr-1-1&quot;&gt;&lt;a href=&quot;#fn-1&quot;&gt;1&lt;&#x2F;a&gt;&lt;&#x2F;sup&gt; Same tree structure, different commitment at each node.&lt;&#x2F;p&gt;
+&lt;p&gt;We do it with polynomials. Represent all 256 children of a node as evaluations of a single polynomial:&lt;&#x2F;p&gt;
+&lt;p&gt;$$P(x) = a_0 + a_1 x + a_2 x^2 + \cdots + a_{255} x^{255}$$&lt;&#x2F;p&gt;
+&lt;p&gt;We pick positions $0, 1, \ldots, 255$ and choose the coefficients $a_0, \ldots, a_{255}$ so that:&lt;&#x2F;p&gt;
+&lt;p&gt;$$P(i) = v_i \quad \text{for } i = 0, 1, \ldots, 255$$&lt;&#x2F;p&gt;
+&lt;p&gt;This gives us a degree-255 polynomial that passes through every child value. Such a polynomial always exists and is unique: any $n$ position-value pairs determine exactly one polynomial of degree $n - 1$.&lt;sup class=&quot;footnote-reference&quot; id=&quot;fr-2-1&quot;&gt;&lt;a href=&quot;#fn-2&quot;&gt;2&lt;&#x2F;a&gt;&lt;&#x2F;sup&gt; The algorithm that finds this polynomial is called &lt;strong&gt;Lagrange interpolation&lt;&#x2F;strong&gt;.&lt;&#x2F;p&gt;
+&lt;details&gt;
+&lt;summary&gt;How Lagrange interpolation works&lt;&#x2F;summary&gt;
+&lt;p&gt;The idea: build basis polynomials that each equal 1 at one point and 0 at all others, then take their weighted sum. For $n$ points, the &lt;strong&gt;Lagrange basis&lt;&#x2F;strong&gt; polynomial for position $j$ is:&lt;&#x2F;p&gt;
+&lt;p&gt;$$L_j(x) = \prod_{\substack{m=0 \\ m \neq j}}^{n-1} \frac{x - m}{j - m}$$&lt;&#x2F;p&gt;
+&lt;p&gt;$L_j(j) = 1$ and $L_j(m) = 0$ for all $m \neq j$. The full polynomial is their weighted sum:&lt;&#x2F;p&gt;
+&lt;p&gt;$$P(x) = \sum_{i=0}^{n-1} v_i L_i(x)$$&lt;&#x2F;p&gt;
+&lt;p&gt;For example, with 4 points, the basis polynomial for position 0 is:&lt;&#x2F;p&gt;
+&lt;p&gt;$$L_0(x) = \frac{(x-1)(x-2)(x-3)}{(0-1)(0-2)(0-3)}$$&lt;&#x2F;p&gt;
+&lt;p&gt;This equals 1 when $x = 0$ and 0 at $x = 1, 2, 3$. The full polynomial $P(x) = v_0 L_0(x) + v_1 L_1(x) + v_2 L_2(x) + v_3 L_3(x)$ passes through all four values.&lt;&#x2F;p&gt;
+&lt;&#x2F;details&gt;
+&lt;p&gt;So far this is just algebra. We have a polynomial that encodes the children, but sharing $P$ directly would mean transmitting all 256 coefficients, no better than sending the children themselves. We need a way to compress $P$ into a short commitment. That&#x27;s where elliptic curves come in.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;one-curve-point-for-an-entire-polynomial&quot;&gt;One Curve Point for an Entire Polynomial&lt;&#x2F;h2&gt;
+&lt;p&gt;Heads up: all arithmetic from here on (the polynomial&#x27;s coefficients, its evaluations, the elliptic curve&#x27;s scalars) happens over the same &lt;a href=&quot;https:&#x2F;&#x2F;vinidlidoo.github.io&#x2F;blog&#x2F;math-behind-private-key&#x2F;#fields-numbers-with-arithmetic&quot;&gt;&lt;strong&gt;finite field&lt;&#x2F;strong&gt;&lt;&#x2F;a&gt; $\mathbb{F}_p$.&lt;&#x2F;p&gt;
+&lt;p&gt;Suppose there&#x27;s a secret scalar $s$ that nobody knows, but everyone has access to the following &lt;strong&gt;public parameters&lt;&#x2F;strong&gt;:&lt;&#x2F;p&gt;
+&lt;p&gt;$$G, \ sG, \ s^2G, \ \ldots, \ s^dG$$&lt;&#x2F;p&gt;
+&lt;p&gt;How $s$ is generated and destroyed is covered in the &lt;a href=&quot;https:&#x2F;&#x2F;vinidlidoo.github.io&#x2F;blog&#x2F;verkle-trees-polynomial-commitments&#x2F;#trusted-setup&quot;&gt;Appendix&lt;&#x2F;a&gt;. For now, take these points as given. To commit to $P(x)$, the prover computes:&lt;&#x2F;p&gt;
+&lt;p&gt;$$\begin{aligned}
+C &amp;amp;= a_0 \cdot G + a_1 \cdot sG + \cdots + a_d \cdot s^dG \\
+&amp;amp;= P(s) \cdot G
+\end{aligned}$$&lt;&#x2F;p&gt;
+&lt;p&gt;Note that the prover doesn&#x27;t need $s$ to compute $C$: they just combine their polynomial&#x27;s coefficients with the public parameters.&lt;sup class=&quot;footnote-reference&quot; id=&quot;fr-3-1&quot;&gt;&lt;a href=&quot;#fn-3&quot;&gt;3&lt;&#x2F;a&gt;&lt;&#x2F;sup&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;The result is a single curve point (48 bytes compressed) that commits to the entire polynomial. Just as a collision-resistant hash won&#x27;t produce the same output for two different inputs, this commitment is &lt;strong&gt;binding&lt;&#x2F;strong&gt;: two different polynomials $P \neq Q$ satisfy $P(s) \neq Q(s)$ with overwhelming probability, so their commitments $C = P(s) \cdot G$ are distinct.&lt;sup class=&quot;footnote-reference&quot; id=&quot;fr-4-1&quot;&gt;&lt;a href=&quot;#fn-4&quot;&gt;4&lt;&#x2F;a&gt;&lt;&#x2F;sup&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Each Verkle node now stores this $C$ instead of a hash. We have the commitment; now we need a way to prove what&#x27;s inside it.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;opening-proofs-proving-a-single-value&quot;&gt;Opening Proofs: Proving a Single Value&lt;&#x2F;h2&gt;
+&lt;p&gt;Alice wants to &lt;strong&gt;open&lt;&#x2F;strong&gt; the commitment $C$ at position $z$ to verify it holds value $y$. The prover must convince her that $P(z) = y$ without revealing $P$ or any other child. How?&lt;&#x2F;p&gt;
+&lt;p&gt;The key insight comes from polynomial algebra: if $P(z) = y$, then $P(x) - y$ has a root at $x = z$, so $(x - z)$ divides it evenly. We define the &lt;strong&gt;quotient polynomial&lt;&#x2F;strong&gt;:&lt;&#x2F;p&gt;
+&lt;p&gt;$$Q(x) = \frac{P(x) - y}{x - z}$$&lt;&#x2F;p&gt;
+&lt;p&gt;This division is exact if and only if $P(z) = y$. A false claim leaves a remainder, so the prover can&#x27;t produce a valid $Q$.&lt;&#x2F;p&gt;
+&lt;p&gt;The &lt;strong&gt;opening proof&lt;&#x2F;strong&gt; $\pi$ is simply a commitment to $Q$:&lt;&#x2F;p&gt;
+&lt;p&gt;$$\pi = Q(s) \cdot G$$&lt;&#x2F;p&gt;
+&lt;p&gt;One curve point. No siblings needed.&lt;&#x2F;p&gt;
+&lt;p&gt;Now the verifier needs to check that $Q$ is legitimate. If the division was exact, multiplying back gives a polynomial identity that holds at every point, including $x = s$:&lt;&#x2F;p&gt;
+&lt;p&gt;$$P(s) - y = Q(s) \cdot (s - z) \tag{1}$$&lt;&#x2F;p&gt;
+&lt;p&gt;The verifier can&#x27;t check this equation directly. They have $C = P(s) \cdot G$ and $\pi = Q(s) \cdot G$, but the curve points &lt;strong&gt;hide&lt;&#x2F;strong&gt; their scalars: extracting $P(s)$ or $Q(s)$ from them is the &lt;a href=&quot;https:&#x2F;&#x2F;vinidlidoo.github.io&#x2F;blog&#x2F;math-behind-private-key&#x2F;&quot;&gt;discrete logarithm problem&lt;&#x2F;a&gt;. And $(s - z)$ requires knowing $s$, which nobody has.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;verifying-the-proof-with-pairings&quot;&gt;Verifying the Proof with Pairings&lt;&#x2F;h2&gt;
+&lt;p&gt;A &lt;strong&gt;pairing&lt;&#x2F;strong&gt; $e$ is a function that takes a point from one curve group ($\mathbb{G}_1$) and a point from another ($\mathbb{G}_2$) and outputs an element in a target group, with the property of &lt;strong&gt;bilinearity&lt;&#x2F;strong&gt;:&lt;&#x2F;p&gt;
+&lt;p&gt;$$e(aG_1, bG_2) = e(G_1, G_2)^{ab}$$&lt;&#x2F;p&gt;
+&lt;p&gt;Feed in a point hiding some scalar $a$ and another hiding $b$, and the output captures their product. We can&#x27;t extract $a$ or $b$, but we can check whether &lt;strong&gt;two products are equal&lt;&#x2F;strong&gt; by comparing pairing outputs.&lt;sup class=&quot;footnote-reference&quot; id=&quot;fr-5-1&quot;&gt;&lt;a href=&quot;#fn-5&quot;&gt;5&lt;&#x2F;a&gt;&lt;&#x2F;sup&gt; Pairings require two distinct curve groups; the $G$ we&#x27;ve been using lives in $\mathbb{G}_1$ (becoming $G_1$), and $G_2$ is a generator in $\mathbb{G}_2$. The public parameters also include $sG_2$.&lt;&#x2F;p&gt;
+&lt;p&gt;The strategy: express each side of equation $(1)$ as a product of two scalars, then feed one factor into $\mathbb{G}_1$ and the other into $\mathbb{G}_2$. The right side naturally factors as $Q(s) \cdot (s - z)$. The left side is just $(P(s) - y) \cdot 1$, so we pair it with the plain generator $G_2$:&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;Left side&lt;&#x2F;strong&gt;: $(P(s) - y)G_1 = C - yG_1$, so&lt;&#x2F;p&gt;
+&lt;p&gt;$$e(C - yG_1, G_2) = e(G_1, G_2)^{P(s) - y}$$&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;Right side&lt;&#x2F;strong&gt;: $Q(s) \cdot G_1 = \pi$ and $(s - z)G_2 = sG_2 - zG_2$, so&lt;&#x2F;p&gt;
+&lt;p&gt;$$e(\pi, sG_2 - zG_2) = e(G_1, G_2)^{Q(s)(s-z)} $$&lt;&#x2F;p&gt;
+&lt;p&gt;These are equal if and only if equation $(1)$ holds, so verification reduces to a single check:&lt;&#x2F;p&gt;
+&lt;p&gt;$$e(C - yG_1, G_2) = e(\pi, sG_2 - zG_2) \tag{2}$$&lt;&#x2F;p&gt;
+&lt;p&gt;The verifier knows every variable in this equation: $C$ and $\pi$ came from the prover, $y$ and $z$ are the claimed value and position, and $G_1$, $G_2$, $sG_2$ are public parameters. One pairing check, no siblings.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;putting-it-all-together&quot;&gt;Putting It All Together&lt;&#x2F;h2&gt;
+&lt;p&gt;Step back and consider what we just built. A node with 256 children gets encoded as a polynomial and mapped to a single curve point. To open one child, the prover divides out the corresponding root, producing a quotient polynomial, and maps it to a second curve point. A pairing function then reaches across two curve groups and, through bilinearity, verifies the division was exact from the curve points alone. Two points, one check, done. That this works at all feels like reaching through a crack in the universe.&lt;&#x2F;p&gt;
+&lt;p&gt;This commit-open-verify scheme is called &lt;strong&gt;&lt;a href=&quot;https:&#x2F;&#x2F;en.wikipedia.org&#x2F;wiki&#x2F;Commitment_scheme#KZG_commitment&quot;&gt;KZG&lt;&#x2F;a&gt;&lt;&#x2F;strong&gt; (Kate-Zaverucha-Goldberg): produce one commitment per node, one opening proof per level. A Merkle tree with width 16 needs ~8-10 levels and 15 sibling hashes (480 bytes) at each one. A Verkle tree with width 256 covers the same state in just ~3 levels,&lt;sup class=&quot;footnote-reference&quot; id=&quot;fr-6-1&quot;&gt;&lt;a href=&quot;#fn-6&quot;&gt;6&lt;&#x2F;a&gt;&lt;&#x2F;sup&gt; with a single ~48-byte proof at each:&lt;&#x2F;p&gt;
+&lt;img src=&quot;&#x2F;img&#x2F;merkle-vs-verkle-comparison.webp&quot; alt=&quot;Side-by-side comparison of Merkle vs Verkle proof structure: Merkle needs 15 sibling hashes per level while Verkle needs only one proof per level, resulting in ~20x smaller proofs&quot;&gt;
+&lt;details&gt;
+&lt;summary&gt;Walkthrough&lt;&#x2F;summary&gt;
+&lt;p&gt;Alice wants to verify her ETH balance. Her hashed address gives the positions $k_0, k_1, k_2$ that trace a path: root $\to$ $C_1$ $\to$ $C_2$ $\to$ leaf $v$. The prover sends Alice the leaf value $v$, the intermediate commitments $C_1$ and $C_2$, and an opening proof $\pi_i$ at each level. Alice verifies bottom-up:&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;Does $C_2$ open at position $k_2$ to $v$? Check $\pi_2$.&lt;&#x2F;li&gt;
+&lt;li&gt;Does $C_1$ open at position $k_1$ to $C_2$?&lt;sup class=&quot;footnote-reference&quot; id=&quot;fr-7-1&quot;&gt;&lt;a href=&quot;#fn-7&quot;&gt;7&lt;&#x2F;a&gt;&lt;&#x2F;sup&gt; Check $\pi_1$.&lt;&#x2F;li&gt;
+&lt;li&gt;Does $C_0$ open at position $k_0$ to $C_1$? Check $\pi_0$.&lt;&#x2F;li&gt;
+&lt;li&gt;Does $C_0$ match the state root in the block header? Done.&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;That&#x27;s three opening proofs (~48 bytes each), about 150 bytes total.&lt;&#x2F;p&gt;
+&lt;&#x2F;details&gt;
+&lt;p&gt;Polynomial commitments also &lt;strong&gt;remove a tradeoff that hash-based Merkle proofs face.&lt;&#x2F;strong&gt; In a Merkle tree, narrower means smaller proofs (fewer siblings per level), but deeper means more disk reads per lookup (the bottleneck from &lt;a href=&quot;https:&#x2F;&#x2F;vinidlidoo.github.io&#x2F;blog&#x2F;ethereum-merkle-patricia-trie&#x2F;#appendix&quot;&gt;Part 1&#x27;s appendix&lt;&#x2F;a&gt;). Stateless validation eases the depth side, but proof size still grows with width. With polynomial commitments, it doesn&#x27;t: nodes can be wide and the tree shallow.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;ethereum-s-verkle-proposal-ipa&quot;&gt;Ethereum&#x27;s Verkle Proposal: IPA&lt;&#x2F;h2&gt;
+&lt;p&gt;The figures above reflect KZG proof sizes. Ethereum&#x27;s &lt;a href=&quot;https:&#x2F;&#x2F;notes.ethereum.org&#x2F;@vbuterin&#x2F;verkle_tree_eip&quot;&gt;Verkle tree proposal&lt;&#x2F;a&gt; swapped in different building blocks: a different commitment type (&lt;strong&gt;Pedersen&lt;&#x2F;strong&gt;), proof technique (&lt;strong&gt;IPA&lt;&#x2F;strong&gt;), and curve (&lt;strong&gt;Bandersnatch&lt;&#x2F;strong&gt;). The architecture is the same; individual proofs are larger (~544 bytes) and verification slower, but the tradeoff worth it: no trusted setup. If the secret $s$ in a KZG ceremony were ever reconstructed, the entire scheme would break. For a state tree securing all of Ethereum&#x27;s value, the community preferred eliminating that risk entirely.&lt;&#x2F;p&gt;
+&lt;p&gt;At block level, Dankrad Feist&#x27;s &lt;a href=&quot;https:&#x2F;&#x2F;dankradfeist.de&#x2F;ethereum&#x2F;2021&#x2F;06&#x2F;18&#x2F;pcs-multiproofs.html&quot;&gt;multiproof scheme&lt;&#x2F;a&gt; merges all opening proofs across a block into a single constant-size proof (~200 bytes), regardless of how many state accesses the block contains.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;what-s-next&quot;&gt;What&#x27;s Next&lt;&#x2F;h2&gt;
+&lt;p&gt;Verkle trees now look unlikely to make it into Ethereum: their reliance on elliptic curve cryptography isn&#x27;t quantum-resistant, and the community is leaning toward a &lt;a href=&quot;https:&#x2F;&#x2F;eips.ethereum.org&#x2F;EIPS&#x2F;eip-7864&quot;&gt;hash-based binary state tree&lt;&#x2F;a&gt; instead. The ideas we built here (committing to data with polynomials, proving properties without revealing everything), though, are foundational to something bigger: &lt;strong&gt;zero-knowledge proofs&lt;&#x2F;strong&gt;. They provide a way to prove not only state access, but that an entire block&#x27;s execution was correct in a single, compact proof. Smaller proofs don&#x27;t solve every problem (e.g., someone still has to store the ever-growing state to construct blocks), but increasingly, the goal is to prove more and store less.&lt;&#x2F;p&gt;
+&lt;p&gt;The cryptography behind zero-knowledge proofs, from arithmetic circuits to the difference between proof systems, is something I&#x27;ll explore on this blog soon. Stay tuned.&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;appendix&quot;&gt;Appendix&lt;&#x2F;h2&gt;
+&lt;p&gt;&lt;a id=&quot;trusted-setup&quot;&gt;&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;details&gt;
+&lt;summary&gt;The Trusted Setup Ceremony&lt;&#x2F;summary&gt;
+&lt;p&gt;KZG commitments require public parameters: the curve points $G, sG, s^2G, \ldots, s^dG$. The secret $s$ must be destroyed after generation. How do you destroy a number that nobody should ever know?&lt;&#x2F;p&gt;
+&lt;p&gt;The ceremony uses &lt;strong&gt;multi-party computation&lt;&#x2F;strong&gt;. Participants contribute randomness sequentially:&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;Participant 1 picks a random $s_1$, computes $s_1^i G$ for each power $i$, publishes the result, and destroys $s_1$.&lt;&#x2F;li&gt;
+&lt;li&gt;Participant 2 picks $s_2$, &quot;re-randomizes&quot; the previous output to produce $(s_1 s_2)^i G$, and destroys $s_2$.&lt;&#x2F;li&gt;
+&lt;li&gt;This continues for all participants.&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;The final output is $(s_1 s_2 \cdots s_n)^i G$. The combined secret $s = s_1 s_2 \cdots s_n$ is secure as long as &lt;strong&gt;at least one participant&lt;&#x2F;strong&gt; honestly destroyed their contribution. Even if every other participant is malicious, one honest party is enough.&lt;&#x2F;p&gt;
+&lt;p&gt;Ethereum ran exactly this kind of ceremony for &lt;a href=&quot;https:&#x2F;&#x2F;eips.ethereum.org&#x2F;EIPS&#x2F;eip-4844&quot;&gt;EIP-4844&lt;&#x2F;a&gt; (proto-danksharding) in early 2023. Over 140,000 participants contributed, making it the largest trusted setup ceremony ever. The resulting parameters are used for blob commitments on Ethereum today.&lt;&#x2F;p&gt;
+&lt;&#x2F;details&gt;
+&lt;hr &#x2F;&gt;
+&lt;section class=&quot;footnotes&quot;&gt;
+&lt;ol class=&quot;footnotes-list&quot;&gt;
+&lt;li id=&quot;fn-1&quot;&gt;
+&lt;p&gt;The name and construction were introduced by John Kuszmaul in &lt;a href=&quot;https:&#x2F;&#x2F;math.mit.edu&#x2F;research&#x2F;highschool&#x2F;primes&#x2F;materials&#x2F;2018&#x2F;Kuszmaul.pdf&quot;&gt;Verkle Trees&lt;&#x2F;a&gt; (2018). &lt;a href=&quot;#fr-1-1&quot;&gt;↩&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li id=&quot;fn-2&quot;&gt;
+&lt;p&gt;Existence: Lagrange interpolation constructs $P$ directly. Uniqueness: suppose $P$ and $Q$ both pass through the same $n$ points. Then $D = P - Q$ is zero at all $n$ points, but $D$ has degree at most $n-1$, so at most $n-1$ roots. Contradiction unless $D = 0$, i.e., $P = Q$. See &lt;a href=&quot;https:&#x2F;&#x2F;en.wikipedia.org&#x2F;wiki&#x2F;Polynomial_interpolation&quot;&gt;Polynomial interpolation&lt;&#x2F;a&gt; (Unisolvence Theorem). &lt;a href=&quot;#fr-2-1&quot;&gt;↩&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li id=&quot;fn-3&quot;&gt;
+&lt;p&gt;This works because scalar multiplication distributes over point addition: $a_0 \cdot G + a_1 \cdot sG = (a_0 + a_1 s)G$. The map $f(a) = aG$ is a group homomorphism from scalars to curve points. &lt;a href=&quot;#fr-3-1&quot;&gt;↩&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li id=&quot;fn-4&quot;&gt;
+&lt;p&gt;If $P \neq Q$, then $D = P - Q$ is a non-zero polynomial of degree at most $d$, so it has at most $d$ roots in $\mathbb{F}_p$. For the commitments to collide, $s$ would have to be one of those $\leq d$ values out of $p$ total. That probability is at most $d&#x2F;p$, which is negligible since $p \sim 2^{255}$ and $d = 255$. &lt;a href=&quot;#fr-4-1&quot;&gt;↩&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li id=&quot;fn-5&quot;&gt;
+&lt;p&gt;Pairing-friendly curves have special structure that enables this. Not all elliptic curves support pairings. BLS12-381, used in Ethereum today, was designed specifically for efficient pairings. &lt;a href=&quot;#fr-5-1&quot;&gt;↩&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li id=&quot;fn-6&quot;&gt;
+&lt;p&gt;With 256 children per node, $256^3 \approx 16.7$ million and $256^4 \approx 4.3$ billion. Ethereum has roughly 250 million accounts plus contract storage slots, so depth 3-4 covers the current state. &lt;a href=&quot;#fr-6-1&quot;&gt;↩&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li id=&quot;fn-7&quot;&gt;
+&lt;p&gt;Polynomial evaluations must be scalars, but $C_2$ and $C_1$ are curve points. Branch nodes handle this by mapping each child commitment to a field element (e.g., its serialized x-coordinate) before interpolating the polynomial. The same applies to step 3. &lt;a href=&quot;#fr-7-1&quot;&gt;↩&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;&#x2F;section&gt;
+</content>
+        <summary type="html">How a single curve point can commit to 256 children, and why proofs shrink from kilobytes to bytes</summary>
+        </entry><entry xml:lang="en">
+        <title>Ethereum&#x27;s Merkle Patricia Trie (Part 1&#x2F;2)</title>
+        <published>2026-02-03T00:00:00+00:00</published>
+        <updated>2026-02-16T00:00:00+00:00</updated>
+        <author>
+            <name>Vincent</name>
+        </author>
+        <link rel="alternate" href="https://vinidlidoo.github.io/blog/ethereum-merkle-patricia-trie/" type="text/html"/>
+        <id>https://vinidlidoo.github.io/blog/ethereum-merkle-patricia-trie/</id>
+        
+            <content type="html">&lt;p&gt;&lt;img src=&quot;&#x2F;img&#x2F;merkle-patricia-trie-banner.webp&quot; alt=&quot;Ethereum&amp;#39;s Merkle Patricia Trie&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Ethereum is the second-largest blockchain by market cap, securing hundreds of billions of dollars in value. Everyone knows it&#x27;s a distributed ledger. But how does it actually store all that data? Hundreds of millions of accounts. Smart contracts with their own persistent storage: token balances, NFT ownership records, DeFi positions. Over 250 GB of state, replicated across nearly a million validators worldwide, growing every day. The answer is a data structure called the Merkle Patricia Trie.&lt;&#x2F;p&gt;
+&lt;p&gt;That may soon change. Ethereum&#x27;s roadmap calls for replacing it to enable &lt;strong&gt;stateless validation&lt;&#x2F;strong&gt;: verifying blocks without storing the full state. It would be the biggest structural change since genesis. To understand why, we need to understand what&#x27;s there today, and why it&#x27;s hitting its limits.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;the-world-state&quot;&gt;The World State&lt;&#x2F;h2&gt;
+&lt;p&gt;Ethereum maintains a &lt;strong&gt;world state&lt;&#x2F;strong&gt;: a key-value store where each key is an address and each value is an account.&lt;&#x2F;p&gt;
+&lt;p&gt;There are two account types. &lt;strong&gt;Externally owned accounts&lt;&#x2F;strong&gt; (EOAs) are controlled by private keys and can initiate transactions. &lt;strong&gt;Contract accounts&lt;&#x2F;strong&gt; hold code and are triggered by transactions. Both types share the same four data fields:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;nonce&lt;&#x2F;strong&gt;: a counter that increments with each transaction&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;balance&lt;&#x2F;strong&gt;: native ETH held&lt;sup class=&quot;footnote-reference&quot; id=&quot;fr-1-1&quot;&gt;&lt;a href=&quot;#fn-1&quot;&gt;1&lt;&#x2F;a&gt;&lt;&#x2F;sup&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;codeHash&lt;&#x2F;strong&gt;: hash of the account&#x27;s bytecode (empty for EOAs)&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;storageRoot&lt;&#x2F;strong&gt;: hash pointing to the contract&#x27;s storage (empty for EOAs)&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;Contracts separate storage from code. Storage (token balances, ownership records, configuration) lives in its own key-value store, nested within the world state via &lt;code&gt;storageRoot&lt;&#x2F;code&gt;. Code is stored on-chain but outside the world state, referenced by &lt;code&gt;codeHash&lt;&#x2F;code&gt;. We&#x27;ll revisit this nested storage when we discuss Merkle proofs.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;why-a-tree&quot;&gt;Why a Tree?&lt;&#x2F;h2&gt;
+&lt;p&gt;If you were building this at your typical tech company, you&#x27;d probably use a &lt;em&gt;flat key-value mapping&lt;&#x2F;em&gt;: address as the key, account data as the value. Lookups are fast, updates are straightforward, and the tooling is mature. Why does Ethereum need anything more complex?&lt;&#x2F;p&gt;
+&lt;p&gt;Ethereum is a distributed system. Nearly a million validators execute the same transactions and must arrive at identical state. To verify consensus, every node produces a &lt;strong&gt;commitment&lt;&#x2F;strong&gt;: a short value that represents the entire state. In Ethereum today, this is a 32-byte hash. This commitment goes in the block header. If yours doesn&#x27;t match, your state has diverged from the network.&lt;&#x2F;p&gt;
+&lt;p&gt;This creates two key requirements that a flat key-value mapping can&#x27;t satisfy.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;1-efficient-commitment&quot;&gt;1. Efficient commitment&lt;&#x2F;h3&gt;
+&lt;p&gt;To compute a commitment from a flat mapping, you&#x27;d need to serialize all entries in some deterministic order and hash them together. Now every time you change one balance, you re-serialize and re-hash the entire state. That&#x27;s O(n) work per block on 250+ GB of data.&lt;&#x2F;p&gt;
+&lt;p&gt;A tree fixes this. Each node&#x27;s hash is computed from its children&#x27;s hashes. Change a leaf, and only the hashes along the path to the root need updating. That&#x27;s O(log n) operations instead of O(n).&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;2-partial-proofs&quot;&gt;2. Partial proofs&lt;&#x2F;h3&gt;
+&lt;p&gt;Alice wants to check her balance without trusting anyone. She can&#x27;t store 250+ GB of state. With a flat key-value store, the only way to verify a value is to recompute the commitment yourself, which requires having the entire state.&lt;&#x2F;p&gt;
+&lt;p&gt;A tree fixes this too. To prove a value exists, the prover provides the path from that leaf to the root, plus enough information (a proof) at each level to recompute the hashes. Alice (the verifier) can then reconstruct the root hash from this small proof and check it against the known root.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;tries-keys-as-paths&quot;&gt;Tries: Keys as Paths&lt;&#x2F;h2&gt;
+&lt;p&gt;We&#x27;ve established that we have a key-value store (addresses → accounts) to organize into a tree. How? By using a &lt;strong&gt;trie&lt;&#x2F;strong&gt; (pronounced &quot;try,&quot; from re&lt;strong&gt;trie&lt;&#x2F;strong&gt;val).&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;A trie uses the key itself as the path through the tree.&lt;&#x2F;strong&gt; Each character in the key determines which branch to take. For a hex key like &lt;code&gt;4a7f...&lt;&#x2F;code&gt;, you start at the root, branch on &lt;code&gt;4&lt;&#x2F;code&gt;, then &lt;code&gt;a&lt;&#x2F;code&gt;, then &lt;code&gt;7&lt;&#x2F;code&gt;, then &lt;code&gt;f&lt;&#x2F;code&gt;, and so on until you reach the stored value. You don&#x27;t store keys explicitly; the path &lt;em&gt;is&lt;&#x2F;em&gt; the key.&lt;&#x2F;p&gt;
+&lt;img src=&quot;&#x2F;img&#x2F;trie-structure.webp&quot; alt=&quot;A hexary trie where hashed addresses become paths: the root branches on hex digits, and following the digits of a hashed address leads to the account data at the leaves. An extension node compresses a chain of single-child branches into one node (the Patricia optimization).&quot;&gt;
+&lt;p&gt;Ethereum uses a &lt;strong&gt;hexary&lt;&#x2F;strong&gt; trie: one child per hex digit (0-F), giving a maximum &lt;strong&gt;width&lt;&#x2F;strong&gt; of 16. The &lt;strong&gt;depth&lt;&#x2F;strong&gt; depends on key length. Before insertion, each address is hashed with keccak256, producing a 32-byte key (64 hex digits).&lt;sup class=&quot;footnote-reference&quot; id=&quot;fr-2-1&quot;&gt;&lt;a href=&quot;#fn-2&quot;&gt;2&lt;&#x2F;a&gt;&lt;&#x2F;sup&gt; Contract storage keys are hashed the same way. Both tries have a maximum depth of 64. The &lt;strong&gt;Patricia&lt;&#x2F;strong&gt; variant used by Ethereum compresses the trie by collapsing branch nodes with only one child into an extension node (purple in the figure above).&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;merkle-patricia-tries&quot;&gt;Merkle Patricia Tries&lt;&#x2F;h2&gt;
+&lt;p&gt;We have the trie structure. Now we are ready to add the &lt;strong&gt;Merkle&lt;&#x2F;strong&gt; part.&lt;&#x2F;p&gt;
+&lt;p&gt;In a plain Patricia trie, each node represents a hex digit in the key. In a Merkle trie, &lt;strong&gt;each node also has a hash computed from its children&#x27;s hashes&lt;&#x2F;strong&gt;. Change any leaf, and every node on the path to the root gets a new hash.&lt;&#x2F;p&gt;
+&lt;p&gt;How is each node&#x27;s hash computed? For a branch node, combine references to all of its children and hash the result with keccak256. The output is a single 32-byte hash.&lt;&#x2F;p&gt;
+&lt;img src=&quot;&#x2F;img&#x2F;merkle-hash-propagation.webp&quot; alt=&quot;Merkle tree showing hash propagation: each parent&#x27;s hash is computed from its children&#x27;s hashes, with color-coded levels showing the recursive pattern&quot;&gt;
+&lt;p&gt;The root hash commits to the entire state, which goes into every block header. Any validator can compute the state root after executing a block&#x27;s transactions and verify it matches. And because only the path from a changed leaf to the root needs rehashing, we get the O(log n) updates promised earlier—efficient commitment.&lt;&#x2F;p&gt;
+&lt;p&gt;What property does this rely on? &lt;strong&gt;Collision resistance&lt;&#x2F;strong&gt;: it&#x27;s computationally infeasible to find two distinct states that produce the same keccak256 root. The root hash uniquely identifies the state.&lt;&#x2F;p&gt;
+&lt;p&gt;The actual Ethereum implementation is more complex: RLP encoding to serialize nodes before hashing, different array specs for different node types (branch, leaf, and extension), flags for even&#x2F;odd path lengths.&lt;&#x2F;p&gt;
+&lt;details&gt;
+&lt;summary&gt;More on the implementation&lt;&#x2F;summary&gt;
+&lt;p&gt;Trie nodes are stored in a key-value database (historically LevelDB, though clients now vary). Each key is the keccak256 hash of the node&#x27;s RLP-encoded content; each value is the node itself. The three node types:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Branch&lt;&#x2F;strong&gt;: a 17-item array &lt;code&gt;[v0, v1, ..., v15, vt]&lt;&#x2F;code&gt;. Each &lt;code&gt;vi&lt;&#x2F;code&gt; points to a child for hex digit &lt;code&gt;i&lt;&#x2F;code&gt; (or empty). &lt;code&gt;vt&lt;&#x2F;code&gt; holds a value if a key terminates here.&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Leaf&lt;&#x2F;strong&gt;: a 2-item array &lt;code&gt;[encodedPath, value]&lt;&#x2F;code&gt;. The path encodes remaining key nibbles; the value is the account data.&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Extension&lt;&#x2F;strong&gt;: a 2-item array &lt;code&gt;[encodedPath, nextNode]&lt;&#x2F;code&gt;. Compresses chains of single-child branches into one node (the Patricia optimization).&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;To look up a key, start from the root hash (in the block header), fetch the root node, follow the appropriate child based on the next hex digit, and repeat. Each level is a random disk read. The &lt;a href=&quot;https:&#x2F;&#x2F;ethereum.org&#x2F;developers&#x2F;docs&#x2F;data-structures-and-encoding&#x2F;patricia-merkle-trie&#x2F;&quot;&gt;Ethereum documentation&lt;&#x2F;a&gt; covers this in detail.&lt;&#x2F;p&gt;
+&lt;&#x2F;details&gt;
+&lt;h2 id=&quot;merkle-proofs&quot;&gt;Merkle Proofs&lt;&#x2F;h2&gt;
+&lt;p&gt;We claimed earlier that a tree enables partial proofs: verifying a single value without the full state. Here&#x27;s how.&lt;&#x2F;p&gt;
+&lt;p&gt;Alice wants to verify her Ethereum balance from her phone&#x27;s wallet. The full state is 250+ GB; she can&#x27;t store it. Her wallet might query a third-party node provider like &lt;a href=&quot;https:&#x2F;&#x2F;www.infura.io&#x2F;&quot;&gt;Infura&lt;&#x2F;a&gt; or &lt;a href=&quot;https:&#x2F;&#x2F;www.alchemy.com&#x2F;&quot;&gt;Alchemy&lt;&#x2F;a&gt; behind the scenes, but that provider could be compromised, or lying, or hacked. She&#x27;d have no way to know.&lt;&#x2F;p&gt;
+&lt;p&gt;The Merkle structure offers an alternative. Alice (&lt;strong&gt;the verifier&lt;&#x2F;strong&gt;) stores just block headers (a few KB each). She asks &lt;em&gt;any&lt;&#x2F;em&gt; full node (&lt;strong&gt;the prover&lt;&#x2F;strong&gt;) for her balance &lt;em&gt;plus a proof&lt;&#x2F;em&gt;. She recomputes the root from the proof. If it matches the state root in the header, the balance is correct, mathematically guaranteed.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;proof-and-verification&quot;&gt;Proof and Verification&lt;&#x2F;h3&gt;
+&lt;p&gt;Consider a trie of depth $d$ and a path $k = (k_0, k_1, \ldots, k_{d-1})$ where each $k_i$ is a hex digit in the account&#x27;s hashed key. To prove the value at this path, the prover provides:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;The leaf value $v$ (all four account fields)&lt;&#x2F;li&gt;
+&lt;li&gt;At each depth $i$, up to 15 sibling hashes $S_i = \lbrace h_{i,j} : j \neq k_i \rbrace$&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;Verification reconstructs the root bottom-up. Hash the leaf, then work up the tree, combining with siblings at each level:&lt;&#x2F;p&gt;
+&lt;p&gt;$$H_d = \text{hash}(v)$$&lt;&#x2F;p&gt;
+&lt;p&gt;$$H_{i-1} = \text{hash}(h_{i,0} | h_{i,1} | \cdots | h_{i,15})$$&lt;&#x2F;p&gt;
+&lt;p&gt;$$\text{where } h_{i,j} = \left\lbrace \begin{array}{ll} H_i &amp;amp; \text{if } j = k_{i-1} \\ S_i[j] &amp;amp; \text{otherwise} \end{array} \right.$$&lt;&#x2F;p&gt;
+&lt;p&gt;If $H_0$ matches the state root, the proof is valid. The prover must supply the full account (if any field were wrong, the leaf hash would differ and the proof would fail), but the verifier never sees the rest of the state; just the sibling hashes along the path:&lt;&#x2F;p&gt;
+&lt;img src=&quot;&#x2F;img&#x2F;merkle-proof.webp&quot; alt=&quot;Merkle proof verification: Alice&#x27;s account is hashed bottom-up through three levels of the hexary trie. At each level, the computed hash (orange) is combined with 15 sibling hashes (green, provided by the prover) to produce the next hash. Gray subtree hints show the rest of the tree that the verifier never needs to see.&quot;&gt;
+&lt;details&gt;
+&lt;summary&gt;Walkthrough&lt;&#x2F;summary&gt;
+&lt;p&gt;Suppose hashing Alice&#x27;s address produces a key starting with &lt;code&gt;7a4...&lt;&#x2F;code&gt;. In a simplified 3-level trie, the path is $k = (7, a, 4)$. The proof contains Alice&#x27;s account data plus up to 45 sibling hashes (15 at each of the 3 levels). Verification proceeds bottom-up:&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;Hash the account data → $H_3$&lt;&#x2F;li&gt;
+&lt;li&gt;Slot $H_3$ into position &lt;code&gt;4&lt;&#x2F;code&gt; among its siblings, hash all 16 → $H_2$&lt;&#x2F;li&gt;
+&lt;li&gt;Slot $H_2$ into position &lt;code&gt;a&lt;&#x2F;code&gt; among its siblings, hash all 16 → $H_1$&lt;&#x2F;li&gt;
+&lt;li&gt;Slot $H_1$ into position &lt;code&gt;7&lt;&#x2F;code&gt; among its siblings, hash all 16 → $H_0$&lt;&#x2F;li&gt;
+&lt;li&gt;Check: does $H_0$ match the state root in the block header?&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;&#x2F;details&gt;
+&lt;p&gt;What about values in contract storage? Recall that each account has a &lt;code&gt;storageRoot&lt;&#x2F;code&gt;, the root of another trie containing that contract&#x27;s storage. To prove a storage value, you provide two proofs: one from the state root to the account (which includes &lt;code&gt;storageRoot&lt;&#x2F;code&gt;), and another from &lt;code&gt;storageRoot&lt;&#x2F;code&gt; to the storage slot. The same verification logic applies, just nested.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;smaller-proofs-bigger-possibilities&quot;&gt;Smaller Proofs, Bigger Possibilities&lt;&#x2F;h2&gt;
+&lt;p&gt;Alice can verify a single state value with a Merkle proof. Validators do something similar thousands of times per block: read state, execute transactions, compute a new state root.&lt;&#x2F;p&gt;
+&lt;p&gt;Ethereum&#x27;s core commitment is decentralization. As Vitalik Buterin &lt;a href=&quot;https:&#x2F;&#x2F;decrypt.co&#x2F;154990&#x2F;future-ethereum-upgrades-could-allow-full-nodes-to-run-on-mobile-phones-vitalik-buterin&quot;&gt;put it&lt;&#x2F;a&gt;: &quot;In the longer term there&#x27;s a plan to maintain fully verified Ethereum nodes where you could literally run it on your phone.&quot; Validation should be accessible to ordinary hardware, not just data centers.&lt;&#x2F;p&gt;
+&lt;p&gt;Currently the world state &lt;a href=&quot;https:&#x2F;&#x2F;www.theblock.co&#x2F;post&#x2F;383156&#x2F;ethereum-foundation-researchers-warn-of-storage-burden-from-state-bloat&quot;&gt;grows by roughly a gigabyte per week&lt;&#x2F;a&gt;. As it grows, less of the trie fits in memory, so more lookups require random disk reads. As I covered in &lt;a href=&quot;https:&#x2F;&#x2F;vinidlidoo.github.io&#x2F;blog&#x2F;understanding-parquet-files&#x2F;&quot;&gt;a previous article&lt;&#x2F;a&gt;, accessing data on disk can create bottlenecks. To meet Ethereum&#x27;s 12-second slot constraint, validators need faster storage (SSDs at minimum, increasingly NVMe-class), pushing costs upward and working against the decentralization goal.&lt;&#x2F;p&gt;
+&lt;p&gt;But what if validators didn&#x27;t store state at all? Instead of reading from disk, they could receive proofs for every value a block touches. The same trick Alice used, scaled up.&lt;&#x2F;p&gt;
+&lt;p&gt;The problem is proof size. Each proof requires sibling hashes at every level: 15 siblings × 64 levels × 32 bytes ≈ 30 KB worst case, &lt;a href=&quot;https:&#x2F;&#x2F;notes.ethereum.org&#x2F;@vbuterin&#x2F;verkle_tree_eip&quot;&gt;~3 KB on average&lt;&#x2F;a&gt;. With current blocks using &lt;a href=&quot;https:&#x2F;&#x2F;etherscan.io&#x2F;chart&#x2F;gasused&quot;&gt;~30M gas&lt;&#x2F;a&gt; and cold state reads costing &lt;a href=&quot;https:&#x2F;&#x2F;eips.ethereum.org&#x2F;EIPS&#x2F;eip-2929&quot;&gt;2100 gas each&lt;&#x2F;a&gt;,&lt;sup class=&quot;footnote-reference&quot; id=&quot;fr-3-1&quot;&gt;&lt;a href=&quot;#fn-3&quot;&gt;3&lt;&#x2F;a&gt;&lt;&#x2F;sup&gt; a block easily touches thousands of values. At ~3 KB average, that&#x27;s several MB of additional bandwidth per block. 10 MB incremental per block would be over 2 TB&#x2F;month in extra bandwidth per validator: the kind of overhead that pushes solo stakers toward data centers.&lt;&#x2F;p&gt;
+&lt;p&gt;So proof size is a binding constraint. Shrink the proofs, and stateless validation becomes viable.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;what-s-next&quot;&gt;What&#x27;s Next&lt;&#x2F;h2&gt;
+&lt;p&gt;One approach to shrinking proofs: replace hash-based commitments with &lt;strong&gt;polynomial commitments&lt;&#x2F;strong&gt;. Verkle trees do exactly this, reducing proofs from several KB to less than 150 bytes each. Ethereum&#x27;s state tree is actually now headed a different way (a &lt;a href=&quot;https:&#x2F;&#x2F;eips.ethereum.org&#x2F;EIPS&#x2F;eip-7864&quot;&gt;binary trie&lt;&#x2F;a&gt; with post-quantum hash-based commitments), but the underlying cryptography is very relevant: polynomial commitments are the foundation of &lt;strong&gt;zero-knowledge proofs&lt;&#x2F;strong&gt;, a rapidly advancing field with applications across Ethereum&#x27;s scaling roadmap and well beyond. &lt;a href=&quot;https:&#x2F;&#x2F;vinidlidoo.github.io&#x2F;blog&#x2F;verkle-trees-polynomial-commitments&#x2F;&quot;&gt;Part 2&lt;&#x2F;a&gt; covers how Verkle trees work, building on &lt;a href=&quot;https:&#x2F;&#x2F;vinidlidoo.github.io&#x2F;blog&#x2F;math-behind-private-key&#x2F;&quot;&gt;finite fields and elliptic curves&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;State growth adds another problem: stateless validation may let validators skip storing state, but the full state must still exist somewhere to construct blocks. &lt;a href=&quot;https:&#x2F;&#x2F;ethresear.ch&#x2F;t&#x2F;hyper-scaling-state-by-creating-new-forms-of-state&#x2F;24052&quot;&gt;New storage primitives&lt;&#x2F;a&gt; like expiring storage and UTXO-style records are currently being discussed and could keep that 250+ GB from growing indefinitely.&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;appendix&quot;&gt;Appendix&lt;&#x2F;h2&gt;
+&lt;details&gt;
+  &lt;summary&gt;Could we shrink Merkle proofs by reshaping the tree?&lt;&#x2F;summary&gt;
+&lt;p&gt;You could by reducing tree width, but in the current architecture the tradeoffs are steep. Each level of trie traversal is a random disk read: the root node points to a child at one location, which points to another child elsewhere. A hexary trie with effective depth ~8-10 means 8-10 random reads per lookup. A binary trie would have depth ~30-40. Even on NVMe, random reads cost tens of microseconds each. Multiply by thousands of state accesses per block, and going binary would blow through the 12-second slot time. Hexary branching was a natural fit for hex-encoded keys, while keeping the trie shallow enough for fast lookups.&lt;&#x2F;p&gt;
+&lt;p&gt;And the payoff isn&#x27;t even that good. A binary trie needs only 1 sibling hash per level instead of 15, but it&#x27;s 4× deeper (since $\log_2 n = 4 \log_{16} n$). Net effect: 15× fewer siblings per level, 4× more levels, so proofs shrink by roughly 15&#x2F;4 ≈ 4×. If hexary proofs run ~10 MB per block, binary gets you to ~2.5 MB... still a significant network overhead.&lt;&#x2F;p&gt;
+&lt;p&gt;Under stateless validation, where validators verify proofs rather than traverse the trie, depth stops being a bottleneck, but the proof-size overhead remains.&lt;&#x2F;p&gt;
+&lt;&#x2F;details&gt;
+&lt;hr &#x2F;&gt;
+&lt;section class=&quot;footnotes&quot;&gt;
+&lt;ol class=&quot;footnotes-list&quot;&gt;
+&lt;li id=&quot;fn-1&quot;&gt;
+&lt;p&gt;Other tokens like USDC are tracked in contract storage. &lt;a href=&quot;#fr-1-1&quot;&gt;↩&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li id=&quot;fn-2&quot;&gt;
+&lt;p&gt;keccak256 is Ethereum&#x27;s hash function; the pre-standardization version of what became SHA-3. Hashing prevents attackers from crafting addresses that create pathologically unbalanced branches. &lt;a href=&quot;#fr-2-1&quot;&gt;↩&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li id=&quot;fn-3&quot;&gt;
+&lt;p&gt;EIP-2929 distinguishes cold reads (first access, 2100 gas) from warm reads (subsequent, 100 gas). Using cold cost here underestimates total accesses. &lt;a href=&quot;#fr-3-1&quot;&gt;↩&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;&#x2F;section&gt;
+</content>
+        <summary type="html">How Ethereum stores its state, commits it to a single hash, and why that design is hitting its limits</summary>
+        </entry><entry xml:lang="en">
+        <title>The Education Value Chain: Where AI Fits</title>
+        <published>2026-01-29T00:00:00+00:00</published>
+        <updated>2026-01-29T00:00:00+00:00</updated>
+        <author>
+            <name>Vincent</name>
+        </author>
+        <link rel="alternate" href="https://vinidlidoo.github.io/blog/education-value-chain/" type="text/html"/>
+        <id>https://vinidlidoo.github.io/blog/education-value-chain/</id>
+        
+            <content type="html">&lt;img src=&quot;&#x2F;img&#x2F;education-value-chain.webp&quot; alt=&quot;The education value chain: Discovery, Learning, Assessment, and Credentialing.&quot;&gt;
+&lt;p&gt;On January 21, 2026, Google announced &lt;a href=&quot;https:&#x2F;&#x2F;blog.google&#x2F;products-and-platforms&#x2F;products&#x2F;education&#x2F;practice-sat-gemini&#x2F;&quot;&gt;SAT practice tests inside Gemini&lt;&#x2F;a&gt; (free, full-length, AI-graded). The same day, OpenAI launched &lt;a href=&quot;https:&#x2F;&#x2F;openai.com&#x2F;index&#x2F;edu-for-countries&#x2F;&quot;&gt;Education for Countries&lt;&#x2F;a&gt; at Davos, a program helping governments bring AI into their national education systems. Google&#x27;s move is specific; OpenAI&#x27;s is broader. Either way, AI in education is accelerating.&lt;&#x2F;p&gt;
+&lt;p&gt;The question is &lt;em&gt;where&lt;&#x2F;em&gt; in education. &quot;AI will transform education&quot; is about as actionable as &quot;software will fix business.&quot; A high schooler choosing between nursing and computer science has a different problem than a dev bootcamp student struggling with recursion, who has a different problem than a hiring manager trying to verify a candidate&#x27;s credentials. Which part of education are we talking about? This post tries to answer that by decomposing education into stages, mapping what&#x27;s broken at each, and sketching where technology could intervene.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;the-value-chain&quot;&gt;The Value Chain&lt;&#x2F;h2&gt;
+&lt;p&gt;Education, viewed from the learner&#x27;s perspective, is a four-stage value chain. Each stage answers a different question:&lt;&#x2F;p&gt;
+&lt;div class=&quot;table-wrapper table-wide&quot;&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;Stage&lt;&#x2F;th&gt;&lt;th&gt;Function&lt;&#x2F;th&gt;&lt;th&gt;Core Question&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;Discovery&lt;&#x2F;td&gt;&lt;td&gt;Identify what to pursue&lt;&#x2F;td&gt;&lt;td&gt;What should I learn?&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;Learning&lt;&#x2F;td&gt;&lt;td&gt;Acquire knowledge and skills&lt;&#x2F;td&gt;&lt;td&gt;How do I learn it?&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;Assessment&lt;&#x2F;td&gt;&lt;td&gt;Measure what was learned&lt;&#x2F;td&gt;&lt;td&gt;Did I learn it?&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;Credentialing&lt;&#x2F;td&gt;&lt;td&gt;Signal competence to others&lt;&#x2F;td&gt;&lt;td&gt;How do I prove it?&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;&#x2F;div&gt;
+&lt;p&gt;Similar stage-based models exist in professional certification and learning science,&lt;sup class=&quot;footnote-reference&quot; id=&quot;fr-1-1&quot;&gt;&lt;a href=&quot;#fn-1&quot;&gt;1&lt;&#x2F;a&gt;&lt;&#x2F;sup&gt; but none were simple enough to use off the shelf, so I built this one. I&#x27;ve pressure-tested it with teachers and professors, and it holds up.&lt;&#x2F;p&gt;
+&lt;p&gt;Consider a working professional pivoting from marketing to data science. She starts at &lt;strong&gt;Discovery&lt;&#x2F;strong&gt;: researching which skills matter, comparing programs, reading job postings to understand what employers actually want. She moves to &lt;strong&gt;Learning&lt;&#x2F;strong&gt;: working through a curriculum, building projects, filling gaps in statistics and Python. Then &lt;strong&gt;Assessment&lt;&#x2F;strong&gt;: taking practice tests, submitting portfolio projects for feedback, measuring herself against job requirements. Finally, &lt;strong&gt;Credentialing&lt;&#x2F;strong&gt;: earning a certification, building a public portfolio, getting a reference from a mentor. Each stage has different failure modes and different opportunities for technology to help.&lt;&#x2F;p&gt;
+&lt;p&gt;These stages are sequential but not strictly linear. A student might cycle between Learning and Assessment many times before reaching Credentialing. Or she might loop from Learning back to Discovery entirely: halfway through a data science curriculum, she encounters computer vision and realizes that&#x27;s the subfield she actually wants to pursue. The value chain describes the logical progression, not a rigid pipeline.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;what-s-broken-stage-by-stage&quot;&gt;What&#x27;s Broken: Stage by Stage&lt;&#x2F;h2&gt;
+&lt;p&gt;Each stage breaks in its own way. Here&#x27;s what learners, educators, and employers might run into.&lt;&#x2F;p&gt;
+&lt;img src=&quot;&#x2F;img&#x2F;four-stages-education.webp&quot; alt=&quot;The four stages of the education value chain — Discovery, Learning, Assessment, and Credentialing — each with their pain points.&quot;&gt;
+&lt;p&gt;Below are fifteen pain points across the four stages, each with a one-line summary. Not exhaustive, but it follows the 80&#x2F;20 rule:&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;discovery&quot;&gt;Discovery&lt;&#x2F;h3&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;Orientation&lt;&#x2F;strong&gt;: hard to pin down the intersection of what you&#x27;re interested in, what you&#x27;re good at, what the world needs (and what pays)&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Access&lt;&#x2F;strong&gt;: suitable programs are hard to find, get into, and often, finance&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;h3 id=&quot;learning&quot;&gt;Learning&lt;&#x2F;h3&gt;
+&lt;ol start=&quot;3&quot;&gt;
+&lt;li&gt;&lt;strong&gt;Motivation&lt;&#x2F;strong&gt;: learners lose momentum and disengage before they hit an intellectual ceiling&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Curricula&lt;&#x2F;strong&gt;: one-size-fits-all not adapted to learner&#x27;s prior knowledge or preferred pace&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Content&lt;&#x2F;strong&gt;: generic textbooks and materials unaware of learner&#x27;s goals or background&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Feedback loops&lt;&#x2F;strong&gt;: learners don&#x27;t know they&#x27;re off track until midterms or finals&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;h3 id=&quot;assessment&quot;&gt;Assessment&lt;&#x2F;h3&gt;
+&lt;ol start=&quot;7&quot;&gt;
+&lt;li&gt;&lt;strong&gt;Identity&lt;&#x2F;strong&gt;: verifying the test-taker in online settings is invasive and imperfect&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Cheating&lt;&#x2F;strong&gt;: language models can write passable essays and solve problem sets&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Validity&lt;&#x2F;strong&gt;: passing an exam about negotiation is not the same as being able to negotiate&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Anxiety&lt;&#x2F;strong&gt;: some students know the material but perform poorly under exam conditions&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;h3 id=&quot;credentialing&quot;&gt;Credentialing&lt;&#x2F;h3&gt;
+&lt;ol start=&quot;11&quot;&gt;
+&lt;li&gt;&lt;strong&gt;Granularity&lt;&#x2F;strong&gt;: a four-year degree is too coarse; a micro-credential is too fine &lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Fraud&lt;&#x2F;strong&gt;: &lt;a href=&quot;https:&#x2F;&#x2F;en.wikipedia.org&#x2F;wiki&#x2F;Diploma_mill&quot;&gt;diploma mills&lt;&#x2F;a&gt; issue credentials that look legitimate&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Portability&lt;&#x2F;strong&gt;: credits from college X don&#x27;t transfer to college Y&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Decay&lt;&#x2F;strong&gt;: credentials don&#x27;t reflect whether skills have been maintained since issued&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Opacity&lt;&#x2F;strong&gt;: credentials are claims backed by reputation, not auditable evidence&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;Without a map, you might build a better textbook. That&#x27;s an improvement, but if credentialing is the actual bottleneck, it&#x27;s not the highest-leverage one. The stages force you to see all the pieces and ask: where does improvement matter most?&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;putting-the-stages-to-work&quot;&gt;Putting the Stages to Work&lt;&#x2F;h2&gt;
+&lt;p&gt;Now that we have the stages and their pain points, we can ask: what would it look like if we pointed current AI capabilities and other emerging technologies at each one? What follows are thought experiments (one per stage), not validated solutions.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;discovery-career-pathfinding-agent&quot;&gt;Discovery: Career Pathfinding Agent&lt;&#x2F;h3&gt;
+&lt;img src=&quot;&#x2F;img&#x2F;career-pathfinding-agent.webp&quot; alt=&quot;An AI pathfinding agent analyzing uploaded documents and mapping career trajectories across data science, UX design, and AI ethics paths.&quot;&gt;
+&lt;p&gt;Current AI agents can already query databases, parse documents, and write analysis code. A pathfinding agent would combine these for career planning: you upload your resume and transcripts, and the AI cross-references them against job postings and skill frameworks to map where you could go. Invest six months in statistics and data infrastructure, and it sketches how your options shift; pivot to UX instead, and the picture changes. The three-dimensional discovery problem (interest, aptitude, demand) becomes a navigable decision space.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;learning-prompt-first-learning&quot;&gt;Learning: Prompt-First Learning&lt;&#x2F;h3&gt;
+&lt;img src=&quot;&#x2F;img&#x2F;you-choose-your-own-adventure.webp&quot; alt=&quot;A prompt-first learning system where conversation adapts in real-time to the learner&#x27;s gaps and questions.&quot;&gt;
+&lt;p&gt;Large language models can already hold extended, context-aware conversations and adapt their explanations on the fly. A prompt-first learning system would make that conversation &lt;em&gt;the&lt;&#x2F;em&gt; path, much more than a supplement for when you&#x27;re stuck. You ask about the parts that confuse you, push back when something doesn&#x27;t click, and the material reshapes itself in real-time. The end artifact is co-authored study notes shaped by your specific gaps, questions, and journey. I wrote about this in more detail in &lt;a href=&quot;https:&#x2F;&#x2F;vinidlidoo.github.io&#x2F;blog&#x2F;prompt-first-learning&#x2F;&quot;&gt;Prompt-First Learning&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;assessment-ai-assessed-performance&quot;&gt;Assessment: AI-assessed Performance&lt;&#x2F;h3&gt;
+&lt;img src=&quot;&#x2F;img&#x2F;ai-assessed-performance.webp&quot; alt=&quot;An AI-assessed performance task where the system observes a learner soldering a circuit board through AR.&quot;&gt;
+&lt;p&gt;Today&#x27;s models are multimodal: they can process text, images, and video, and interpret what you&#x27;re doing through a screen or a camera. An AI-assessed performance system would use this to replace exams with task simulations. Instead of answering questions about circuit design, you design and route a circuit board while the AI evaluates your component choices and trace layout. Instead of writing about project management principles, you work through a scenario while the AI evaluates your decisions. Every learner&#x27;s task unfolds differently based on their choices, making certain forms of cheating significantly harder. What you&#x27;re assessed on is closer to what you&#x27;d do on the job.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;credentialing-evidence-anchored-credentials&quot;&gt;Credentialing: Evidence-Anchored Credentials&lt;&#x2F;h3&gt;
+&lt;img src=&quot;&#x2F;img&#x2F;evidence-based-credentials.webp&quot; alt=&quot;An evidence-anchored credentialing system storing verifiable proof of skills on a blockchain.&quot;&gt;
+&lt;p&gt;Blockchain can make any record instantly verifiable and tamper-proof. An evidence-anchored credentialing system would go further: the chain stores not just the claim (&quot;this person passed&quot;) but hashes of what was actually demonstrated — assessment responses, project artifacts, evaluator scores. The credential becomes a transparent container rather than an opaque badge. Anyone verifying it can audit the evidence behind it, shifting trust from issuer reputation to verifiable proof. This addresses fraud (credentials can&#x27;t be forged), portability (anyone can verify without contacting the issuer), and opacity (the evidence is auditable).&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;what-s-next&quot;&gt;What&#x27;s Next&lt;&#x2F;h2&gt;
+&lt;p&gt;Many actors participate across these stages, each with different incentives and constraints:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Learners&lt;&#x2F;strong&gt;: K-12 students, university students, working adults&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Providers&lt;&#x2F;strong&gt;: institutions, platforms, bootcamps&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Employers&lt;&#x2F;strong&gt;: hiring managers, recruiters&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Gatekeepers&lt;&#x2F;strong&gt;: government entities, accreditors, credentialing bodies&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;Future posts will pick a stage, consider these actors in context, and dig into the most pressing pain points and the most promising uses of technology within that stage.&lt;&#x2F;p&gt;
+&lt;p&gt;This is a starting framework. It may be missing a piece or two, or the boundaries may shift as I dig deeper. If you see a gap, &lt;a href=&quot;https:&#x2F;&#x2F;vinidlidoo.github.io&#x2F;contact&#x2F;&quot;&gt;let me know&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;section class=&quot;footnotes&quot;&gt;
+&lt;ol class=&quot;footnotes-list&quot;&gt;
+&lt;li id=&quot;fn-1&quot;&gt;
+&lt;p&gt;The closest parallels are the learn-practice-certify progression common in professional certification and the seven-step transformative learning cycle from &lt;a href=&quot;https:&#x2F;&#x2F;journals.sagepub.com&#x2F;doi&#x2F;10.1177&#x2F;15413446231220317&quot;&gt;De Witt et al. (2023)&lt;&#x2F;a&gt;. &lt;a href=&quot;#fr-1-1&quot;&gt;↩&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;&#x2F;section&gt;
+</content>
+        <summary type="html">Education isn&#x27;t one thing. Decomposing it into stages reveals where technology can actually help.</summary>
+        </entry><entry xml:lang="en">
+        <title>When Parquet Files Beat CSV</title>
+        <published>2026-01-23T00:00:00+00:00</published>
+        <updated>2026-02-18T00:00:00+00:00</updated>
+        <author>
+            <name>Vincent</name>
+        </author>
+        <link rel="alternate" href="https://vinidlidoo.github.io/blog/understanding-parquet-files/" type="text/html"/>
+        <id>https://vinidlidoo.github.io/blog/understanding-parquet-files/</id>
+        
+            <content type="html">&lt;p&gt;&lt;img src=&quot;&#x2F;img&#x2F;row-vs-column-orientation.webp&quot; alt=&quot;Row-oriented vs column-oriented storage&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Back in December 2021, I was leading a new team at Amazon building a trend analytics application. We had data flowing into S3 as CSV files, getting ingested into a database, feeding weekly batch jobs. A data engineer proposed switching the storage format from CSV to Parquet. A debate ensued. Parquet won.&lt;&#x2F;p&gt;
+&lt;p&gt;I&#x27;ll be honest: I never deeply understood &lt;em&gt;why&lt;&#x2F;em&gt;. When I pressed for reasons, I heard that columnar storage was better for performance, offered better compression, and so on. It felt a bit too good to be true. I didn&#x27;t have a firm grasp of the trade-offs, let alone the mechanics behind the benefits. It was my first 90 days into the role, so I did what many managers do: went with my gut and moved on. This post is my attempt to finally get it.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;files-as-byte-arrays&quot;&gt;Files as Byte Arrays&lt;&#x2F;h2&gt;
+&lt;p&gt;On disk, a file&#x27;s data is stored as a contiguous &lt;strong&gt;sequence of bytes&lt;&#x2F;strong&gt;:&lt;sup class=&quot;footnote-reference&quot; id=&quot;fr-1-1&quot;&gt;&lt;a href=&quot;#fn-1&quot;&gt;1&lt;&#x2F;a&gt;&lt;&#x2F;sup&gt; $[b_0, b_1, b_2, \ldots, b_n]$ where each $b_i$ is a byte (8 bits, each 0 or 1) and $n$ typically ranges from millions (MB) to billions (GB) for analytics workloads.&lt;&#x2F;p&gt;
+&lt;p&gt;Analytics queries rarely need all this data. A typical query might aggregate one column, filter on another, and ignore the rest. If your file has 100 columns and 10 million rows, but your query only touches 3 columns, reading the entire file means transferring 30x more bytes than necessary. At scale—hundreds of files, each gigabytes—this overhead dominates. Reading entire files is not viable.&lt;&#x2F;p&gt;
+&lt;p&gt;So you need to be surgical: extract only the bytes you actually need.&lt;&#x2F;p&gt;
+&lt;p&gt;Two operations let you do this:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;seek&lt;&#x2F;strong&gt;: position the read head to byte $b_i$&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;read&lt;&#x2F;strong&gt;: transfer bytes sequentially from $b_i$ onward&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;The file &lt;strong&gt;layout&lt;&#x2F;strong&gt; determines whether the data you need is contiguous (one seek) or scattered (many seeks).&lt;&#x2F;p&gt;
+&lt;p&gt;But there&#x27;s a constraint: &lt;strong&gt;seek is expensive relative to read&lt;&#x2F;strong&gt;. A traditional hard drive has ~10ms access latency (the seek) and 150 MB&#x2F;s throughput (the read). Compare:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;Reading 10 bytes: 10ms + ~0ms = &lt;strong&gt;10ms&lt;&#x2F;strong&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;Reading 1MB: 10ms + 6.7ms = &lt;strong&gt;17ms&lt;&#x2F;strong&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;Going from 10 bytes to 1MB (100,000x more data) doesn&#x27;t even double the I&#x2F;O time if the data being read is contiguous. The goal is clear: &lt;strong&gt;minimize seeks, maximize bytes per seek&lt;&#x2F;strong&gt;. The strategy that achieves this is called &lt;strong&gt;batching&lt;&#x2F;strong&gt;: read large contiguous chunks instead of many small reads scattered across the file.&lt;&#x2F;p&gt;
+&lt;p&gt;The same principle applies to cloud object storage like S3. AWS&#x27;s disks still have seek overhead, but from your perspective the bottleneck is HTTP request overhead (TCP, TLS, round-trip). Batching here means requesting large byte ranges per HTTP request. Unlike disk (one read head), S3 lets you issue multiple requests in parallel, but concurrency is limited so the goal remains the same: &lt;strong&gt;fewer requests with larger byte ranges&lt;&#x2F;strong&gt;.&lt;&#x2F;p&gt;
+&lt;div class=&quot;table-wrapper table-wide&quot;&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;Storage&lt;&#x2F;th&gt;&lt;th&gt;Access Latency&lt;&#x2F;th&gt;&lt;th&gt;Throughput&lt;&#x2F;th&gt;&lt;th&gt;Implication&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;HDD&lt;&#x2F;td&gt;&lt;td&gt;~10ms (mechanical seek)&lt;&#x2F;td&gt;&lt;td&gt;150 MB&#x2F;s&lt;&#x2F;td&gt;&lt;td&gt;Latency dominates; batching essential&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;SSD&lt;sup class=&quot;footnote-reference&quot; id=&quot;fr-2-1&quot;&gt;&lt;a href=&quot;#fn-2&quot;&gt;2&lt;&#x2F;a&gt;&lt;&#x2F;sup&gt;&lt;&#x2F;td&gt;&lt;td&gt;~0.1ms (no moving parts)&lt;&#x2F;td&gt;&lt;td&gt;500–3000 MB&#x2F;s&lt;&#x2F;td&gt;&lt;td&gt;Smaller penalty per seek; batching still wins&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;S3&lt;&#x2F;td&gt;&lt;td&gt;~100ms (HTTP round-trip)&lt;&#x2F;td&gt;&lt;td&gt;100+ MB&#x2F;s&lt;&#x2F;td&gt;&lt;td&gt;Large byte ranges per request; parallelize across chunks&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;&#x2F;div&gt;
+&lt;h2 id=&quot;row-vs-column-orientation&quot;&gt;Row vs Column Orientation&lt;&#x2F;h2&gt;
+&lt;p&gt;Analytics data is typically tabular: rows and columns. When you serialize a table into a byte sequence, there are two natural choices. Consider a simple employee table:&lt;&#x2F;p&gt;
+&lt;div class=&quot;table-wrapper&quot;&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;name&lt;&#x2F;th&gt;&lt;th&gt;age&lt;&#x2F;th&gt;&lt;th&gt;salary&lt;&#x2F;th&gt;&lt;th&gt;dept&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;Alice&lt;&#x2F;td&gt;&lt;td&gt;32&lt;&#x2F;td&gt;&lt;td&gt;95000&lt;&#x2F;td&gt;&lt;td&gt;Eng&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;Bob&lt;&#x2F;td&gt;&lt;td&gt;28&lt;&#x2F;td&gt;&lt;td&gt;72000&lt;&#x2F;td&gt;&lt;td&gt;Mkt&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;Carol&lt;&#x2F;td&gt;&lt;td&gt;45&lt;&#x2F;td&gt;&lt;td&gt;120000&lt;&#x2F;td&gt;&lt;td&gt;Eng&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;&#x2F;div&gt;
+&lt;p&gt;&lt;strong&gt;Row-oriented&lt;&#x2F;strong&gt; (CSV): store each row contiguously, then the next row.
+&lt;code&gt;[Alice,32,95000,Eng][Bob,28,72000,Mkt][Carol,45,120000,Eng]&lt;&#x2F;code&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;Column-oriented&lt;&#x2F;strong&gt; (Parquet): store each column contiguously, then the next column.
+&lt;code&gt;[Alice,Bob,Carol][32,28,45][95000,72000,120000][Eng,Mkt,Eng]&lt;&#x2F;code&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;This changes which bytes you need to read. Consider &lt;code&gt;SELECT name, salary&lt;&#x2F;code&gt;: you need 2 of 4 columns.&lt;&#x2F;p&gt;
+&lt;p&gt;With CSV, columns are interleaved within each row. You could read the entire file and discard what you don&#x27;t need, but we just established that&#x27;s not viable at scale. What if you had an index telling you exactly where each field starts? Could you then seek directly to name and salary and read just those?&lt;&#x2F;p&gt;
+&lt;p&gt;You could, but it wouldn&#x27;t help. To read 2 columns from 1 million rows, you&#x27;d need 2 million separate seeks (one per field). At 10ms per seek on HDD, that&#x27;s 5+ hours of seek time alone. The problem isn&#x27;t knowing where the data is. The problem is that the data you need is &lt;em&gt;scattered&lt;&#x2F;em&gt;. Row-oriented layout forces you to either read everything or make millions of tiny reads. Neither is acceptable.&lt;&#x2F;p&gt;
+&lt;p&gt;Columnar layout solves this. Each column is stored contiguously, so reading name and salary means two seeks and two sequential reads. The data you need is physically together. You just need some way to locate where each column starts. That&#x27;s what Parquet provides.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;parquet-file-structure&quot;&gt;Parquet File Structure&lt;&#x2F;h2&gt;
+&lt;p&gt;A Parquet file has three key components:&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;&#x2F;img&#x2F;parquet-file-structure.webp&quot; alt=&quot;Parquet file structure&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;As a byte sequence:&lt;&#x2F;p&gt;
+&lt;pre&gt;&lt;code&gt;[RG0:Col0][RG0:Col1][RG0:Col2]...[RG1:Col0][RG1:Col1][RG1:Col2]...[Footer]
+&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;strong&gt;Row groups&lt;&#x2F;strong&gt; (~128MB each) are horizontal partitions of rows. They enable parallel processing: distributed query engines like Spark or BigQuery can assign different row groups to different workers.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;Column chunks&lt;&#x2F;strong&gt; live within each row group. Each column&#x27;s data is stored contiguously. This is where columnar storage actually happens. Column chunks are further divided into &lt;strong&gt;pages&lt;&#x2F;strong&gt; (~1MB each), which is where encoding and compression are applied. We won&#x27;t go into page-level details here.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;The footer&lt;&#x2F;strong&gt; is stored at the end of the file and contains the metadata you need to read surgically: the offset (where to seek), size (how much to read), and statistics (min&#x2F;max&#x2F;nulls) for every column chunk in every row group.&lt;&#x2F;p&gt;
+&lt;p&gt;Here&#x27;s what the footer looks like (simplified):&lt;&#x2F;p&gt;
+&lt;pre&gt;&lt;code&gt;Footer:
+  Schema: name (STRING), age (INT32), salary (INT64), dept (STRING)
+
+  Row Group 0 (rows 0–99,999):
+    name:   offset=0,      size=2.1MB, min=&amp;quot;Aaron&amp;quot;,  max=&amp;quot;Cynthia&amp;quot;, nulls=0
+    age:    offset=2.1MB,  size=0.4MB, min=18,       max=67,        nulls=12
+    salary: offset=2.5MB,  size=0.8MB, min=31000,    max=185000,    nulls=0
+    dept:   offset=3.3MB,  size=0.1MB, min=&amp;quot;Design&amp;quot;, max=&amp;quot;Sales&amp;quot;,   nulls=0
+
+  Row Group 1 (rows 100,000–199,999):
+    ...
+&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;To read a Parquet file, you first seek to the end, read the footer, then use it to locate exactly the data you need. This structure enables three key benefits: &lt;strong&gt;projection efficiency&lt;&#x2F;strong&gt; (read only the columns you need), &lt;strong&gt;compression&lt;&#x2F;strong&gt; (column chunks contain homogeneous data), and &lt;strong&gt;predicate pushdown&lt;&#x2F;strong&gt; (skip row groups based on statistics). There are additional benefits—parallelism from row groups and type safety from the schema—but these three account for most of why Parquet wins for analytics.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;1-projection-efficiency&quot;&gt;1. Projection Efficiency&lt;&#x2F;h3&gt;
+&lt;p&gt;Let&#x27;s put concrete numbers to this. Consider 1 million employee records with 4 columns totaling ~100MB. The query &lt;code&gt;SELECT name, salary&lt;&#x2F;code&gt; needs only 2 columns.&lt;&#x2F;p&gt;
+&lt;p&gt;Using the footer from our earlier example: name is at offset 0 (2.1MB), salary is at offset 2.5MB (0.8MB). Two seeks, 2.9MB transferred. On HDD, that&#x27;s ~40ms total. You skip 97% of the file.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;2-compression&quot;&gt;2. Compression&lt;&#x2F;h3&gt;
+&lt;p&gt;Fewer bytes means even faster I&#x2F;O. The columns you do read can be made smaller still.&lt;&#x2F;p&gt;
+&lt;p&gt;Within each column chunk, all values share the same type, and in practice they often follow patterns: repeated categories, sequential timestamps, sorted keys. Parquet exploits these patterns through &lt;strong&gt;encoding&lt;&#x2F;strong&gt;: column-aware transformations applied at the page level.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;Dictionary encoding&lt;&#x2F;strong&gt; for low-cardinality strings (few unique values). Consider 8 department names repeated across 1M rows. Instead of storing &quot;Engineering&quot; 200k times (~12 bytes each), build a dictionary mapping each unique value to a small integer: &lt;code&gt;{0: &quot;Design&quot;, 1: &quot;Engineering&quot;, ...}&lt;&#x2F;code&gt;. Then store just the integer codes (1 byte each) instead of the full strings. ~12:1 compression.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;Delta encoding&lt;&#x2F;strong&gt; for sequential integers. Timestamps often increment by small amounts: &lt;code&gt;[1704067200, 1704067201, 1704067203, ...]&lt;&#x2F;code&gt;. Instead of storing each 8-byte value, store the first value once, then just the differences: &lt;code&gt;[1704067200, +1, +2, ...]&lt;&#x2F;code&gt;. Deltas fit in 1–2 bytes. ~4–8:1 compression.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;Run-length encoding (RLE)&lt;&#x2F;strong&gt; for consecutive repeated values. If data is sorted, you get long runs:&lt;sup class=&quot;footnote-reference&quot; id=&quot;fr-3-1&quot;&gt;&lt;a href=&quot;#fn-3&quot;&gt;3&lt;&#x2F;a&gt;&lt;&#x2F;sup&gt; &lt;code&gt;Design, Design, ...(50k times)..., Engineering, ...&lt;&#x2F;code&gt;. Instead of repeating the value, store it once with a count: &lt;code&gt;(Design, 50000), (Engineering, 200000), ...&lt;&#x2F;code&gt;. Compression scales with run length; a 50k run becomes a single (value, count) pair.&lt;&#x2F;p&gt;
+&lt;p&gt;After encoding, generic &lt;strong&gt;compression&lt;&#x2F;strong&gt; (Snappy, Zstd, or others) is applied to the result for further reduction. Both benefit from columnar layout: &lt;strong&gt;grouping values by column exposes patterns that shrink file size&lt;&#x2F;strong&gt;.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;3-predicate-pushdown&quot;&gt;3. Predicate Pushdown&lt;&#x2F;h3&gt;
+&lt;p&gt;Predicate pushdown lets you skip entire row groups without reading them.&lt;&#x2F;p&gt;
+&lt;p&gt;A &lt;strong&gt;predicate&lt;&#x2F;strong&gt; is a condition that filters rows: the &lt;code&gt;WHERE&lt;&#x2F;code&gt; clause in SQL. In a query execution plan, operations form a hierarchy—read data at the bottom, transform and filter higher up. &quot;Pushdown&quot; means moving the filter down that hierarchy, from the query engine to the storage layer. Instead of reading data and then discarding rows that don&#x27;t match, you skip them before reading. The footer&#x27;s min&#x2F;max statistics make this possible: Parquet can check whether a row group could possibly contain matches without reading the actual data.&lt;&#x2F;p&gt;
+&lt;p&gt;Query: &lt;code&gt;SELECT name FROM employees WHERE salary &amp;gt; 200000&lt;&#x2F;code&gt;&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;Read footer&lt;&#x2F;li&gt;
+&lt;li&gt;Check salary statistics per row group:
+&lt;ul&gt;
+&lt;li&gt;Row Group 0: salary max = 185,000 → &lt;strong&gt;skip&lt;&#x2F;strong&gt; (no row can match)&lt;&#x2F;li&gt;
+&lt;li&gt;Row Group 1: salary max = 210,000 → &lt;strong&gt;read&lt;&#x2F;strong&gt; (might have matches)&lt;&#x2F;li&gt;
+&lt;li&gt;Row Group 2: salary max = 178,000 → &lt;strong&gt;skip&lt;&#x2F;strong&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;...&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;Only read name and salary chunks from row groups that survived&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;If 2 of 10 row groups survive, you&#x27;ve eliminated 80% of I&#x2F;O before reading any actual data.&lt;&#x2F;p&gt;
+&lt;p&gt;This works for strings too. Min&#x2F;max use alphabetical ordering, so if a row group has min=&quot;Aaron&quot; and max=&quot;Cynthia&quot;, a query for &lt;code&gt;name = &#x27;Zoe&#x27;&lt;&#x2F;code&gt; can skip it entirely.&lt;&#x2F;p&gt;
+&lt;details&gt;
+&lt;summary&gt;Bloom filters for high-cardinality columns&lt;&#x2F;summary&gt;
+&lt;p&gt;For high-cardinality columns like &lt;code&gt;user_id&lt;&#x2F;code&gt;, min&#x2F;max is useless (the range spans everything). Bloom filters offer an alternative: a bit array with multiple hash functions that answers &quot;definitely not here&quot; or &quot;maybe here.&quot; A false positive (&quot;maybe here&quot; when the value isn&#x27;t actually there) means a wasted read. The rate follows $(1 - e^{-kn&#x2F;m})^k$ where $k$ is hash functions, $n$ is rows, $m$ is bits—and there&#x27;s a closed-form formula for the optimal $k$ that minimizes this rate. A topic for another post.&lt;&#x2F;p&gt;
+&lt;&#x2F;details&gt;
+&lt;h2 id=&quot;the-tradeoffs&quot;&gt;The Tradeoffs&lt;&#x2F;h2&gt;
+&lt;p&gt;Parquet optimizes for analytical reads: many rows, few columns. The costs show up in two places:&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;Writes are expensive and inflexible.&lt;&#x2F;strong&gt; Creating a Parquet file requires buffering an entire row group in memory (~128MB), computing statistics for every column chunk, applying encoding, and compressing. CSV is just concatenating strings. And Parquet files are immutable: you cannot append rows without rewriting the file (the footer would be invalidated). With CSV, &lt;code&gt;echo &quot;new,row&quot; &amp;gt;&amp;gt; file.csv&lt;&#x2F;code&gt; just works.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;Not all reads benefit.&lt;&#x2F;strong&gt; Single-row lookups are terrible: even with predicate pushdown, you read entire column chunks (megabytes) to retrieve one row. Row-oriented databases use indexes for O(log n) single-record access. And the more columns you select, the less you gain. &lt;code&gt;SELECT *&lt;&#x2F;code&gt; reads everything, losing the projection benefit (though compression still helps), and pays reconstruction overhead to stitch columns back into rows.&lt;&#x2F;p&gt;
+&lt;p&gt;If your workload is transactional (lots of single-record reads and writes), Parquet is the wrong choice.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;takeaway&quot;&gt;Takeaway&lt;&#x2F;h2&gt;
+&lt;p&gt;The format you choose should match your workload:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;Analytics (scan millions of rows, aggregate few columns, filter) → Parquet&lt;&#x2F;li&gt;
+&lt;li&gt;Transactions (fetch&#x2F;update&#x2F;add single records by key) → row-oriented&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;Many systems use both. Postgres for the live app, Parquet files (or a columnar warehouse like BigQuery) for reporting. They serve different purposes.&lt;&#x2F;p&gt;
+&lt;p&gt;Parquet won the columnar analytics category so thoroughly that innovation moved to adjacent spaces: Arrow for in-memory processing, lakehouses (Delta Lake, Iceberg, Hudi) for transactions and appends on top of immutable files.&lt;&#x2F;p&gt;
+&lt;p&gt;The underlying principle is the access latency asymmetry: whether it&#x27;s disk seeks or HTTP round-trips, the cost of &lt;em&gt;starting&lt;&#x2F;em&gt; a read dominates the cost of &lt;em&gt;continuing&lt;&#x2F;em&gt; it. Organize your data so the bytes you need are contiguous, and you win.&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;section class=&quot;footnotes&quot;&gt;
+&lt;ol class=&quot;footnotes-list&quot;&gt;
+&lt;li id=&quot;fn-1&quot;&gt;
+&lt;p&gt;A simplification: files can be fragmented across non-contiguous disk blocks, and filesystems add abstraction layers. The mental model still holds for understanding layout trade-offs. &lt;a href=&quot;#fr-1-1&quot;&gt;↩&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li id=&quot;fn-2&quot;&gt;
+&lt;p&gt;SSDs eliminate mechanical seeks and are more forgiving, but the principle holds: few large sequential reads beat many small reads. &lt;a href=&quot;#fr-2-1&quot;&gt;↩&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li id=&quot;fn-3&quot;&gt;
+&lt;p&gt;Parquet doesn&#x27;t sort your data. You must sort before writing. The primary sort key benefits most; secondary keys benefit less, and only if low-cardinality. &lt;a href=&quot;#fr-3-1&quot;&gt;↩&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;&#x2F;section&gt;
+</content>
+        <summary type="html">The physical reality that makes file layout matter</summary>
+        </entry><entry xml:lang="en">
+        <title>Prompt-First Learning</title>
+        <published>2026-01-22T00:00:00+00:00</published>
+        <updated>2026-01-22T00:00:00+00:00</updated>
+        <author>
+            <name>Vincent</name>
+        </author>
+        <link rel="alternate" href="https://vinidlidoo.github.io/blog/prompt-first-learning/" type="text/html"/>
+        <id>https://vinidlidoo.github.io/blog/prompt-first-learning/</id>
+        
+            <content type="html">&lt;p&gt;&lt;img src=&quot;&#x2F;img&#x2F;you-choose-your-own-adventure.webp&quot; alt=&quot;Prompt-First Learning: You choose where the story goes&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Since the holiday break, I&#x27;ve been thinking about AI and education. It&#x27;s a big part of why I started this blog two weeks ago, right after wrapping up a 10-year stint at Amazon. I wanted to experiment with how AI can help teach. Though my goals are also selfish: I learn best by teaching. Feynman had it right: if you can&#x27;t explain something simply, you don&#x27;t understand it well enough. And honestly, few things give me a bigger high than finally getting something to click.&lt;&#x2F;p&gt;
+&lt;p&gt;A &lt;a href=&quot;https:&#x2F;&#x2F;x.com&#x2F;AriaWestcott&#x2F;status&#x2F;2013153611715350783&quot;&gt;tweet&lt;&#x2F;a&gt; crossed my feed last week: &quot;BREAKING: Google just dropped the textbook killer.&quot; A system called Learn Your Way that transforms PDFs into personalized learning materials. I got excited—then clicked through to the &lt;a href=&quot;https:&#x2F;&#x2F;research.google&#x2F;blog&#x2F;learn-your-way-reimagining-textbooks-with-generative-ai&#x2F;&quot;&gt;blog post&lt;&#x2F;a&gt; and saw September 2025. Not exactly breaking, more like resurfacing. Still, I wanted to see what they&#x27;d built.&lt;&#x2F;p&gt;
+&lt;p&gt;So I tried the &lt;a href=&quot;https:&#x2F;&#x2F;learnyourway.withgoogle.com&#x2F;&quot;&gt;demo&lt;&#x2F;a&gt; and read the &lt;a href=&quot;https:&#x2F;&#x2F;arxiv.org&#x2F;pdf&#x2F;2509.13348&quot;&gt;paper&lt;&#x2F;a&gt;, published earlier this month. I&#x27;m glad a company with Google&#x27;s resources is investing in this space. What they&#x27;ve built is not trivial: LearnLM transforms PDFs into multiple formats (immersive text, slides with narration, audio-graphic lessons, mind maps), adjusts to your grade level, tailors examples to your interests, and embeds questions throughout to check understanding. The quiz at the end of each section gives you an assessment with strengths and growth areas.&lt;&#x2F;p&gt;
+&lt;video autoplay loop muted playsinline&gt;
+  &lt;source src=&quot;https:&#x2F;&#x2F;pub-94e31bf482a74272bb61e9559b598705.r2.dev&#x2F;video&#x2F;learn-your-way.mp4&quot; type=&quot;video&#x2F;mp4&quot;&gt;
+&lt;&#x2F;video&gt;
+&lt;p&gt;Here&#x27;s where I was disappointed. I set my persona to &quot;undergraduate interested in painting&quot; and loaded the Hydrocarbons module. I went through the material, answered questions, got my assessment. At the end, the artifact I was left with was the original text plus one added sentence: &quot;&lt;em&gt;We find hydrocarbons in many artist materials—for instance, the turpentine used to thin oil paints or the mineral spirits for cleaning brushes.&lt;&#x2F;em&gt;&quot; No study notes reflecting my journey. No document shaped by where I struggled. The infrastructure works (format transformations, assessment pipeline, all of it), but after all that interaction, I walked away with the same material everyone else gets. I was left wondering: is augmenting existing textbooks the best direction to take for AI x Learning? My take is there&#x27;s something much more fundamental waiting to be built.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;the-problem-with-augmentation&quot;&gt;The Problem with Augmentation&lt;&#x2F;h2&gt;
+&lt;p&gt;Most textbooks aren&#x27;t written for you. They&#x27;re written for broad audiences, optimized for the middle of the bell curve. They can&#x27;t anticipate where &lt;em&gt;you&lt;&#x2F;em&gt; will get stuck or what background &lt;em&gt;you&lt;&#x2F;em&gt; bring. Augmenting that kind of source material—even with smart personalization—doesn&#x27;t change the underlying problem: the text still wasn&#x27;t written with your specific gaps, your specific questions, your way of learning in mind.&lt;&#x2F;p&gt;
+&lt;p&gt;Anyone who&#x27;s been through school knows the workaround: you write your own notes. The textbook is input; your notes are output, shaped by what confused you and what finally clicked. Those notes, not the textbook, are what you review before exams.&lt;&#x2F;p&gt;
+&lt;p&gt;Learn Your Way&#x27;s current approach is augmentation: take the source, add personalized touches, present it in different formats. That&#x27;s valuable, but it doesn&#x27;t help you write those notes. What&#x27;s missing is the &lt;strong&gt;natural language back-and-forth&lt;&#x2F;strong&gt;: the chance to say &quot;wait, I don&#x27;t get this part&quot; and &lt;strong&gt;have the material respond in near real-time&lt;&#x2F;strong&gt;.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;what-works-for-me&quot;&gt;What Works for Me&lt;&#x2F;h2&gt;
+&lt;p&gt;Here&#x27;s what&#x27;s been working for me over the past year. I start a conversation with Claude about a topic: tell it what I&#x27;m trying to understand, my background, how I learn best. For me, that often means math; unless I see the formulas, I feel like I only have a superficial grasp. A friend of mine learns better through analogies. We&#x27;re different, and that&#x27;s the point.&lt;&#x2F;p&gt;
+&lt;p&gt;I go back and forth: asking about the parts that confuse me, pushing back when something doesn&#x27;t click, keeping at it until I get it. When I&#x27;m done, I have Claude save review notes directly to Obsidian via an MCP server (in plain markdown; no vendor lock-in), with special attention to the areas that gave me difficulty. Those notes, addressing my specific confusions, also become my textbook.&lt;&#x2F;p&gt;
+&lt;p&gt;This year I added another step: I take those notes plus a rough outline and draft blog posts with Claude Code, using a custom skill that encodes my writing style and preferences (I wrote about a similar approach for &lt;a href=&quot;https:&#x2F;&#x2F;vinidlidoo.github.io&#x2F;blog&#x2F;translation-with-claude-code&#x2F;&quot;&gt;translations&lt;&#x2F;a&gt;). I edit in Neovim and collaborate through the IDE integration. If something in my draft isn&#x27;t clear, I keep revising until it is, whether manually or through more back-and-forth with Claude.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;By the end of the conversation, the material reflects my updated understanding&lt;&#x2F;strong&gt;. Not a static text I had to adapt to, but a document that adapted to me.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;prompt-first-learning&quot;&gt;Prompt-First Learning&lt;&#x2F;h2&gt;
+&lt;p&gt;The flow I&#x27;m proposing looks like this:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Start&lt;&#x2F;strong&gt;: Enter what you want to learn, what you already know, how you learn best. Source material (textbook section, paper, video transcript) can ground the conversation, but isn&#x27;t required.&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Loop&lt;&#x2F;strong&gt;: The AI engages in conversation with you, occasionally searching online as needed to ground itself. The text updates dynamically based on what confuses you. You also answer assessment questions as you go.&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;End state&lt;&#x2F;strong&gt;: Study notes co-authored with you, shaped by the questions you asked and responses you gave along the way.&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;Static text assumes other readers have the same gaps. Dynamic text fills &lt;em&gt;your&lt;&#x2F;em&gt; gaps as they emerge.&lt;&#x2F;p&gt;
+&lt;p&gt;This isn&#x27;t an &quot;AI tutor,&quot; a helper you consult when the textbook fails. In prompt-first learning, conversation &lt;em&gt;is&lt;&#x2F;em&gt; the path, and the study notes you co-author are what you keep. You also choose where to go: which rabbit holes to explore, which tangents to follow. &lt;em&gt;Choose Your Own Adventure&lt;&#x2F;em&gt;, but for learning.&lt;&#x2F;p&gt;
+&lt;p&gt;This is easier said than done. A production system needs to maintain factual accuracy as content adapts, and in formal education, ensure coverage of shared fundamentals across a student population. Hard problems. But this direction feels right.&lt;&#x2F;p&gt;
+&lt;p&gt;Google&#x27;s &lt;a href=&quot;https:&#x2F;&#x2F;arxiv.org&#x2F;pdf&#x2F;2509.13348&quot;&gt;future work section&lt;&#x2F;a&gt; hints at something similar: &quot;&lt;em&gt;The system could be made more adaptive, by dynamically adjusting the learning material to the performance of the learner on assessment components.&lt;&#x2F;em&gt;&quot; It looks like we&#x27;re circling similar ideas.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;experimenting-here&quot;&gt;Experimenting Here&lt;&#x2F;h2&gt;
+&lt;p&gt;I&#x27;m planning to hack on this directly on this blog. Run some experiments, see what sticks. The shape might look like this: you read a section, and if something doesn&#x27;t make sense, you can ask questions in a sidebar or modal. The post adapts (not the entire thing, but the specific passages where you&#x27;re stuck). You&#x27;d get a version of the post written for your sticking points, not a generic audience&#x27;s.&lt;&#x2F;p&gt;
+&lt;p&gt;The core loop exists today if you&#x27;re willing to do it manually: read a post, open Claude, ask about the parts you don&#x27;t understand, iterate. The challenge is building a UX that makes this seamless.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;beyond-understanding&quot;&gt;Beyond Understanding&lt;&#x2F;h2&gt;
+&lt;p&gt;Prompt-first learning gets you to understanding. But understanding is just the first step. You also need to retain what you learned, and sometimes you want to learn in a different modality.&lt;&#x2F;p&gt;
+&lt;p&gt;On retention: I learned Japanese despite starting at 23, and the primary reason was &lt;a href=&quot;https:&#x2F;&#x2F;apps.ankiweb.net&#x2F;&quot;&gt;Anki&lt;&#x2F;a&gt; flashcards with spaced repetition. Imagine a system that builds cards automatically from the areas where you struggled, exports them via API, and schedules reviews at optimal intervals. Understand through conversation, commit to memory through repetition.&lt;&#x2F;p&gt;
+&lt;p&gt;On modality: a Japanese friend recently tried to read my posts on &lt;a href=&quot;https:&#x2F;&#x2F;vinidlidoo.github.io&#x2F;blog&#x2F;math-behind-private-key&#x2F;&quot;&gt;private keys&lt;&#x2F;a&gt; and &lt;a href=&quot;https:&#x2F;&#x2F;vinidlidoo.github.io&#x2F;blog&#x2F;secrets-and-signatures&#x2F;&quot;&gt;digital signatures&lt;&#x2F;a&gt;. His approach: feed both to NotebookLM and ask for a podcast explaining elliptic curves using Pokemon analogies. In Japanese. The result is hilarious but surprisingly accurate; the metaphors held up when I compared them to my original descriptions. This isn&#x27;t prompt-first learning—there&#x27;s no back-and-forth—but it shows how far content can flex while staying faithful to the source.&lt;&#x2F;p&gt;
+&lt;div class=&quot;centered&quot;&gt;
+&lt;audio controls&gt;
+  &lt;source src=&quot;https:&#x2F;&#x2F;pub-94e31bf482a74272bb61e9559b598705.r2.dev&#x2F;audio&#x2F;pokemon-elliptic-curves.mp3&quot; type=&quot;audio&#x2F;mpeg&quot;&gt;
+&lt;&#x2F;audio&gt;
+&lt;&#x2F;div&gt;
+&lt;h2 id=&quot;why-now&quot;&gt;Why Now&lt;&#x2F;h2&gt;
+&lt;p&gt;AI is widening the gap between how we learn and how we could learn. Andrej Karpathy &lt;a href=&quot;https:&#x2F;&#x2F;youtu.be&#x2F;lXUZvyajciY?si=pV2gwP7Fe9kN7Gl8&amp;amp;t=7731&quot;&gt;put it well&lt;&#x2F;a&gt; on the Dwarkesh podcast last October: &quot;&lt;em&gt;pre-AGI education is useful, post-AGI education is fun. People will go to school like they go to the gym—because it&#x27;s enjoyable, keeps you sharp, and intelligence is attractive in the way a six-pack is attractive.&lt;&#x2F;em&gt;&quot; I buy into that vision. I&#x27;d add: smart people will be attractive not only for their nuanced views on &lt;a href=&quot;https:&#x2F;&#x2F;en.wikipedia.org&#x2F;wiki&#x2F;P_versus_NP_problem&quot;&gt;P vs NP&lt;&#x2F;a&gt; at dinner parties, but also because they put their knowledge to use. Society rewards people who are useful. Though that&#x27;s a discussion for another post.&lt;&#x2F;p&gt;
+&lt;p&gt;Learn Your Way helps learners; their paper includes results to prove it. But the bigger opportunity isn&#x27;t better augmentation. It&#x27;s prompt-first: conversation as the path, study notes shaped by each learner&#x27;s journey.&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+</content>
+        <summary type="html">What if textbooks adapted to your questions, not the other way around?</summary>
+        </entry><entry xml:lang="en">
+        <title>From Keys to Protocols: ECDH and ECDSA (Part 2&#x2F;2)</title>
+        <published>2026-01-19T00:00:00+00:00</published>
+        <updated>2026-01-19T00:00:00+00:00</updated>
+        <author>
+            <name>Vincent</name>
+        </author>
+        <link rel="alternate" href="https://vinidlidoo.github.io/blog/secrets-and-signatures/" type="text/html"/>
+        <id>https://vinidlidoo.github.io/blog/secrets-and-signatures/</id>
+        
+            <content type="html">&lt;p&gt;&lt;img src=&quot;&#x2F;img&#x2F;keys-to-protocols.webp&quot; alt=&quot;keys-to-protocols&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;In &lt;a href=&quot;https:&#x2F;&#x2F;vinidlidoo.github.io&#x2F;blog&#x2F;math-behind-private-key&#x2F;&quot;&gt;Part 1&lt;&#x2F;a&gt;, we built up the machinery: fields, groups, elliptic curves, and the discrete logarithm problem (DLP). We ended with a key pair: pick a secret integer (I called it $n$ there; I&#x27;ll use $d$ here to match standard cryptographic notation), then compute:&lt;&#x2F;p&gt;
+&lt;p&gt;$$Q = dG$$&lt;&#x2F;p&gt;
+&lt;p&gt;$Q$ is the public key and $d$ is the private key. The forward direction is fast, but recovering $d$ from $Q$ means solving the DLP, which is infeasible.&lt;&#x2F;p&gt;
+&lt;p&gt;This post shows how that asymmetry enables two protocols solving different problems: &lt;strong&gt;ECDH&lt;&#x2F;strong&gt; for establishing shared keys, and &lt;strong&gt;ECDSA&lt;&#x2F;strong&gt; for digital signatures.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;ecdh-shared-keys&quot;&gt;ECDH: Shared Keys&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;the-problem&quot;&gt;The Problem&lt;&#x2F;h3&gt;
+&lt;p&gt;Alice wants to send Bob a secret message. &lt;strong&gt;Encryption&lt;&#x2F;strong&gt; scrambles the message into ciphertext; &lt;strong&gt;decryption&lt;&#x2F;strong&gt; reverses the process.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;Symmetric encryption&lt;&#x2F;strong&gt; uses one key for both operations. It&#x27;s fast, but it has a bootstrap problem: how does Alice send Bob that key? If she sends it over the same channel as the message, an eavesdropper intercepts both. She needs a secure channel to send the key, but that&#x27;s exactly what she&#x27;s trying to create. Chicken and egg.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;Asymmetric encryption&lt;&#x2F;strong&gt; could solve this: anyone can encrypt with Bob&#x27;s public key, but only Bob&#x27;s private key can decrypt. No secret travels over the wire. The cost? Asymmetric operations involve expensive math (point multiplications, modular exponentiations), while symmetric ciphers use simple bitwise operations. The difference in complexity is roughly 1000x.&lt;&#x2F;p&gt;
+&lt;p&gt;The solution is a &lt;strong&gt;hybrid approach&lt;&#x2F;strong&gt;: use asymmetric cryptography once to establish a shared key, then switch to symmetric for the actual messages. This is exactly what ECDH does.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;the-protocol&quot;&gt;The Protocol&lt;&#x2F;h3&gt;
+&lt;p&gt;&lt;strong&gt;Elliptic Curve Diffie-Hellman&lt;&#x2F;strong&gt; lets two parties derive a shared key over a public channel:&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;Alice picks a secret integer $a$ and publishes $A = aG$&lt;&#x2F;li&gt;
+&lt;li&gt;Bob picks a secret integer $b$ and publishes $B = bG$&lt;&#x2F;li&gt;
+&lt;li&gt;Alice computes $S = aB = a(bG) = abG$&lt;&#x2F;li&gt;
+&lt;li&gt;Bob computes $S = bA = b(aG) = abG$&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;Both arrive at the same point $S$ without ever transmitting $a$ or $b$. Why does this work? Because $a(bG) = (ab)G = b(aG)$: the commutativity comes from integer multiplication, not any special property of the curve.&lt;&#x2F;p&gt;
+&lt;p&gt;Why is this secure? An eavesdropper sees $A$, $B$, and $G$, but computing $abG$ from these requires solving the DLP to recover $a$ or $b$. That&#x27;s the hard direction we established in Part 1.&lt;&#x2F;p&gt;
+&lt;p&gt;What happens next: Alice and Bob hash the x-coordinate of $S$ to derive a symmetric key, then use it with a symmetric cipher like AES (the standard for same-key encryption). ECDH doesn&#x27;t encrypt anything itself; it bootstraps the shared key that makes symmetric encryption possible.&lt;sup class=&quot;footnote-reference&quot; id=&quot;fr-1-1&quot;&gt;&lt;a href=&quot;#fn-1&quot;&gt;1&lt;&#x2F;a&gt;&lt;&#x2F;sup&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;If you&#x27;ve used PGP or GPG with a modern key, you&#x27;ve used this. The hybrid structure is the same: ECDH establishes the session key, AES encrypts the message.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;ecdsa-digital-signatures&quot;&gt;ECDSA: Digital Signatures&lt;&#x2F;h2&gt;
+&lt;p&gt;ECDH solves secrecy. &lt;strong&gt;ECDSA&lt;&#x2F;strong&gt; (Elliptic Curve Digital Signature Algorithm) solves a different problem: authenticity.&lt;&#x2F;p&gt;
+&lt;p&gt;Consider Ethereum transactions. They&#x27;re broadcast publicly; secrecy isn&#x27;t the goal. The network needs to verify that the account holder actually authorized the transaction. A &lt;strong&gt;digital signature&lt;&#x2F;strong&gt; proves you know the private key $d$ without revealing it, and binds that proof to a specific message.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;signing&quot;&gt;Signing&lt;&#x2F;h3&gt;
+&lt;p&gt;To sign a message $m$ with private key $d$:&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;Hash the message: $z = H(m)$ (where $H$ is a hash function like SHA-256)&lt;&#x2F;li&gt;
+&lt;li&gt;Pick a random integer $k$ (the nonce)&lt;&#x2F;li&gt;
+&lt;li&gt;Compute $R = kG$ and extract the x-coordinate as $r$&lt;&#x2F;li&gt;
+&lt;li&gt;Compute (where $n$ is the curve order):&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;$$s = k^{-1}(z + rd) \mod n$$&lt;&#x2F;p&gt;
+&lt;p&gt;The signature is the pair $(r, s)$.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;verification&quot;&gt;Verification&lt;&#x2F;h3&gt;
+&lt;p&gt;Given a message $m$, signature $(r, s)$, and public key $Q$:&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;Compute $z = H(m)$&lt;&#x2F;li&gt;
+&lt;li&gt;Compute $u_1 = zs^{-1} \mod n$ and $u_2 = rs^{-1} \mod n$&lt;&#x2F;li&gt;
+&lt;li&gt;Compute $P = u_1 G + u_2 Q$&lt;&#x2F;li&gt;
+&lt;li&gt;The signature is valid if $P$&#x27;s x-coordinate equals $r$&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;h3 id=&quot;why-verification-works&quot;&gt;Why Verification Works&lt;&#x2F;h3&gt;
+&lt;p&gt;The verifier reconstructs $R$ without knowing $k$ or $d$. Here&#x27;s the algebra:&lt;&#x2F;p&gt;
+&lt;p&gt;$$P = u_1 G + u_2 Q = zs^{-1}G + rs^{-1}Q$$&lt;&#x2F;p&gt;
+&lt;p&gt;Since $Q = dG$:&lt;&#x2F;p&gt;
+&lt;p&gt;$$P = zs^{-1}G + rs^{-1}dG = s^{-1}(z + rd)G$$&lt;&#x2F;p&gt;
+&lt;p&gt;From the signing equation, $s = k^{-1}(z + rd)$, so $s^{-1} = k&#x2F;(z + rd)$. Substituting:&lt;&#x2F;p&gt;
+&lt;p&gt;$$P = \frac{k}{z + rd}(z + rd)G = kG = R$$&lt;&#x2F;p&gt;
+&lt;p&gt;The x-coordinate of $P$ equals $r$ precisely when the signer knew $d$.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;the-nonce&quot;&gt;The Nonce&lt;&#x2F;h3&gt;
+&lt;p&gt;The random value $k$ must be truly random and &lt;strong&gt;never reused&lt;&#x2F;strong&gt;. If the same $k$ signs two different messages, an attacker can algebraically recover your private key $d$. This isn&#x27;t theoretical: Sony&#x27;s PlayStation 3 code signing was &lt;a href=&quot;https:&#x2F;&#x2F;en.wikipedia.org&#x2F;wiki&#x2F;Elliptic_Curve_Digital_Signature_Algorithm#Security&quot;&gt;broken in 2010&lt;&#x2F;a&gt; because they used a constant $k$, allowing attackers to extract the private key and sign arbitrary code.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;takeaway&quot;&gt;Takeaway&lt;&#x2F;h2&gt;
+&lt;p&gt;One elliptic curve, one hard problem, two protocols.&lt;&#x2F;p&gt;
+&lt;p&gt;ECDH gives you secrecy: two parties derive a shared key over a public channel, then use it for symmetric encryption. ECDSA gives you authenticity: prove you authorized something without revealing your private key.&lt;&#x2F;p&gt;
+&lt;p&gt;This shows how the abstract group theory from Part 1 isn&#x27;t just elegant mathematics. It&#x27;s the foundation securing your encrypted messages, your cryptocurrency transactions, and much of the internet&#x27;s infrastructure.&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;section class=&quot;footnotes&quot;&gt;
+&lt;ol class=&quot;footnotes-list&quot;&gt;
+&lt;li id=&quot;fn-1&quot;&gt;
+&lt;p&gt;This works elegantly for two parties. Group chats are harder: the naive approach requires $\binom{N}{2} = \frac{N(N-1)}{2}$ pairwise key exchanges for $N$ participants. Real messaging apps use more sophisticated protocols to avoid this quadratic scaling. &lt;a href=&quot;#fr-1-1&quot;&gt;↩&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;&#x2F;section&gt;
+</content>
+        <summary type="html">How elliptic curve math enables secure key exchange and digital signatures</summary>
+        </entry><entry xml:lang="en">
+        <title>The Math Behind Your Private Key (Part 1&#x2F;2)</title>
+        <published>2026-01-16T00:00:00+00:00</published>
+        <updated>2026-01-18T00:00:00+00:00</updated>
+        <author>
+            <name>Vincent</name>
+        </author>
+        <link rel="alternate" href="https://vinidlidoo.github.io/blog/math-behind-private-key/" type="text/html"/>
+        <id>https://vinidlidoo.github.io/blog/math-behind-private-key/</id>
+        
+            <content type="html">&lt;p&gt;&lt;img src=&quot;&#x2F;img&#x2F;elliptic-curve-point-addition.png&quot; alt=&quot;Point Addition&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Elliptic curves keep showing up in crypto. I&#x27;d been dodging them for years, but while digging into Ethereum&#x27;s rollup architecture I finally decided to stop and actually learn what&#x27;s going on. The surprise? It&#x27;s all built on group theory—the same abstract algebra I learned in college and promptly forgot because it seemed so disconnected from anything real. Turns out I was wrong.&lt;&#x2F;p&gt;
+&lt;p&gt;By the end of this post, you&#x27;ll understand the core math behind public and private keys: how they&#x27;re constructed from elliptic curves, and why the construction is secure. &lt;a href=&quot;https:&#x2F;&#x2F;vinidlidoo.github.io&#x2F;blog&#x2F;secrets-and-signatures&#x2F;&quot;&gt;Part 2&lt;&#x2F;a&gt; will cover how this math gets applied in practice.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;fields-numbers-with-arithmetic&quot;&gt;Fields: Numbers with Arithmetic&lt;&#x2F;h2&gt;
+&lt;p&gt;In &lt;a href=&quot;https:&#x2F;&#x2F;vinidlidoo.github.io&#x2F;blog&#x2F;russells-paradox&#x2F;&quot;&gt;my post on Russell&#x27;s Paradox&lt;&#x2F;a&gt;, I covered what a set is. A &lt;strong&gt;field&lt;&#x2F;strong&gt; is a set $F$ equipped with two &lt;strong&gt;binary operations&lt;&#x2F;strong&gt;—addition and multiplication—satisfying &lt;strong&gt;nine axioms&lt;&#x2F;strong&gt;: four for each operation, plus distributivity linking them. &quot;Binary&quot; means each operation takes two elements and returns one element from the same set:&lt;&#x2F;p&gt;
+&lt;p&gt;$$+: F \times F \to F$$
+$$\cdot: F \times F \to F$$&lt;&#x2F;p&gt;
+&lt;p&gt;Two axiom examples (see &lt;a href=&quot;https:&#x2F;&#x2F;vinidlidoo.github.io&#x2F;blog&#x2F;math-behind-private-key&#x2F;#field-axioms&quot;&gt;Appendix&lt;&#x2F;a&gt; for full list):&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;associativity: $(a + b) + c = a + (b + c)$&lt;&#x2F;li&gt;
+&lt;li&gt;multiplicative inverses: $\forall a \neq 0,\ \exists\ a^{-1}$ such that $a \cdot a^{-1} = 1$&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;As it turns out, fields are the minimal structure required to support linear algebra, calculus and other undergraduate math. The real numbers $\mathbb{R}$ form a field. So do the rationals $\mathbb{Q}$. But the integers $\mathbb{Z}$ do not: there&#x27;s no integer $n$ such that $2 \cdot n = 1$. The multiplicative inverse of 2 would be $\frac{1}{2}$, which isn&#x27;t in $\mathbb{Z}$.&lt;&#x2F;p&gt;
+&lt;p&gt;Cryptography often uses finite fields. Ethereum&#x27;s secp256k1 curve operates over $\mathbb{F}_p$:&lt;&#x2F;p&gt;
+&lt;p&gt;$$\mathbb{F}_p = \lbrace 0, 1, 2, \ldots, p-1 \rbrace$$&lt;&#x2F;p&gt;
+&lt;p&gt;where $p$ is a large prime ($p \approx 2^{256}$). Arithmetic wraps modulo $p$. Using $p = 7$ as a small example:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;$5 + 4 = 9 \equiv 2 \pmod{7}$&lt;&#x2F;li&gt;
+&lt;li&gt;$3 \cdot 5 = 15 \equiv 1 \pmod{7}$ — so $3$ and $5$ are multiplicative inverses in $\mathbb{F}_7$&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;Why must $p$ be prime? With $p = 6$, we have $2 \cdot 3 \equiv 0$. If $2$ had an inverse $2^{-1}$, we could multiply both sides: $2^{-1} \cdot 2 \cdot 3 = 2^{-1} \cdot 0$, giving $3 = 0$, a contradiction. So $2$ has no multiplicative inverse, and the field axiom fails. Primes avoid this.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;groups-simpler-than-fields&quot;&gt;Groups: Simpler Than Fields&lt;&#x2F;h2&gt;
+&lt;p&gt;A &lt;strong&gt;group&lt;&#x2F;strong&gt; is a simpler structure than a field: one binary operation instead of two, four axioms instead of nine. We write a group as $(G, \circ)$ where $G$ is a set and $\circ$ is the operation (could be addition, multiplication, composition, etc.).&lt;&#x2F;p&gt;
+&lt;p&gt;The four axioms:&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;Closure&lt;&#x2F;strong&gt;: $\forall a, b \in G:\ a \circ b \in G$&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Associativity&lt;&#x2F;strong&gt;: $(a \circ b) \circ c = a \circ (b \circ c)$&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Identity&lt;&#x2F;strong&gt;: $\exists\ e \in G$ such that $e \circ a = a \circ e = a$&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Inverses&lt;&#x2F;strong&gt;: $\forall a \in G,\ \exists\ a^{-1} \in G$ such that $a \circ a^{-1} = a^{-1} \circ a = e$&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;The axioms don&#x27;t specify what $G$ contains or what $\circ$ does. Prove something about groups in general, and it applies to every group: integers, symmetries, points on a curve.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;Example&lt;&#x2F;strong&gt;: $(\mathbb{Z}, +)$, the integers under addition:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;Closure: $3 + 5 = 8 \in \mathbb{Z}$&lt;&#x2F;li&gt;
+&lt;li&gt;Associativity: $(2 + 3) + 4 = 2 + (3 + 4) = 9$&lt;&#x2F;li&gt;
+&lt;li&gt;Identity: $e = 0\ $ ( not 1! )&lt;&#x2F;li&gt;
+&lt;li&gt;Inverses: $a^{-1} = -a$ since $a + (-a) = 0$&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h2 id=&quot;elliptic-curves-are-groups&quot;&gt;Elliptic Curves are Groups&lt;&#x2F;h2&gt;
+&lt;p&gt;An &lt;strong&gt;elliptic curve&lt;&#x2F;strong&gt; over a field $\mathbb{F}_p$ is the set of points $(x, y)$ satisfying:&lt;&#x2F;p&gt;
+&lt;p&gt;$$y^2 = x^3 + ax + b$$&lt;&#x2F;p&gt;
+&lt;p&gt;plus a special &lt;strong&gt;point at infinity&lt;&#x2F;strong&gt; $\mathcal{O}$. The constants $a, b \in \mathbb{F}_p$ define the curve&#x27;s shape.&lt;&#x2F;p&gt;
+&lt;p&gt;This set forms a group under a binary operation called &lt;strong&gt;point addition&lt;&#x2F;strong&gt;. The construction may seem arbitrary, but it&#x27;s precisely what makes the group axioms hold. Here&#x27;s how it works:&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;Find the line through $P$ and $Q$ (i.e., solve for slope $m$ and intercept $c$ in $y = mx + c$). If $P = Q$, use the tangent line at $P$.&lt;&#x2F;li&gt;
+&lt;li&gt;This line intersects the curve at exactly 3 points (counting multiplicity—a tangent counts twice). Find the third intersection $R$.&lt;&#x2F;li&gt;
+&lt;li&gt;Compute the result:
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;If $R$ is a finite point&lt;&#x2F;strong&gt;: reflect it over the x-axis to get $P + Q = -R$, where $-R = (x, -y)$.&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;If the line is vertical&lt;&#x2F;strong&gt;: there is no finite third intersection. The result is $\mathcal{O}$, the point at infinity.&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;One more rule: $P + \mathcal{O} = P$ for any point $P$. The point at infinity acts as the identity element.&lt;&#x2F;p&gt;
+&lt;p&gt;Verifying the group axioms:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Closure&lt;&#x2F;strong&gt;: point addition always yields another point on the curve (or $\mathcal{O}$)&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Associativity&lt;&#x2F;strong&gt;: holds, though the proof is non-trivial&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Identity&lt;&#x2F;strong&gt;: $\mathcal{O}$, by definition above&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Inverses&lt;&#x2F;strong&gt;: the inverse of $(x, y)$ is $(x, -y)$, since their sum gives $\mathcal{O}$&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h2 id=&quot;why-cryptographers-care&quot;&gt;Why Cryptographers Care&lt;&#x2F;h2&gt;
+&lt;p&gt;So we have a group: points on an elliptic curve, an addition operation, four axioms satisfied. But groups are everywhere in mathematics. What makes &lt;em&gt;this&lt;&#x2F;em&gt; group useful for cryptography?&lt;&#x2F;p&gt;
+&lt;p&gt;The answer lies in an asymmetry: some operations on this group are easy to compute, others are practically impossible to reverse. To see this, we need one more concept.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;Scalar multiplication&lt;&#x2F;strong&gt; is repeated addition. Since we have a group operation, we can apply it repeatedly. $nP$ means adding $P$ to itself $n$ times:&lt;&#x2F;p&gt;
+&lt;p&gt;$$nP = \underbrace{P + P + \cdots + P}_{n \text{ times}}$$&lt;&#x2F;p&gt;
+&lt;p&gt;Cryptographic security requires large numbers. Ethereum uses $n \approx 2^{256}$, a number with 78 digits. Naively computing $nP$ would require $n - 1$ additions, which is impossible.&lt;&#x2F;p&gt;
+&lt;p&gt;But any integer has a binary representation. Take $n = 13$:&lt;&#x2F;p&gt;
+&lt;p&gt;$$13 = 1101_2 = 8 + 4 + 1$$&lt;&#x2F;p&gt;
+&lt;p&gt;So $13P = 8P + 4P + P$. The key insight: $8P = 2(4P) = 2(2(2P))$. We compute $2P$, $4P$, $8P$ by repeated doubling (3 operations), then add the relevant terms (2 more). Total: 5 operations instead of 12.&lt;&#x2F;p&gt;
+&lt;p&gt;This is &lt;strong&gt;double-and-add&lt;&#x2F;strong&gt;. For any $n$, it requires $O(\log n)$ operations, roughly the number of bits in $n$. Even for $n \approx 2^{256}$, that&#x27;s only ~256 doublings and additions. Fast.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;The reverse direction is hard.&lt;&#x2F;strong&gt; Given $P$ and $Q = nP$, finding $n$ is the &lt;strong&gt;discrete logarithm problem&lt;&#x2F;strong&gt; (DLP). &quot;Logarithm&quot; by analogy to $b^n = x \Rightarrow n = \log_b(x)$. &quot;Discrete&quot; because we&#x27;re in a finite group.&lt;&#x2F;p&gt;
+&lt;p&gt;No known algorithm beats brute force by much. With $n \approx 2^{256}$, that&#x27;s infeasible.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;This asymmetry is exactly what public-key cryptography needs.&lt;&#x2F;strong&gt; Each curve specification includes a standard base point $P$ (also called the generator) that everyone uses.&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;Pick a secret integer $n$. This is your &lt;strong&gt;private key&lt;&#x2F;strong&gt;.&lt;&#x2F;li&gt;
+&lt;li&gt;Compute $Q = nP$. This is your &lt;strong&gt;public key&lt;&#x2F;strong&gt;.&lt;&#x2F;li&gt;
+&lt;li&gt;Publish $Q$. Signature and encryption protocols build on top of this key pair.&lt;&#x2F;li&gt;
+&lt;li&gt;To impersonate you, an attacker must recover $n$ from $Q$ and $P$. But that&#x27;s the DLP, which is infeasible.&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;This is the core of elliptic curve cryptography. Real implementations add layers: Ethereum hashes your public key to derive your address, and signature schemes like ECDSA involve additional steps. But the security of all of it rests on the DLP being hard.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;takeaway&quot;&gt;Takeaway&lt;&#x2F;h2&gt;
+&lt;p&gt;We covered a lot of ground. Fields give us arithmetic in finite spaces. Groups are simpler structures—one operation, four axioms—that show up everywhere. Elliptic curves form a group under point addition, and the discrete logarithm problem on these curves is hard enough to secure your private keys.&lt;&#x2F;p&gt;
+&lt;p&gt;The construction is elegant: pick a secret number $n$, multiply a known point $P$ by it, publish the result $Q = nP$. Anyone can verify things with $Q$, but recovering $n$ is computationally out of reach. In &lt;a href=&quot;https:&#x2F;&#x2F;vinidlidoo.github.io&#x2F;blog&#x2F;secrets-and-signatures&#x2F;&quot;&gt;Part 2&lt;&#x2F;a&gt;, we&#x27;ll see how this foundation enables two practical protocols: ECDH for key exchange, and ECDSA for digital signatures.&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;&lt;a id=&quot;field-axioms&quot;&gt;&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;appendix-field-axioms&quot;&gt;Appendix: Field Axioms&lt;&#x2F;h2&gt;
+&lt;details&gt;
+&lt;summary&gt;The nine axioms&lt;&#x2F;summary&gt;
+&lt;p&gt;&lt;strong&gt;Addition axioms&lt;&#x2F;strong&gt; (for all $a, b, c \in F$):&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;Associativity&lt;&#x2F;strong&gt;: $(a + b) + c = a + (b + c)$&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Commutativity&lt;&#x2F;strong&gt;: $a + b = b + a$&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Identity&lt;&#x2F;strong&gt;: $\exists\ 0 \in F$ such that $a + 0 = a$&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Inverses&lt;&#x2F;strong&gt;: $\exists\ (-a) \in F$ such that $a + (-a) = 0$&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;&lt;strong&gt;Multiplication axioms&lt;&#x2F;strong&gt; (for all $a, b, c \in F$):&lt;&#x2F;p&gt;
+&lt;ol start=&quot;5&quot;&gt;
+&lt;li&gt;&lt;strong&gt;Associativity&lt;&#x2F;strong&gt;: $(a \cdot b) \cdot c = a \cdot (b \cdot c)$&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Commutativity&lt;&#x2F;strong&gt;: $a \cdot b = b \cdot a$&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Identity&lt;&#x2F;strong&gt;: $\exists\ 1 \in F$ such that $a \cdot 1 = a$&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Inverses&lt;&#x2F;strong&gt;: $\forall a \neq 0,\ \exists\ a^{-1} \in F$ such that $a \cdot a^{-1} = 1$&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;&lt;strong&gt;Linking addition and multiplication&lt;&#x2F;strong&gt;:&lt;&#x2F;p&gt;
+&lt;ol start=&quot;9&quot;&gt;
+&lt;li&gt;&lt;strong&gt;Distributivity&lt;&#x2F;strong&gt;: $a \cdot (b + c) = a \cdot b + a \cdot c$&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;&#x2F;details&gt;
+&lt;hr &#x2F;&gt;
+</content>
+        <summary type="html">From group theory to elliptic curves: how public-key cryptography actually works</summary>
+        </entry><entry xml:lang="en">
+        <title>Translation with Claude Code Skills</title>
+        <published>2026-01-14T00:00:00+00:00</published>
+        <updated>2026-01-14T00:00:00+00:00</updated>
+        <author>
+            <name>Vincent</name>
+        </author>
+        <link rel="alternate" href="https://vinidlidoo.github.io/blog/translation-with-claude-code/" type="text/html"/>
+        <id>https://vinidlidoo.github.io/blog/translation-with-claude-code/</id>
+        
+            <content type="html">&lt;p&gt;&lt;img src=&quot;&#x2F;img&#x2F;translation-with-claude-code-main-image.webp&quot; alt=&quot;translation with claude code&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;I can now translate every blog post into French and Japanese in under a minute, with no manual edits. The translations read incredibly natural, even for my most technical content. And with a Claude subscription, the marginal cost is zero. Hard not to be AI-pilled these days.&lt;&#x2F;p&gt;
+&lt;p&gt;This post explains how I built this using Claude Code &lt;strong&gt;skills&lt;&#x2F;strong&gt; and &lt;strong&gt;subagents&lt;&#x2F;strong&gt;.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;skills-and-subagents&quot;&gt;Skills and Subagents&lt;&#x2F;h2&gt;
+&lt;p&gt;Two Claude Code features make this possible.&lt;&#x2F;p&gt;
+&lt;p&gt;A &lt;strong&gt;&lt;a href=&quot;https:&#x2F;&#x2F;docs.anthropic.com&#x2F;en&#x2F;docs&#x2F;claude-code&#x2F;skills&quot;&gt;skill&lt;&#x2F;a&gt;&lt;&#x2F;strong&gt; is a reusable prompt that teaches Claude how to perform a specific task. Skills can read files, run shell scripts, and coordinate complex workflows. You can invoke them with a slash command (like &lt;code&gt;&#x2F;sync-translations&lt;&#x2F;code&gt; as we&#x27;ll see in the next section), or Claude Code can trigger them automatically based on context.&lt;&#x2F;p&gt;
+&lt;p&gt;A &lt;strong&gt;&lt;a href=&quot;https:&#x2F;&#x2F;docs.anthropic.com&#x2F;en&#x2F;docs&#x2F;claude-code&#x2F;sub-agents&quot;&gt;subagent&lt;&#x2F;a&gt;&lt;&#x2F;strong&gt; is a separate Claude instance that the main agent can spawn. Each subagent has its own system prompt, starts with a fresh context window, and doesn&#x27;t pollute the main agent&#x27;s context with its work. Multiple subagents can run in parallel. All of these properties turn out to matter for quality.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;the-system-at-a-glance&quot;&gt;The System at a Glance&lt;&#x2F;h2&gt;
+&lt;p&gt;This blog runs on Zola with markdown files. The approach generalizes to any blog with human-readable source files. Here&#x27;s the relevant structure:&lt;&#x2F;p&gt;
+&lt;pre&gt;&lt;code&gt;.claude&amp;#x2F;
+├── skills&amp;#x2F;
+│   └── sync-translations&amp;#x2F;
+│       ├── SKILL.md          # the skill definition
+│       └── check-sync.sh     # detects what needs work
+├── agents&amp;#x2F;
+│   └── translation-editor.md # reviews translations
+└── translation-learnings&amp;#x2F;
+    ├── fr.md                 # French terminology &amp;amp; style
+    └── ja.md                 # Japanese terminology &amp;amp; style
+
+content&amp;#x2F;blog&amp;#x2F;
+├── kv-cache-invalidation.md     # English original
+├── kv-cache-invalidation.fr.md  # French translation
+├── kv-cache-invalidation.ja.md  # Japanese translation
+├── translation-with-claude-code.md       # this post (no translations yet)
+└── ...
+&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;The main agent orchestrates everything using the &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;vinidlidoo&#x2F;vinidlidoo.github.io&#x2F;blob&#x2F;main&#x2F;.claude&#x2F;skills&#x2F;sync-translations&#x2F;SKILL.md&quot;&gt;sync-translations&lt;&#x2F;a&gt; &lt;strong&gt;skill&lt;&#x2F;strong&gt;. It runs the &lt;code&gt;check-sync.sh&lt;&#x2F;code&gt; shell script to detect what needs work, reads &lt;code&gt;{fr.md, ja.md}&lt;&#x2F;code&gt; in the &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;vinidlidoo&#x2F;vinidlidoo.github.io&#x2F;tree&#x2F;main&#x2F;.claude&#x2F;translation-learnings&quot;&gt;translation-learnings&lt;&#x2F;a&gt; directory for terminology guidance, drafts translations, then spawns two &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;vinidlidoo&#x2F;vinidlidoo.github.io&#x2F;blob&#x2F;main&#x2F;.claude&#x2F;agents&#x2F;translation-editor.md&quot;&gt;translation-editor&lt;&#x2F;a&gt; &lt;strong&gt;subagents&lt;&#x2F;strong&gt; (one for each language) to review them with fresh eyes. The editors feed discoveries back into the learnings files, so the system improves over time:&lt;&#x2F;p&gt;
+&lt;img src=&quot;&#x2F;img&#x2F;translation-workflow.svg&quot; alt=&quot;Translation workflow diagram&quot; &#x2F;&gt;
+&lt;h2 id=&quot;detecting-what-needs-work&quot;&gt;Detecting What Needs Work&lt;&#x2F;h2&gt;
+&lt;p&gt;The first step for the main agent is to run &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;vinidlidoo&#x2F;vinidlidoo.github.io&#x2F;blob&#x2F;main&#x2F;.claude&#x2F;skills&#x2F;sync-translations&#x2F;check-sync.sh&quot;&gt;&lt;code&gt;check-sync.sh&lt;&#x2F;code&gt;&lt;&#x2F;a&gt;.&lt;sup class=&quot;footnote-reference&quot; id=&quot;fr-1-1&quot;&gt;&lt;a href=&quot;#fn-1&quot;&gt;1&lt;&#x2F;a&gt;&lt;&#x2F;sup&gt; For each English post and target language, it outputs one of three states: &lt;strong&gt;NEW&lt;&#x2F;strong&gt; (no translation file exists), &lt;strong&gt;SYNC&lt;&#x2F;strong&gt; (translation exists but English changed), or &lt;strong&gt;ABORT&lt;&#x2F;strong&gt; (translation is current).&lt;&#x2F;p&gt;
+&lt;p&gt;NEW and ABORT are straightforward file checks. SYNC is trickier. We need git history—not just file modification times—because the agent needs to know &lt;em&gt;what&lt;&#x2F;em&gt; changed, not just &lt;em&gt;that&lt;&#x2F;em&gt; something changed. Without the exact diff, it would re-translate the entire post. Minor changes get lost in the shuffle, and polished sections get unnecessarily rewritten.&lt;&#x2F;p&gt;
+&lt;p&gt;The script finds when the translation &lt;em&gt;content&lt;&#x2F;em&gt; was last updated, then extracts the English diff since. For a post like &lt;code&gt;kv-cache-invalidation.md&lt;&#x2F;code&gt; with French translation &lt;code&gt;kv-cache-invalidation.fr.md&lt;&#x2F;code&gt;:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;# Find the commit where French content last changed (not just renamed)
+baseline=$(git log --follow --format=&amp;quot;%H&amp;quot; -- &amp;quot;kv-cache-invalidation.fr.md&amp;quot; \
+    | while read commit; do
+        # Check if this commit had real content changes (not just +++ --- headers)
+        changes=$(git show &amp;quot;$commit&amp;quot; -- &amp;quot;kv-cache-invalidation.fr.md&amp;quot; | grep -c &amp;quot;^[-+]&amp;quot;)
+        [[ &amp;quot;$changes&amp;quot; -gt 4 ]] &amp;amp;&amp;amp; echo &amp;quot;$commit&amp;quot; &amp;amp;&amp;amp; break
+    done)
+
+# Check if English changed since that baseline
+git diff &amp;quot;$baseline&amp;quot;..HEAD -- &amp;quot;kv-cache-invalidation.md&amp;quot;
+&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Any diff output means the English source diverged and the translation needs syncing.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;drafter-and-editor&quot;&gt;Drafter and Editor&lt;&#x2F;h2&gt;
+&lt;p&gt;The main agent drafts translations, writes them to disk, then spawns a separate &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;vinidlidoo&#x2F;vinidlidoo.github.io&#x2F;blob&#x2F;main&#x2F;.claude&#x2F;agents&#x2F;translation-editor.md&quot;&gt;editor subagent&lt;&#x2F;a&gt; to review them. The editor starts with a clean context—it sees only the English source, the draft translation, and a shared learnings file (more on that below). It checks for naturalness (does this sound translated or native?), idiom adaptation (were English expressions translated by meaning, not literally?), technical terminology (standard terms in the target language?), and voice (does it still sound like me?).&lt;&#x2F;p&gt;
+&lt;p&gt;Why not have the main agent review its own work? Bias. When you&#x27;ve just written something, the phrasing looks fine because you just chose it. Awkward constructions slip through. A fresh reader catches what the writer misses. This is true for humans; it&#x27;s true for LLMs too.&lt;&#x2F;p&gt;
+&lt;p&gt;The handoff depends on context. For new translations, the editor does a full review. For syncs, it focuses on changed sections—the rest was already reviewed. And since each language gets its own editor working on an independent file, they run in parallel.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;learnings-that-accumulate&quot;&gt;Learnings That Accumulate&lt;&#x2F;h2&gt;
+&lt;p&gt;Both agents share a &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;vinidlidoo&#x2F;vinidlidoo.github.io&#x2F;tree&#x2F;main&#x2F;.claude&#x2F;translation-learnings&quot;&gt;learnings file&lt;&#x2F;a&gt; per language. The main agent reads it before drafting; the editor reads it during review and appends new discoveries afterward. This creates a feedback loop: each translation makes the next one better.&lt;&#x2F;p&gt;
+&lt;p&gt;For French, the file now captures that &quot;proof by contradiction&quot; should be &quot;par l&#x27;absurde&quot; (not the literal &quot;en vue d&#x27;une contradiction&quot;), that &quot;attends to&quot; in attention mechanisms means &quot;prête attention à&quot; (not &quot;assiste à&quot;), and that technical terms like &quot;forward pass&quot; should stay in English.&lt;&#x2F;p&gt;
+&lt;p&gt;For Japanese, it records to avoid em dashes entirely (they&#x27;re not standard in Japanese text), that &quot;sent me down a rabbit hole&quot; becomes 「沼にはまってしまった」 (fell into a swamp—a natural Japanese idiom for obsessive exploration), and that series numbering should use 「第N回&#x2F;全M回」 format.&lt;&#x2F;p&gt;
+&lt;p&gt;These aren&#x27;t rules I wrote upfront. They emerged from editing sessions and compound with each post.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;bottom-line&quot;&gt;Bottom Line&lt;&#x2F;h2&gt;
+&lt;p&gt;I&#x27;m a native French speaker who spent a decade living and working in Japan. Writing this blog in English made sense for reach, but it meant leaving readers (friends and family) behind.&lt;&#x2F;p&gt;
+&lt;p&gt;The alternatives weren&#x27;t great. Manual translation would take 3-4 hours per post per language, and the quality would be hard to get right: I learned my business and technical writing in English, my math in French, and while I&#x27;m fluent in Japanese, writing polished prose is a skill I haven&#x27;t practiced much. Professional translation is expensive. And anyone who&#x27;s read Google Translate output for technical content knows the cringe: awkward phrasing, wrong terminology, prose that screams &quot;I am a robot.&quot;&lt;&#x2F;p&gt;
+&lt;p&gt;This changes the game. The translations aren&#x27;t perfect, but darn close. They cost me nothing but a minute of waiting. I wouldn&#x27;t have bothered translating this blog without that option available to me. I suspect we&#x27;ll see a lot more multilingual content online in the months to come.&lt;&#x2F;p&gt;
+&lt;p&gt;The system took a few hours to build. Now I just write in English, commit, and run &lt;code&gt;&#x2F;sync-translations&lt;&#x2F;code&gt;. This post was translated using it—if you read the French or Japanese version, you&#x27;re seeing the result. If you want to build something similar, follow the links throughout this post or explore the &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;vinidlidoo&#x2F;vinidlidoo.github.io&#x2F;tree&#x2F;main&#x2F;.claude&quot;&gt;full repo&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;section class=&quot;footnotes&quot;&gt;
+&lt;ol class=&quot;footnotes-list&quot;&gt;
+&lt;li id=&quot;fn-1&quot;&gt;
+&lt;p&gt;The script uses different labels internally: &lt;code&gt;NEEDS TRANSLATION&lt;&#x2F;code&gt;, &lt;code&gt;NEEDS SYNC&lt;&#x2F;code&gt;, and &lt;code&gt;UP TO DATE&lt;&#x2F;code&gt;. &lt;a href=&quot;#fr-1-1&quot;&gt;↩&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;&#x2F;section&gt;
+</content>
+        <summary type="html">How custom skills and subagents make multilingual publishing faster, cheaper, and better than manual translation</summary>
+        </entry><entry xml:lang="en">
+        <title>The Limits of Computation (Part 3&#x2F;3)</title>
+        <published>2026-01-11T00:00:00+00:00</published>
+        <updated>2026-01-11T00:00:00+00:00</updated>
+        <author>
+            <name>Vincent</name>
+        </author>
+        <link rel="alternate" href="https://vinidlidoo.github.io/blog/limits-of-computation/" type="text/html"/>
+        <id>https://vinidlidoo.github.io/blog/limits-of-computation/</id>
+        
+            <content type="html">&lt;p&gt;In &lt;a href=&quot;https:&#x2F;&#x2F;vinidlidoo.github.io&#x2F;blog&#x2F;turing-completeness&#x2F;&quot;&gt;Part 2&lt;&#x2F;a&gt;, we established that Turing completeness is the ceiling of computational power. Every reasonable formalism for &quot;computation&quot; turns out to be equivalent. You can&#x27;t build something stronger than a Turing machine.&lt;&#x2F;p&gt;
+&lt;p&gt;But can Turing machines solve &lt;em&gt;everything&lt;&#x2F;em&gt;?&lt;&#x2F;p&gt;
+&lt;p&gt;No. And the proof is surprisingly elegant. It will also lead us, almost immediately, to one of the most famous results in mathematics: Gödel&#x27;s Incompleteness Theorem.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;the-halting-problem&quot;&gt;The Halting Problem&lt;&#x2F;h2&gt;
+&lt;p&gt;Here&#x27;s a simple question: given a program, will it ever finish running?
+In our formalism from &lt;a href=&quot;https:&#x2F;&#x2F;vinidlidoo.github.io&#x2F;blog&#x2F;turing-machines&#x2F;&quot;&gt;Part 1&lt;&#x2F;a&gt;, a &quot;program&quot; is an encoding $\langle M, w \rangle$: a Turing machine $M$ together with its input $w$, written as data on a tape. So the halting question is: does $M$ halt on $w$?&lt;&#x2F;p&gt;
+&lt;p&gt;Imagine a &lt;em&gt;Halt Decider&lt;&#x2F;em&gt;, $H$. Feed it your code and it tells you &quot;this terminates (halts)&quot; or &quot;this loops forever.&quot; If it existed, you could use it on any program to catch infinite loops before deployment, verify that critical software always returns an answer, guarantee any recursive function won&#x27;t recurse forever. Incredibly useful.&lt;&#x2F;p&gt;
+&lt;p&gt;The &lt;strong&gt;Halting Problem&lt;&#x2F;strong&gt; asks: can we build such $H$? Not for one specific program, but a general procedure that correctly answers for &lt;em&gt;all&lt;&#x2F;em&gt; $\langle M, w \rangle$.&lt;&#x2F;p&gt;
+&lt;p&gt;Turing proved no such procedure can exist.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;intuition&quot;&gt;Intuition&lt;&#x2F;h2&gt;
+&lt;p&gt;It&#x27;s useful to notice that &quot;yes&quot; and &quot;no&quot; answers to the halting question are fundamentally different.&lt;&#x2F;p&gt;
+&lt;p&gt;For &quot;yes&quot; answers, just run the program long enough. If it halts after a week, you can say confidently &quot;yes, it halts.&quot;&lt;&#x2F;p&gt;
+&lt;p&gt;&quot;no&quot; answers are different. Suppose you&#x27;ve been running a program for a thousand years and it still hasn&#x27;t halted. Can you say &quot;no, it won&#x27;t ever halt&quot;? You can&#x27;t. Maybe it&#x27;ll halt in a thousand and one years. At no point does running the program entitle you to say &quot;no.&quot;&lt;&#x2F;p&gt;
+&lt;p&gt;This asymmetry hints at the impossibility. Let&#x27;s now prove it.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;the-diagonal-argument&quot;&gt;The Diagonal Argument&lt;&#x2F;h2&gt;
+&lt;p&gt;Suppose, toward contradiction, that we have a procedure $H$ that solves the halting problem. Given any program $P$ and input, $H$ correctly tells us whether $P$ halts.&lt;&#x2F;p&gt;
+&lt;p&gt;Now I&#x27;ll use $H$ as a subroutine to build a new program. Call it $Q$. Program $Q$ takes another program $P$ as input and does the following:&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;Ask $H$: &quot;Would $P$ halt if we ran it on $P$ itself?&quot;&lt;&#x2F;li&gt;
+&lt;li&gt;If $H$ says &quot;yes, $P$ halts on $P$&quot; → $Q$ loops forever&lt;&#x2F;li&gt;
+&lt;li&gt;If $H$ says &quot;no, $P$ doesn&#x27;t halt on $P$&quot; → $Q$ halts immediately&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;That&#x27;s it. $Q$ asks whether $P$ halts on itself, then does the &lt;em&gt;opposite&lt;&#x2F;em&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;Step 1 is the diagonal part: we&#x27;re feeding $P$ its own description as input. This is the same self-referential trick behind &lt;a href=&quot;https:&#x2F;&#x2F;vinidlidoo.github.io&#x2F;blog&#x2F;russells-paradox&#x2F;&quot;&gt;Russell&#x27;s paradox&lt;&#x2F;a&gt; and Cantor&#x27;s diagonal argument we explored in &lt;a href=&quot;https:&#x2F;&#x2F;vinidlidoo.github.io&#x2F;blog&#x2F;three-proofs-by-diagonalization&#x2F;&quot;&gt;Three Proofs by Diagonalization&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;Now comes the punch line. $Q$ is a program. What happens when we run $Q$ on &lt;em&gt;itself&lt;&#x2F;em&gt;?&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;If $Q$ halts on $Q$, then $H$ must have said &quot;$Q$ halts on $Q$,&quot; so by step 2, $Q$ loops forever. Contradiction.&lt;&#x2F;li&gt;
+&lt;li&gt;If $Q$ doesn&#x27;t halt on $Q$, then $H$ must have said &quot;$Q$ doesn&#x27;t halt on $Q$,&quot; so by step 3, $Q$ halts. Contradiction.&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;$Q$ halts on $Q$ if and only if $Q$ doesn&#x27;t halt on $Q$. That&#x27;s impossible. So $H$ cannot exist.&lt;&#x2F;p&gt;
+&lt;p&gt;The halting problem is &lt;strong&gt;undecidable&lt;&#x2F;strong&gt;. $\blacksquare$&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;why-this-matters&quot;&gt;Why This Matters&lt;&#x2F;h2&gt;
+&lt;p&gt;What does &quot;undecidable&quot; mean? &lt;strong&gt;A problem is decidable if there exists a procedure that always halts and always gives the correct yes&#x2F;no answer.&lt;&#x2F;strong&gt; The halting problem is undecidable: no such procedure exists. For any would-be halt decider, there&#x27;s some program it gets wrong (or runs forever on).&lt;&#x2F;p&gt;
+&lt;p&gt;The halting problem might seem like a contrived edge case. But it is only the tip of the iceberg. &lt;a href=&quot;https:&#x2F;&#x2F;en.wikipedia.org&#x2F;wiki&#x2F;Rice%27s_theorem&quot;&gt;Rice&#x27;s Theorem&lt;&#x2F;a&gt;, proved in 1953 by Henry Gordon Rice, generalized it: &lt;em&gt;any&lt;&#x2F;em&gt; non-trivial property of what a program computes is undecidable. Want to know if a program ever outputs a specific value? Undecidable. Ever accesses the network? Undecidable. Contains a security vulnerability? Undecidable.&lt;&#x2F;p&gt;
+&lt;p&gt;This explains why static analysis tools sometimes produce false positives, why compilers can&#x27;t always eliminate dead code, and why antivirus software can&#x27;t catch all malware. Perfect program analysis is mathematically impossible.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;godel-s-incompleteness-theorem&quot;&gt;Gödel&#x27;s Incompleteness Theorem&lt;&#x2F;h2&gt;
+&lt;p&gt;The halting problem immediately proves one of the most famous results in mathematics.&lt;&#x2F;p&gt;
+&lt;p&gt;In the early 20th century, David Hilbert proposed an ambitious goal: find a finite set of axioms from which every true statement about numbers could be mechanically derived. Start with basic axioms like &quot;$0$ is a number&quot; and &quot;$x + 0 = x$,&quot; add rules of inference, and in principle you could prove any true arithmetic statement.&lt;&#x2F;p&gt;
+&lt;p&gt;Here we need to distinguish two concepts:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;A statement is &lt;strong&gt;true&lt;&#x2F;strong&gt; if it accurately describes actual numbers (e.g., &quot;there is no largest prime&quot;)&lt;&#x2F;li&gt;
+&lt;li&gt;A statement is &lt;strong&gt;provable&lt;&#x2F;strong&gt; if it can be derived from axioms via inference rules&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;These aren&#x27;t obviously the same thing. Truth is about what&#x27;s actually the case; provability is about what follows from your starting assumptions. Hilbert&#x27;s dream, called &lt;strong&gt;Hilbert&#x27;s program&lt;&#x2F;strong&gt;, was to make them coincide for arithmetic: every true statement should be provable, and every provable statement should be true.&lt;sup class=&quot;footnote-reference&quot; id=&quot;fr-1-1&quot;&gt;&lt;a href=&quot;#fn-1&quot;&gt;1&lt;&#x2F;a&gt;&lt;&#x2F;sup&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;If such a system existed, you could build a theorem-proving machine: start from the axioms, apply inference rules in every possible way, and output each theorem as you derive it.&lt;sup class=&quot;footnote-reference&quot; id=&quot;fr-2-1&quot;&gt;&lt;a href=&quot;#fn-2&quot;&gt;2&lt;&#x2F;a&gt;&lt;&#x2F;sup&gt; $1 + 1 = 2$. Every prime has a larger prime. One by one, every true statement about numbers.&lt;&#x2F;p&gt;
+&lt;p&gt;Here&#x27;s the key insight: &lt;strong&gt;such a machine would solve the halting problem.&lt;&#x2F;strong&gt; Whether a program halts is a question about finite sequences of state transitions—exactly the kind of thing arithmetic can express. If the axiom system were complete, then for any program $M$ and input $w$, either &quot;$M$ halts on $w$&quot; or &quot;$M$ doesn&#x27;t halt on $w$&quot; would be provable. The enumeration machine would eventually find whichever proof exists, and we&#x27;d have our answer.&lt;&#x2F;p&gt;
+&lt;p&gt;But we already proved the halting problem is undecidable. So the system cannot be complete.&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;Gödel&#x27;s First Incompleteness Theorem&lt;&#x2F;strong&gt;: Any computable axiom system&lt;sup class=&quot;footnote-reference&quot; id=&quot;fr-3-1&quot;&gt;&lt;a href=&quot;#fn-3&quot;&gt;3&lt;&#x2F;a&gt;&lt;&#x2F;sup&gt; capable of expressing basic arithmetic is incomplete. There exist true statements that the system cannot prove.&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;This is the punchline: &lt;strong&gt;truth outruns provability.&lt;&#x2F;strong&gt; No matter what axioms you choose, some statements will be &lt;em&gt;independent&lt;&#x2F;em&gt;—neither provable nor refutable within the system.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;takeaway&quot;&gt;Takeaway&lt;&#x2F;h2&gt;
+&lt;p&gt;We&#x27;ve traced a boundary between what&#x27;s computable and what isn&#x27;t. In Part 2, we saw that Turing completeness is the ceiling: you can&#x27;t compute more than a Turing machine can. But now we&#x27;ve seen that this ceiling has holes. Some problems have no procedure that always halts with the correct answer.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;Inside&lt;&#x2F;strong&gt;: any yes&#x2F;no problem for which we can write a terminating procedure. Is this number prime? Trial division will tell you. What&#x27;s 347 × 892? Long multiplication gives the answer. Sort this list? Mergesort terminates with the correct ordering. These are decidable: we have procedures that always halt with correct answers.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;Outside&lt;&#x2F;strong&gt;: the halting problem is just the beginning. Rice&#x27;s theorem tells us that &lt;em&gt;any&lt;&#x2F;em&gt; interesting question about program behavior is undecidable. Does this code have a bug? Will it ever access the network? Is it equivalent to this other program? No single general algorithm can answer these for &lt;strong&gt;all programs&lt;&#x2F;strong&gt;. And Gödel tells us the problem runs deeper: some true statements about numbers can never be proven from any finite set of axioms.&lt;&#x2F;p&gt;
+&lt;p&gt;This boundary doesn&#x27;t depend on technology. Faster computers, quantum computers, whatever comes next: the halting problem will still be undecidable, and arithmetic will still be incomplete. There are truths that no mechanical procedure can discover. That&#x27;s a deep fact about the nature of computation itself.&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;section class=&quot;footnotes&quot;&gt;
+&lt;ol class=&quot;footnotes-list&quot;&gt;
+&lt;li id=&quot;fn-1&quot;&gt;
+&lt;p&gt;The second half—every provable statement is true—is called &lt;em&gt;soundness&lt;&#x2F;em&gt;, and we definitely want it. An unsound system proves false things, which is useless. The first half—every true statement is provable—is called &lt;em&gt;completeness&lt;&#x2F;em&gt;. Gödel showed completeness is impossible. &lt;a href=&quot;#fr-1-1&quot;&gt;↩&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li id=&quot;fn-2&quot;&gt;
+&lt;p&gt;Why can we enumerate theorems? A proof is a finite sequence of steps, each following mechanically from axioms or previous steps. Enumerate all finite sequences, check each for validity, output the conclusion of valid proofs. Every provable statement eventually appears. &lt;a href=&quot;#fr-2-1&quot;&gt;↩&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li id=&quot;fn-3&quot;&gt;
+&lt;p&gt;The system must also be &lt;em&gt;consistent&lt;&#x2F;em&gt;: it never proves both $P$ and $\neg P$. An inconsistent system can prove anything (including contradictions), making &quot;completeness&quot; trivially achievable but meaningless. &lt;a href=&quot;#fr-3-1&quot;&gt;↩&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;&#x2F;section&gt;
+</content>
+        <summary type="html">What Turing machines can&#x27;t do, and why it matters</summary>
+        </entry><entry xml:lang="en">
+        <title>What It Means to Be Turing Complete (Part 2&#x2F;3)</title>
+        <published>2026-01-10T00:00:00+00:00</published>
+        <updated>2026-01-10T00:00:00+00:00</updated>
+        <author>
+            <name>Vincent</name>
+        </author>
+        <link rel="alternate" href="https://vinidlidoo.github.io/blog/turing-completeness/" type="text/html"/>
+        <id>https://vinidlidoo.github.io/blog/turing-completeness/</id>
+        
+            <content type="html">&lt;p&gt;In &lt;a href=&quot;https:&#x2F;&#x2F;vinidlidoo.github.io&#x2F;blog&#x2F;turing-machines&#x2F;&quot;&gt;Part 1&lt;&#x2F;a&gt;, we built Turing machines (TM) from scratch: a tape, a head, a handful of states and transitions. Our palindrome detector had maybe a dozen states.&lt;&#x2F;p&gt;
+&lt;p&gt;The quote that started this series was Demis Hassabis &lt;a href=&quot;https:&#x2F;&#x2F;x.com&#x2F;demishassabis&#x2F;status&#x2F;2003097405026193809&quot;&gt;claiming&lt;&#x2F;a&gt; that &quot;the human brain (and AI foundation models) are approximate Turing Machines.&quot; But Hassabis surely didn&#x27;t mean that our minds are like little palindrome detectors. He was rather making a claim about &lt;em&gt;computational power&lt;&#x2F;em&gt;: brains can compute anything that&#x27;s computable at all, given enough time (compute) and memory. The technical term for this property is &lt;strong&gt;Turing complete&lt;&#x2F;strong&gt;.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;the-universal-turing-machine&quot;&gt;The Universal Turing Machine&lt;&#x2F;h2&gt;
+&lt;p&gt;In &lt;a href=&quot;https:&#x2F;&#x2F;vinidlidoo.github.io&#x2F;blog&#x2F;turing-machines&#x2F;&quot;&gt;Part 1&lt;&#x2F;a&gt;, we built individual machines for each problem: one for palindromes, one for even-counting. Each was a fixed device, hardwired for one task. Want to check primes? Build a new machine. Want to sort numbers? Build another.&lt;&#x2F;p&gt;
+&lt;p&gt;Turing asked: could we build &lt;em&gt;one&lt;&#x2F;em&gt; machine that does the job of all of them?&lt;&#x2F;p&gt;
+&lt;p&gt;The answer is yes. A &lt;strong&gt;Universal Turing Machine&lt;&#x2F;strong&gt; (UTM) is a specific Turing machine $U$ that takes an encoding $\langle M, w \rangle$ of another machine $M$ and input $w$, then simulates $M$ running on $w$:&lt;&#x2F;p&gt;
+&lt;p&gt;$$U(\langle M, w \rangle) = M(w)$$&lt;&#x2F;p&gt;
+&lt;p&gt;The encoding is just data on the tape: states as numbers, the transition table as a list of rules, then the input $w$. The UTM reads this description and executes it step by step, tracking $M$&#x27;s state, head position, and tape contents on its own tape.&lt;&#x2F;p&gt;
+&lt;p&gt;This is where the term &quot;program&quot; comes from. The UTM doesn&#x27;t need to be rebuilt for each task; you just feed it a different program (i.e., encoding). Your laptop works the same way: the Python script you run is the encoded machine $M$, the file you feed it is the input $w$, and the CPU simulates $M$ on $w$, step by step.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;turing-completeness&quot;&gt;Turing Completeness&lt;&#x2F;h2&gt;
+&lt;p&gt;Turing didn&#x27;t physically build the UTM; he specified it precisely enough that it &lt;em&gt;could&lt;&#x2F;em&gt; be built. The specification itself is the proof saying: here&#x27;s a concrete machine that simulates any other. We call any system with this power &lt;strong&gt;Turing complete&lt;&#x2F;strong&gt;: give it an encoding $\langle M, w \rangle$, and it can do whatever $M$ would do on $w$.&lt;&#x2F;p&gt;
+&lt;p&gt;What does it take to be Turing complete? Three things:&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;Unbounded read&#x2F;write memory&lt;&#x2F;strong&gt;: Storage that can grow without limit, with the ability to both read from and write to arbitrary locations (like the TM&#x27;s infinite tape and read&#x2F;write head)&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Conditional branching&lt;&#x2F;strong&gt;: Different behavior based on data values (like the transition function: &quot;if in state $q$ reading $s$, then...&quot;)&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Unbounded iteration&lt;&#x2F;strong&gt;: The ability to repeat operations indefinitely, via loops, recursion, or equivalent (a TM can cycle through states as many times as needed)&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;That&#x27;s enough. Python has these. So do JavaScript, C, Excel (yes, really), and even PowerPoint. The encoding might be absurd, but it will work.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;the-ceiling&quot;&gt;The Ceiling&lt;&#x2F;h2&gt;
+&lt;p&gt;But is Turing complete the &lt;em&gt;most&lt;&#x2F;em&gt; powerful a system can be? Could we build something stronger: a system that solves problems no Turing machine can?&lt;&#x2F;p&gt;
+&lt;p&gt;A Turing machine computes a function: give it input $w$, and it produces output $M(w)$ (or runs forever). Different formalisms define &quot;computable function&quot; differently. Turing invented his tape-and-head model. Alonzo Church, working independently, defined computation using pure functions. Others proposed their own definitions. Remarkably, every reasonable formalization turned out to define exactly the same class of functions. Different starting points, same destination.&lt;&#x2F;p&gt;
+&lt;p&gt;This convergence is the evidence behind the &lt;strong&gt;Church-Turing Thesis&lt;&#x2F;strong&gt;:&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;A function is effectively computable if and only if it is computable by a Turing machine.&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;No one has ever found a counterexample.&lt;&#x2F;p&gt;
+&lt;p&gt;The thesis answers our question. There&#x27;s no &quot;super-computer&quot; beyond Turing completeness. You can build faster systems, systems with nicer syntax. But you can&#x27;t build a system that computes &lt;em&gt;more&lt;&#x2F;em&gt; than a Turing machine can.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;Turing completeness is the ceiling.&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;back-to-demis&quot;&gt;Back to Demis&lt;&#x2F;h2&gt;
+&lt;p&gt;Brains and neural networks are Turing complete: they branch, loop, and can expand memory as needed. In theory, they can solve any computable problem.&lt;&#x2F;p&gt;
+&lt;p&gt;&quot;General intelligence&quot; just means solving enough of them. How many depends on the definition you use. The gap between current AI and that goal isn&#x27;t underlying capability, it is about solving enough computable problems &lt;strong&gt;efficiently&lt;&#x2F;strong&gt;. Humans and AI are &quot;approximate&quot; Turing machines because they&#x27;re finite. A Turing machine has infinite tape and unlimited time; we have fixed parameters and deadlines. But for problems we actually care about, finite should be good enough, provided we get efficiency right.&lt;&#x2F;p&gt;
+&lt;p&gt;What we don&#x27;t yet know is the fastest path to get there: better data, more compute, smarter architectures? Probably all of the above. Thousands of researchers and billions of dollars are at work on exactly this question, day in and day out.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;what-s-next&quot;&gt;What&#x27;s Next&lt;&#x2F;h2&gt;
+&lt;p&gt;Turing completeness tells us what&#x27;s &lt;em&gt;possible&lt;&#x2F;em&gt;. But it doesn&#x27;t tell us what&#x27;s &lt;em&gt;impossible&lt;&#x2F;em&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;In &lt;a href=&quot;https:&#x2F;&#x2F;vinidlidoo.github.io&#x2F;blog&#x2F;limits-of-computation&#x2F;&quot;&gt;Part 3&lt;&#x2F;a&gt;, we&#x27;ll open the ceiling and take a look above. Some problems are provably unsolvable: not just hard, but impossible for any Turing machine, any computer, any brain, any AI.&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+</content>
+        <summary type="html">Why brains and AI are &#x27;approximate Turing machines&#x27;</summary>
+        </entry><entry xml:lang="en">
+        <title>What is a Turing Machine? (Part 1&#x2F;3)</title>
+        <published>2026-01-09T00:00:00+00:00</published>
+        <updated>2026-01-09T00:00:00+00:00</updated>
+        <author>
+            <name>Vincent</name>
+        </author>
+        <link rel="alternate" href="https://vinidlidoo.github.io/blog/turing-machines/" type="text/html"/>
+        <id>https://vinidlidoo.github.io/blog/turing-machines/</id>
+        
+            <content type="html">&lt;p&gt;Last month, DeepMind CEO Demis Hassabis &lt;a href=&quot;https:&#x2F;&#x2F;twitter.com&#x2F;demishassabis&#x2F;status&#x2F;2003097405026193809&quot;&gt;fired back&lt;&#x2F;a&gt; at Yann LeCun on X with a claim that caught my attention:&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&quot;The human brain (and AI foundation models) are approximate Turing Machines.&quot;&lt;sup class=&quot;footnote-reference&quot; id=&quot;fr-1-1&quot;&gt;&lt;a href=&quot;#fn-1&quot;&gt;1&lt;&#x2F;a&gt;&lt;&#x2F;sup&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;I&#x27;ve heard the expressions &quot;Turing machine&quot; and &quot;Turing complete&quot; a hundred times over the years, but I have to admit I never truly understood what they meant. This is my attempt at a short, dense, yet accessible explanation. Part 1 covers what a Turing machine actually &lt;em&gt;is&lt;&#x2F;em&gt;. &lt;a href=&quot;https:&#x2F;&#x2F;vinidlidoo.github.io&#x2F;blog&#x2F;turing-completeness&#x2F;&quot;&gt;Part 2&lt;&#x2F;a&gt; will explain what &quot;Turing complete&quot; means and return to Demis&#x27;s claim.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;historical-context&quot;&gt;Historical Context&lt;&#x2F;h2&gt;
+&lt;p&gt;In the 1930s, mathematicians were trying to formalize what &quot;computation&quot; actually means. Before electronic computers existed, a &quot;computer&quot; was literally a human being performing calculations by hand, following rules and writing intermediate results on paper.&lt;&#x2F;p&gt;
+&lt;p&gt;Alan Turing asked: what are the &lt;em&gt;minimal&lt;&#x2F;em&gt; operations needed to capture any mechanical calculation? His answer was an abstract machine so simple it seems almost trivial, yet powerful enough to compute anything that can be computed at all.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;the-turing-machine&quot;&gt;The Turing Machine&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;intuition&quot;&gt;Intuition&lt;&#x2F;h3&gt;
+&lt;p&gt;Imagine a person sitting at a desk with:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;An infinitely long strip of paper divided into squares (the &lt;strong&gt;tape&lt;&#x2F;strong&gt;)&lt;&#x2F;li&gt;
+&lt;li&gt;A pencil and eraser&lt;&#x2F;li&gt;
+&lt;li&gt;A finite set of memorized instructions&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;They can only:&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;Look at one square at a time&lt;&#x2F;li&gt;
+&lt;li&gt;Write or erase a symbol in that square&lt;&#x2F;li&gt;
+&lt;li&gt;Move attention one square left or right&lt;&#x2F;li&gt;
+&lt;li&gt;Be in one of finitely many &quot;mental states&quot;&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;That&#x27;s it. No arithmetic unit, no memory banks, no parallel processing. Just read, write, move, change state. Repeat.&lt;&#x2F;p&gt;
+&lt;p&gt;Let&#x27;s see this in action.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;example-1-even-number-of-1s&quot;&gt;Example 1: Even Number of 1s&lt;&#x2F;h2&gt;
+&lt;p&gt;Let&#x27;s build a machine $M$ that accepts binary strings with an even number of 1s.&lt;&#x2F;p&gt;
+&lt;p&gt;Take the input $w = \texttt{1011}$. This has three 1s (odd), so $M$ should reject it. The input $w = \texttt{1100}$ has two 1s (even), so $M$ should accept it.&lt;&#x2F;p&gt;
+&lt;p&gt;The tape starts with the input written on it, followed by blanks (written $b$) extending infinitely to the right:&lt;&#x2F;p&gt;
+&lt;p&gt;$$\texttt{1} \quad \texttt{0} \quad \texttt{1} \quad \texttt{1} \quad b \quad b \quad b \quad \cdots$$&lt;&#x2F;p&gt;
+&lt;p&gt;The machine&#x27;s head starts at the leftmost cell, in some initial state $q_0$. Our strategy: scan right, toggling between &quot;seen even&quot; and &quot;seen odd&quot; on each 1, ignoring 0s, and accept or reject when we hit a blank.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;States&lt;&#x2F;strong&gt;: $Q = \lbrace q_{\text{even}}, q_{\text{odd}}, q_{\text{accept}}, q_{\text{reject}} \rbrace$, with $q_0 = q_{\text{even}}$ (zero 1s seen is even).&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;Transitions&lt;&#x2F;strong&gt;:&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;State&lt;&#x2F;th&gt;&lt;th&gt;Read&lt;&#x2F;th&gt;&lt;th&gt;Write&lt;&#x2F;th&gt;&lt;th&gt;Move&lt;&#x2F;th&gt;&lt;th&gt;Next State&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;$q_{\text{even}}$&lt;&#x2F;td&gt;&lt;td&gt;0&lt;&#x2F;td&gt;&lt;td&gt;0&lt;&#x2F;td&gt;&lt;td&gt;R&lt;&#x2F;td&gt;&lt;td&gt;$q_{\text{even}}$&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;$q_{\text{even}}$&lt;&#x2F;td&gt;&lt;td&gt;1&lt;&#x2F;td&gt;&lt;td&gt;1&lt;&#x2F;td&gt;&lt;td&gt;R&lt;&#x2F;td&gt;&lt;td&gt;$q_{\text{odd}}$&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;$q_{\text{even}}$&lt;&#x2F;td&gt;&lt;td&gt;$b$&lt;&#x2F;td&gt;&lt;td&gt;$b$&lt;&#x2F;td&gt;&lt;td&gt;—&lt;&#x2F;td&gt;&lt;td&gt;$q_{\text{accept}}$&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;$q_{\text{odd}}$&lt;&#x2F;td&gt;&lt;td&gt;0&lt;&#x2F;td&gt;&lt;td&gt;0&lt;&#x2F;td&gt;&lt;td&gt;R&lt;&#x2F;td&gt;&lt;td&gt;$q_{\text{odd}}$&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;$q_{\text{odd}}$&lt;&#x2F;td&gt;&lt;td&gt;1&lt;&#x2F;td&gt;&lt;td&gt;1&lt;&#x2F;td&gt;&lt;td&gt;R&lt;&#x2F;td&gt;&lt;td&gt;$q_{\text{even}}$&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;$q_{\text{odd}}$&lt;&#x2F;td&gt;&lt;td&gt;$b$&lt;&#x2F;td&gt;&lt;td&gt;$b$&lt;&#x2F;td&gt;&lt;td&gt;—&lt;&#x2F;td&gt;&lt;td&gt;$q_{\text{reject}}$&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;Read each row as: &quot;If in &lt;em&gt;State&lt;&#x2F;em&gt;, &lt;em&gt;Read&lt;&#x2F;em&gt; this symbol, then &lt;em&gt;Write&lt;&#x2F;em&gt; this symbol, then &lt;em&gt;Move&lt;&#x2F;em&gt; position in this direction (Left or Right); you&#x27;re now in this &lt;em&gt;Next State&lt;&#x2F;em&gt;.&quot;&lt;&#x2F;p&gt;
+&lt;p&gt;Let&#x27;s trace through $w = \texttt{1011}$:&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;State $q_{\text{even}}$, read &lt;code&gt;1&lt;&#x2F;code&gt; → move right, switch to $q_{\text{odd}}$&lt;&#x2F;li&gt;
+&lt;li&gt;State $q_{\text{odd}}$, read &lt;code&gt;0&lt;&#x2F;code&gt; → move right, stay in $q_{\text{odd}}$&lt;&#x2F;li&gt;
+&lt;li&gt;State $q_{\text{odd}}$, read &lt;code&gt;1&lt;&#x2F;code&gt; → move right, switch to $q_{\text{even}}$&lt;&#x2F;li&gt;
+&lt;li&gt;State $q_{\text{even}}$, read &lt;code&gt;1&lt;&#x2F;code&gt; → move right, switch to $q_{\text{odd}}$&lt;&#x2F;li&gt;
+&lt;li&gt;State $q_{\text{odd}}$, read $b$ → halt in $q_{\text{reject}}$&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;Rejected, as expected. Try $w = \texttt{1100}$ yourself: you should end in $q_{\text{accept}}$.&lt;&#x2F;p&gt;
+&lt;p&gt;Notice something? This machine never writes anything new, never moves left. It&#x27;s just scanning right and toggling state. We&#x27;re not using the full power of a Turing machine yet.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;example-2-palindrome-detection&quot;&gt;Example 2: Palindrome Detection&lt;&#x2F;h2&gt;
+&lt;p&gt;Now let&#x27;s try something that &lt;em&gt;requires&lt;&#x2F;em&gt; writing and bidirectional movement: detecting palindromes.&lt;&#x2F;p&gt;
+&lt;p&gt;A string is a palindrome if it reads the same forwards and backwards. Take $w = \texttt{101}$: it&#x27;s a palindrome, so $M$ should accept. The input $w = \texttt{100}$ is not, so $M$ should reject.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;Algorithm&lt;&#x2F;strong&gt;:&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;Read the leftmost character, remember it (via state), mark it with $X$&lt;&#x2F;li&gt;
+&lt;li&gt;Scan right to find the rightmost unmarked character&lt;&#x2F;li&gt;
+&lt;li&gt;Check if it matches what we remembered; reject if not&lt;&#x2F;li&gt;
+&lt;li&gt;Mark it with $X$, scan left back to the first unmarked character&lt;&#x2F;li&gt;
+&lt;li&gt;Repeat until all characters are marked (accept) or we find a mismatch (reject)&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;Let&#x27;s trace through $w = \texttt{101}$. The tape starts as:&lt;&#x2F;p&gt;
+&lt;p&gt;$$\texttt{1} \quad \texttt{0} \quad \texttt{1} \quad b \quad \cdots$$&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;Iteration 1&lt;&#x2F;strong&gt;: In state $q_0$, read &lt;code&gt;1&lt;&#x2F;code&gt; at the left. Transition to $q_{\text{seek1}}$ (&quot;looking for 1&quot;), write $X$:&lt;&#x2F;p&gt;
+&lt;p&gt;$$X \quad \texttt{0} \quad \texttt{1} \quad b \quad \cdots$$&lt;&#x2F;p&gt;
+&lt;p&gt;In $q_{\text{seek1}}$, scan right to the rightmost unmarked character (&lt;code&gt;1&lt;&#x2F;code&gt;). It matches! Write $X$, transition to $q_{\text{return}}$:&lt;&#x2F;p&gt;
+&lt;p&gt;$$X \quad \texttt{0} \quad X \quad b \quad \cdots$$&lt;&#x2F;p&gt;
+&lt;p&gt;In $q_{\text{return}}$, scan left back to the first unmarked character (&lt;code&gt;0&lt;&#x2F;code&gt;), transition to $q_0$.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;Iteration 2&lt;&#x2F;strong&gt;: In $q_0$, read &lt;code&gt;0&lt;&#x2F;code&gt;. Transition to $q_{\text{seek0}}$, write $X$:&lt;&#x2F;p&gt;
+&lt;p&gt;$$X \quad X \quad X \quad b \quad \cdots$$&lt;&#x2F;p&gt;
+&lt;p&gt;In $q_{\text{seek0}}$, scan right for the rightmost unmarked character... there isn&#x27;t one. Everything is marked, so transition to $q_{\text{accept}}$.&lt;&#x2F;p&gt;
+&lt;p&gt;This example shows what Example 1 didn&#x27;t need:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Writing&lt;&#x2F;strong&gt;: We mark characters with $X$ to track progress&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Bidirectional movement&lt;&#x2F;strong&gt;: We scan left and right repeatedly&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;State as memory&lt;&#x2F;strong&gt;: We remember &quot;looking for 0&quot; vs &quot;looking for 1&quot;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;Notice that $X$ isn&#x27;t part of the input. The &lt;strong&gt;input alphabet&lt;&#x2F;strong&gt; is $\Sigma = \lbrace \texttt{0}, \texttt{1} \rbrace$, but the &lt;strong&gt;tape alphabet&lt;&#x2F;strong&gt; is $\Gamma = \lbrace \texttt{0}, \texttt{1}, X, b \rbrace$. The machine can read and write symbols beyond what appears in valid inputs.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;formal-definition&quot;&gt;Formal Definition&lt;&#x2F;h2&gt;
+&lt;p&gt;Now that we&#x27;ve seen examples, here&#x27;s the formal definition. A Turing machine is a 7-tuple:&lt;&#x2F;p&gt;
+&lt;p&gt;$$M = (Q, \Gamma, b, \Sigma, \delta, q_0, F)$$&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;Symbol&lt;&#x2F;th&gt;&lt;th&gt;Meaning&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;$Q$&lt;&#x2F;td&gt;&lt;td&gt;Finite set of states&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;$\Gamma$&lt;&#x2F;td&gt;&lt;td&gt;Tape alphabet (finite set of symbols the machine can read&#x2F;write)&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;$b \in \Gamma$&lt;&#x2F;td&gt;&lt;td&gt;Blank symbol (fills the infinite tape beyond input)&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;$\Sigma \subseteq \Gamma \setminus \lbrace b \rbrace$&lt;&#x2F;td&gt;&lt;td&gt;Input alphabet (valid input symbols)&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;$q_0 \in Q$&lt;&#x2F;td&gt;&lt;td&gt;Initial state&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;$F \subseteq Q$&lt;&#x2F;td&gt;&lt;td&gt;Accepting states&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;$\delta: Q \times \Gamma \rightarrow Q \times \Gamma \times \lbrace L, R \rbrace$&lt;&#x2F;td&gt;&lt;td&gt;Transition function&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;The transition function $\delta$ is the brain of the machine: &quot;If I&#x27;m in state $q$ and see symbol $s$, then write $s&#x27;$, move left or right, and switch to state $q&#x27;$.&quot;&lt;&#x2F;p&gt;
+&lt;p&gt;A machine &lt;strong&gt;accepts&lt;&#x2F;strong&gt; input $w$ if it eventually reaches a state in $F$. The &lt;strong&gt;language&lt;&#x2F;strong&gt; it recognizes is the set of all strings it accepts: $L(M) = \lbrace w \in \Sigma^* \mid M \text{ accepts } w \rbrace$, where $\Sigma^*$ means all finite strings over the input alphabet, such as $\lbrace 0, 1 \rbrace^* = \lbrace \epsilon, 0, 1, 00, 01, \ldots \rbrace$.&lt;&#x2F;p&gt;
+&lt;p&gt;Look at $L(M)$ again. The machine $M$ is finite: finitely many states, finite tape alphabet, therefore finitely many transition rules. Yet the language $L(M)$ can contain infinitely many strings. &lt;strong&gt;A Turing machine is a finite description of a potentially infinite set.&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;This parallels something I explored in &lt;a href=&quot;https:&#x2F;&#x2F;vinidlidoo.github.io&#x2F;blog&#x2F;russells-paradox&#x2F;&quot;&gt;my post on Russell&#x27;s Paradox&lt;&#x2F;a&gt;. In set-builder notation, $\lbrace x : x &amp;gt; 5 \rbrace$ describes infinitely many numbers with a few symbols. A Turing machine does something similar:&lt;&#x2F;p&gt;
+&lt;p&gt;$$\lbrace x : x &amp;gt; 5 \rbrace \quad \text{vs} \quad \lbrace w : M \text{ accepts } w \rbrace$$&lt;&#x2F;p&gt;
+&lt;p&gt;Both define sets via a membership criterion. The difference: set-builder notation allows &lt;em&gt;any&lt;&#x2F;em&gt; property, including ones with no mechanical test (&quot;$n$ will appear in next week&#x27;s winning lottery numbers&quot; defines a set, but good luck testing membership). A Turing machine, by construction, &lt;em&gt;is&lt;&#x2F;em&gt; a test.&lt;sup class=&quot;footnote-reference&quot; id=&quot;fr-2-1&quot;&gt;&lt;a href=&quot;#fn-2&quot;&gt;2&lt;&#x2F;a&gt;&lt;&#x2F;sup&gt; The definition and the procedure are the same thing: hand me a candidate $w$, and I run $M$ on it.&lt;&#x2F;p&gt;
+&lt;p&gt;Our even-1s machine has six transition rules, yet it accepts infinitely many strings: $\epsilon$, &lt;code&gt;0&lt;&#x2F;code&gt;, &lt;code&gt;00&lt;&#x2F;code&gt;, &lt;code&gt;11&lt;&#x2F;code&gt;, &lt;code&gt;0000&lt;&#x2F;code&gt;, &lt;code&gt;1111&lt;&#x2F;code&gt;, &lt;code&gt;0110&lt;&#x2F;code&gt;... You could never list them all, but hand me any string and I can run the machine to tell you if it&#x27;s in the set.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;what-s-next&quot;&gt;What&#x27;s Next&lt;&#x2F;h2&gt;
+&lt;p&gt;We&#x27;ve seen what a Turing machine is: a minimal abstraction for mechanical computation. Read, write, move, change state.&lt;&#x2F;p&gt;
+&lt;p&gt;But why should such a simple machine matter? &lt;a href=&quot;https:&#x2F;&#x2F;vinidlidoo.github.io&#x2F;blog&#x2F;turing-completeness&#x2F;&quot;&gt;Part 2&lt;&#x2F;a&gt; tackles what &quot;Turing complete&quot; means, why this primitive machine turns out to be maximally powerful, and what Demis meant by &quot;approximate Turing machines.&quot;&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;&lt;a id=&quot;tweet&quot;&gt;&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;blockquote class=&quot;twitter-tweet&quot; data-theme=&quot;dark&quot; data-align=&quot;center&quot;&gt;&lt;p lang=&quot;en&quot; dir=&quot;ltr&quot;&gt;Yann is just plain incorrect here, he&#x27;s confusing general intelligence with universal intelligence.&lt;br&gt;&lt;br&gt;Brains are the most exquisite and complex phenomena we know of in the universe (so far), and they are in fact extremely general.&lt;br&gt;&lt;br&gt;Obviously one can&#x27;t circumvent the no free lunch… &lt;a href=&quot;https:&#x2F;&#x2F;t.co&#x2F;RjeqlaP7GO&quot;&gt;https:&#x2F;&#x2F;t.co&#x2F;RjeqlaP7GO&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;&amp;mdash; Demis Hassabis (@demishassabis) &lt;a href=&quot;https:&#x2F;&#x2F;twitter.com&#x2F;demishassabis&#x2F;status&#x2F;2003097405026193809?ref_src=twsrc%5Etfw&quot;&gt;December 22, 2025&lt;&#x2F;a&gt;&lt;&#x2F;blockquote&gt;
+&lt;script async src=&quot;https:&#x2F;&#x2F;platform.twitter.com&#x2F;widgets.js&quot; charset=&quot;utf-8&quot;&gt;&lt;&#x2F;script&gt;
+&lt;hr &#x2F;&gt;
+&lt;section class=&quot;footnotes&quot;&gt;
+&lt;ol class=&quot;footnotes-list&quot;&gt;
+&lt;li id=&quot;fn-1&quot;&gt;
+&lt;p&gt;&lt;a href=&quot;https:&#x2F;&#x2F;vinidlidoo.github.io&#x2F;blog&#x2F;turing-machines&#x2F;#tweet&quot;&gt;Full tweet at the end of the post&lt;&#x2F;a&gt; &lt;a href=&quot;#fr-1-1&quot;&gt;↩&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li id=&quot;fn-2&quot;&gt;
+&lt;p&gt;With one caveat: the machine might run forever without halting. More on that in Part 2. &lt;a href=&quot;#fr-2-1&quot;&gt;↩&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;&#x2F;section&gt;
+</content>
+        <summary type="html">The elegant abstraction that defines what it means to compute</summary>
+        </entry><entry xml:lang="en">
+        <title>Three Proofs by Diagonalization</title>
+        <published>2026-01-08T00:00:00+00:00</published>
+        <updated>2026-01-08T00:00:00+00:00</updated>
+        <author>
+            <name>Vincent</name>
+        </author>
+        <link rel="alternate" href="https://vinidlidoo.github.io/blog/three-proofs-by-diagonalization/" type="text/html"/>
+        <id>https://vinidlidoo.github.io/blog/three-proofs-by-diagonalization/</id>
+        
+            <content type="html">&lt;p&gt;Continuing down the rabbit hole from &lt;a href=&quot;https:&#x2F;&#x2F;youtu.be&#x2F;14OPT6CcsH4?t=2967&amp;amp;si=_qnWStDudzUB_o_D&quot;&gt;Lex Fridman&#x27;s podcast #488&lt;&#x2F;a&gt;, I want to explore &lt;strong&gt;diagonalization&lt;&#x2F;strong&gt;—a proof technique that keeps appearing in foundational mathematics.&lt;&#x2F;p&gt;
+&lt;p&gt;The core idea: construct an object that&#x27;s guaranteed to differ from every object in a given list by changing the &quot;diagonal&quot; entries. We&#x27;ll cover three variations of this technique, all sharing the same logical structure (each also covered in the podcast).&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;1-cantor-s-proof-the-reals-are-uncountable&quot;&gt;1. Cantor&#x27;s Proof: The Reals Are Uncountable&lt;&#x2F;h2&gt;
+&lt;p&gt;Georg Cantor introduced diagonalization in 1891 to prove that the real numbers form a strictly larger infinity than the natural numbers.&lt;&#x2F;p&gt;
+&lt;p&gt;Suppose, toward contradiction, that we could list all real numbers between 0 and 1. Each real can be written as an infinite decimal:&lt;&#x2F;p&gt;
+&lt;p&gt;$$
+\begin{array}{c|cccccc}
+&amp;amp; d_1 &amp;amp; d_2 &amp;amp; d_3 &amp;amp; d_4 &amp;amp; d_5 &amp;amp; \cdots \\
+\hline
+r_1 &amp;amp; \mathbf{5} &amp;amp; 1 &amp;amp; 4 &amp;amp; 1 &amp;amp; 5 &amp;amp; \cdots \\
+r_2 &amp;amp; 3 &amp;amp; \mathbf{3} &amp;amp; 3 &amp;amp; 3 &amp;amp; 3 &amp;amp; \cdots \\
+r_3 &amp;amp; 7 &amp;amp; 1 &amp;amp; \mathbf{8} &amp;amp; 2 &amp;amp; 8 &amp;amp; \cdots \\
+r_4 &amp;amp; 0 &amp;amp; 0 &amp;amp; 0 &amp;amp; \mathbf{0} &amp;amp; 0 &amp;amp; \cdots \\
+r_5 &amp;amp; 9 &amp;amp; 9 &amp;amp; 9 &amp;amp; 9 &amp;amp; \mathbf{9} &amp;amp; \cdots \\
+\vdots &amp;amp; \vdots &amp;amp; \vdots &amp;amp; \vdots &amp;amp; \vdots &amp;amp; \vdots &amp;amp; \ddots
+\end{array}
+$$&lt;&#x2F;p&gt;
+&lt;p&gt;Now construct a new number $d$ by looking at the &lt;strong&gt;diagonal&lt;&#x2F;strong&gt;—the $n$-th digit of the $n$-th number—and changing each digit. If the diagonal digit is 5, make it 6; otherwise make it 5:&lt;&#x2F;p&gt;
+&lt;p&gt;$$d = 0.\mathbf{6}\mathbf{5}\mathbf{5}\mathbf{5}\mathbf{5}\ldots$$&lt;&#x2F;p&gt;
+&lt;p&gt;This number $d$ differs from $r_1$ in the first digit, from $r_2$ in the second digit, from $r_3$ in the third digit, and so on. It differs from every number in the list.&lt;&#x2F;p&gt;
+&lt;p&gt;But we assumed the list contained all reals between 0 and 1. Contradiction. Therefore no such list can exist—the reals are &lt;strong&gt;uncountable&lt;&#x2F;strong&gt;.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;2-the-power-set-is-always-larger&quot;&gt;2. The Power Set Is Always Larger&lt;&#x2F;h2&gt;
+&lt;p&gt;Cantor proved something even more general: for any set $X$, its &lt;strong&gt;power set&lt;&#x2F;strong&gt; $\mathcal{P}(X)$—the set of all subsets—is strictly larger than $X$ itself. Even for infinite sets.&lt;&#x2F;p&gt;
+&lt;p&gt;This means there&#x27;s no &quot;largest&quot; infinity. Given any infinite set, you can always construct a larger one by taking its power set.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;the-formal-proof&quot;&gt;The Formal Proof&lt;&#x2F;h3&gt;
+&lt;p&gt;Let $X$ be any set. There&#x27;s obviously at least as many subsets as elements (each element $x$ corresponds to the singleton $\lbrace x \rbrace$). The question is whether there are strictly more.&lt;&#x2F;p&gt;
+&lt;p&gt;Suppose, toward contradiction, that $X$ and $\mathcal{P}(X)$ have the same size. Then there exists a bijection $f: X \to \mathcal{P}(X)$, associating each element with a unique subset.&lt;&#x2F;p&gt;
+&lt;p&gt;Define a new subset:&lt;&#x2F;p&gt;
+&lt;p&gt;$$D = \lbrace x \in X : x \notin f(x) \rbrace$$&lt;&#x2F;p&gt;
+&lt;p&gt;In words: $D$ contains all elements that are &lt;strong&gt;not&lt;&#x2F;strong&gt; in their associated subset.&lt;&#x2F;p&gt;
+&lt;p&gt;Since $D$ is a subset of $X$, we have $D \in \mathcal{P}(X)$. And since $f$ is a bijection, some element maps to $D$. Call that element Diana, so $f(\text{Diana}) = D$.&lt;&#x2F;p&gt;
+&lt;p&gt;Now ask: is Diana in $D$?&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;If Diana $\in D$:&lt;&#x2F;strong&gt; By definition of $D$, Diana would be an element not in her associated subset. But her associated subset is $D$, so Diana $\notin D$. Contradiction.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;If Diana $\notin D$:&lt;&#x2F;strong&gt; Then Diana is not in her associated subset, which is exactly the criterion for membership in $D$. So Diana $\in D$. Contradiction.&lt;&#x2F;p&gt;
+&lt;p&gt;Both cases fail. Therefore no bijection exists, and $|\mathcal{P}(X)| &amp;gt; |X|$.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;people-and-committees&quot;&gt;People and Committees&lt;&#x2F;h3&gt;
+&lt;p&gt;Here&#x27;s an anthropomorphization from Joel David Hamkins: for any collection of people, you can form more committees than there are people—even with infinitely many people.&lt;&#x2F;p&gt;
+&lt;p&gt;A committee is just a subset of people. The claim is $|\mathcal{P}(\text{People})| &amp;gt; |\text{People}|$.&lt;&#x2F;p&gt;
+&lt;p&gt;Suppose not. Then we could name every committee after a person in a one-to-one correspondence. (The person doesn&#x27;t have to be on the committee named after them—it&#x27;s just a naming.)&lt;&#x2F;p&gt;
+&lt;p&gt;Form &lt;strong&gt;Committee D&lt;&#x2F;strong&gt;: all the people who are &lt;em&gt;not&lt;&#x2F;em&gt; on the committee named after them.&lt;&#x2F;p&gt;
+&lt;p&gt;That&#x27;s a valid committee. It must be named after someone—call her Daniella.&lt;&#x2F;p&gt;
+&lt;p&gt;Is Daniella on the committee named after her?&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;If yes, she&#x27;s on Committee D. But Committee D consists of people who &lt;em&gt;aren&#x27;t&lt;&#x2F;em&gt; on their named committee. Contradiction.&lt;&#x2F;li&gt;
+&lt;li&gt;If no, she&#x27;s not on her named committee. So she qualifies for Committee D. Contradiction.&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;More committees than people.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;fruits-and-fruit-salads&quot;&gt;Fruits and Fruit Salads&lt;&#x2F;h3&gt;
+&lt;p&gt;Another anthropomorphization, from one of Hamkins&#x27; Oxford students: for any collection of fruits, there are more possible fruit salads than fruits.&lt;&#x2F;p&gt;
+&lt;p&gt;A fruit salad is just a subset of fruits. If there were only as many salads as fruits, we could name each salad after a fruit.&lt;&#x2F;p&gt;
+&lt;p&gt;Form the &lt;strong&gt;diagonal salad&lt;&#x2F;strong&gt;: all fruits that are &lt;em&gt;not&lt;&#x2F;em&gt; in the salad named after them.&lt;&#x2F;p&gt;
+&lt;p&gt;This salad must be named after some fruit—say, durian.&lt;&#x2F;p&gt;
+&lt;p&gt;Is durian in the salad named after it?&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;If yes, it shouldn&#x27;t be (the salad only contains fruits &lt;em&gt;not&lt;&#x2F;em&gt; in their named salad).&lt;&#x2F;li&gt;
+&lt;li&gt;If no, it should be (it qualifies for membership).&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;Contradiction. More salads than fruits.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;3-russell-s-paradox-no-universal-set&quot;&gt;3. Russell&#x27;s Paradox: No Universal Set&lt;&#x2F;h2&gt;
+&lt;p&gt;In a &lt;a href=&quot;https:&#x2F;&#x2F;vinidlidoo.github.io&#x2F;blog&#x2F;russells-paradox&#x2F;&quot;&gt;previous post&lt;&#x2F;a&gt;, I explored Russell&#x27;s paradox and how it broke naive set theory. What I didn&#x27;t emphasize then is that Russell&#x27;s argument is &lt;strong&gt;the same diagonal technique&lt;&#x2F;strong&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;Here&#x27;s the parallel structure:&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;The correspondence assumption:&lt;&#x2F;strong&gt; Suppose the class of all sets $V$ is itself a set. Then every set is &quot;in the list&quot;—$V$ indexes all sets, including itself. We can ask of each set $x$: does $x$ contain itself?&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;The diagonal construction:&lt;&#x2F;strong&gt; Form $R$, the collection of all sets where the answer is &quot;no&quot;:&lt;&#x2F;p&gt;
+&lt;p&gt;$$R = \lbrace x \in V : x \notin x \rbrace$$&lt;&#x2F;p&gt;
+&lt;p&gt;This mirrors Cantor&#x27;s construction exactly. Where Cantor asked &quot;is $x$ in its associated subset $f(x)$?&quot;, Russell asks &quot;is $x$ in itself?&quot; The set $R$ collects all the &quot;no&quot; answers—sets that are not members of themselves.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;The contradiction:&lt;&#x2F;strong&gt; Since $R$ is a collection of sets, and $V$ contains all sets, we have $R \in V$. Now ask: is $R \in R$?&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;If $R \in R$: Then $R$ is a member of itself. But $R$ only contains sets that are &lt;em&gt;not&lt;&#x2F;em&gt; members of themselves. So $R \notin R$. Contradiction.&lt;&#x2F;li&gt;
+&lt;li&gt;If $R \notin R$: Then $R$ is not a member of itself—exactly the criterion for membership in $R$. So $R \in R$. Contradiction.&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;The structure is identical to Diana, Daniella, and durian. The assumed correspondence (all sets indexed by $V$) lets us form the diagonal set, which then can&#x27;t exist.&lt;&#x2F;p&gt;
+&lt;p&gt;What Russell proved, as Hamkins puts it: &quot;There&#x27;s no universal set.&quot; The assumption that $V$ is a set leads to contradiction, so the universe of sets can&#x27;t itself be a set.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;the-common-thread&quot;&gt;The Common Thread&lt;&#x2F;h2&gt;
+&lt;p&gt;All three proofs share the same skeleton:&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;Assume some collection can be put in correspondence with its &quot;parts&quot; (digits, subsets, committees, salads, or sets)&lt;&#x2F;li&gt;
+&lt;li&gt;Construct the diagonal object: the one that differs from each item at its own position&lt;&#x2F;li&gt;
+&lt;li&gt;Ask whether this object contains itself &#x2F; is in its own category&lt;&#x2F;li&gt;
+&lt;li&gt;Derive contradiction from both yes and no&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;Diagonalization reveals that certain collections are too large to be captured by any list or any set. It&#x27;s a fundamental limit built into the structure of mathematics itself.&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+</content>
+        <summary type="html">A family of proofs that construct objects guaranteed to differ from every item in a list</summary>
+        </entry><entry xml:lang="en">
+        <title>KV Cache Invalidation</title>
+        <published>2026-01-07T00:00:00+00:00</published>
+        <updated>2026-01-08T00:00:00+00:00</updated>
+        <author>
+            <name>Vincent</name>
+        </author>
+        <link rel="alternate" href="https://vinidlidoo.github.io/blog/kv-cache-invalidation/" type="text/html"/>
+        <id>https://vinidlidoo.github.io/blog/kv-cache-invalidation/</id>
+        
+            <content type="html">&lt;p&gt;&lt;img src=&quot;&#x2F;img&#x2F;next_token_prediction.webp&quot; alt=&quot;Next token prediction&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Over the holiday break, I had a conversation with a friend about prompt caching. Everyone&#x27;s intuition about context engineering is sensible: if you&#x27;re chatting with ChatGPT or Claude and the conversation accumulates irrelevant context, removing it should help the model focus. Better accuracy, right?&lt;&#x2F;p&gt;
+&lt;p&gt;Yes, but there&#x27;s a catch. Removing tokens from the middle of a conversation invalidates the &lt;strong&gt;KV cache&lt;&#x2F;strong&gt;—a key mechanism that speeds up LLM inference. You don&#x27;t just lose a bit of cached work; you lose &lt;strong&gt;everything after the edit&lt;&#x2F;strong&gt;. This is why claude.ai, ChatGPT, or Claude Code don&#x27;t frequently edit or delete earlier messages&lt;sup class=&quot;footnote-reference&quot; id=&quot;fr-1-1&quot;&gt;&lt;a href=&quot;#fn-1&quot;&gt;1&lt;&#x2F;a&gt;&lt;&#x2F;sup&gt;. As a Claude Code PM &lt;a href=&quot;https:&#x2F;&#x2F;x.com&#x2F;trq212&#x2F;status&#x2F;2004026126889320668&quot;&gt;put it&lt;&#x2F;a&gt;: &quot;&lt;em&gt;Coding agents would be cost prohibitive if they didn&#x27;t maintain the prompt cache between turns.&lt;&#x2F;em&gt;&quot; This post explains why.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;next-token-prediction&quot;&gt;Next-Token Prediction&lt;&#x2F;h2&gt;
+&lt;p&gt;LLMs generate text one token at a time. Given a sequence of tokens $t_1, \ldots, t_i$, the model predicts a probability distribution over the next token:&lt;&#x2F;p&gt;
+&lt;p&gt;$$P(t_{i+1} | t_1, \ldots, t_i)$$&lt;&#x2F;p&gt;
+&lt;p&gt;To generate a response, the model samples from this distribution (likely &lt;em&gt;Paris&lt;&#x2F;em&gt; in the figure above), appends the new token to the context, and repeats. Each new token requires a &lt;strong&gt;forward pass&lt;&#x2F;strong&gt; through the entire model, processing the full context.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;the-transformer-forward-pass&quot;&gt;The Transformer Forward Pass&lt;&#x2F;h2&gt;
+&lt;p&gt;Modern LLMs use the transformer architecture. Here&#x27;s the famous diagram from &quot;Attention Is All You Need&quot;:&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;&#x2F;img&#x2F;transformer.png&quot; alt=&quot;Transformer architecture&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;The grey box marked &quot;Nx&quot; to the right is a &lt;strong&gt;decoder block&lt;&#x2F;strong&gt;—it&#x27;s repeated $L$ times. Each block contains a masked multi-head attention and a feed-forward network.&lt;sup class=&quot;footnote-reference&quot; id=&quot;fr-2-1&quot;&gt;&lt;a href=&quot;#fn-2&quot;&gt;2&lt;&#x2F;a&gt;&lt;&#x2F;sup&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Each token $t_i$ starts as an embedding vector $x_i$. As it passes through the blocks, this vector gets transformed. Call the vector for position $i$ after block $\ell$ the &lt;strong&gt;hidden state&lt;&#x2F;strong&gt; $z_i^{(\ell)}$.&lt;&#x2F;p&gt;
+&lt;p&gt;Each block feeds into the next: $z_i^{(\ell)}$ becomes the input for computing $z_i^{(\ell+1)}$. After $L$ blocks, the final hidden state $z_i^{(L)}$ is used to predict $P(t_{i+1} | t_1, \ldots, t_i)$, that is, the probability distribution we started with.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;the-kv-cache&quot;&gt;The KV Cache&lt;&#x2F;h2&gt;
+&lt;p&gt;The masked multi-head attention in each block computes three vectors from each hidden state $z_i^{(\ell)}$—for every position $i$, every block $\ell$, and every attention head $h$ (&lt;a href=&quot;https:&#x2F;&#x2F;huggingface.co&#x2F;blog&#x2F;llama31&quot;&gt;Llama 3.1 405B&lt;&#x2F;a&gt; has 126 blocks and 128 heads):&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Query&lt;&#x2F;strong&gt; $Q(z_i^{(\ell)})$: what is position $i$ looking for?&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Key&lt;&#x2F;strong&gt; $K(z_j^{(\ell)})$: what does position $j$ contain?&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Value&lt;&#x2F;strong&gt; $V(z_j^{(\ell)})$: what information does position $j$ provide?&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;Position $i$ attends to all positions $j \leq i$ by comparing its query against their keys, then taking a weighted sum of their values. This means $z_i^{(\ell)}$, and Q, K, V, depend on &lt;em&gt;all preceding tokens&lt;&#x2F;em&gt;, not just $t_i$ alone.&lt;&#x2F;p&gt;
+&lt;p&gt;The KV cache exploits a key observation: when generating &lt;strong&gt;new tokens&lt;&#x2F;strong&gt;, the K and V vectors for previous positions don&#x27;t change. So we cache them. For each new token, we compute its Q, K, V, then reuse the cached K&#x27;s and V&#x27;s for attention. This turns $O(n^2)$ per-token work into $O(n)$.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;why-removing-tokens-breaks-the-cache&quot;&gt;Why Removing Tokens Breaks the Cache&lt;&#x2F;h2&gt;
+&lt;p&gt;Now consider removing a token from position $j$. What happens to the cached K and V vectors?
+Remove token $j$, and every hidden state $z_{j+1}^{(\ell)}, z_{j+2}^{(\ell)}, \ldots$ changes—they all attended to position $j$ but no longer do. Per previous section, changed hidden states mean changed K and V vectors. The entire cache from position $j$ onward is now stale.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;implications&quot;&gt;Implications&lt;&#x2F;h2&gt;
+&lt;p&gt;&lt;strong&gt;Prompt caching requires exact prefix match.&lt;&#x2F;strong&gt; API providers like Anthropic and OpenAI cache the KV state for prompts. If your new request shares an exact prefix with a previous one, they can reuse the cache. But if you modify anything—even a single token in the middle—the cache is useless from that point onward.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;Cache invalidation is expensive.&lt;&#x2F;strong&gt; Consider editing a token early in a 50,000-token conversation. Every position after the edit needs its K and V vectors recomputed—across all blocks and heads. That&#x27;s over 800 million vector computations for Llama 3.1 405B. Anthropic&#x27;s &lt;a href=&quot;https:&#x2F;&#x2F;platform.claude.com&#x2F;docs&#x2F;en&#x2F;build-with-claude&#x2F;prompt-caching&quot;&gt;prompt caching&lt;&#x2F;a&gt; prices cache hits at 10% of base input token cost; a cache miss means paying the full price. Latency suffers too: cache hits can reduce time-to-first-token by &lt;a href=&quot;https:&#x2F;&#x2F;claude.com&#x2F;blog&#x2F;prompt-caching&quot;&gt;up to 85%&lt;&#x2F;a&gt; for long prompts.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;You can append, but you can&#x27;t edit.&lt;&#x2F;strong&gt; Adding tokens to the end is cheap: just extend the cache. Inserting or deleting in the middle forces recomputation of everything downstream. This is why conversation history in chatbots tends to grow monotonically.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;The accuracy-cost tradeoff is real.&lt;&#x2F;strong&gt; Removing irrelevant context might improve model focus, but you pay with compute. For long conversations, this cost can be substantial. Sometimes it&#x27;s worth it; often it&#x27;s not. One approach: &lt;a href=&quot;https:&#x2F;&#x2F;forum.letta.com&#x2F;t&#x2F;breaking-prompt-caching&#x2F;149&quot;&gt;Letta suggests&lt;&#x2F;a&gt; prompt edits asynchronously during idle periods (&quot;via sleep-time agents&quot;), so the cache reconstruction happens when the user isn&#x27;t waiting.&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;appendix-transformer-math&quot;&gt;Appendix: Transformer Math&lt;&#x2F;h2&gt;
+&lt;details&gt;
+&lt;summary&gt;Full derivation&lt;&#x2F;summary&gt;
+&lt;p&gt;The notation here matches what&#x27;s used above.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;notation&quot;&gt;Notation&lt;&#x2F;h3&gt;
+&lt;ul&gt;
+&lt;li&gt;$V$ = vocabulary size&lt;&#x2F;li&gt;
+&lt;li&gt;$d$ = model dimension (embedding size)&lt;&#x2F;li&gt;
+&lt;li&gt;$k$ = head dimension (typically $k = d &#x2F; H$)&lt;&#x2F;li&gt;
+&lt;li&gt;$H$ = number of attention heads&lt;&#x2F;li&gt;
+&lt;li&gt;$m$ = FFN hidden dimension (typically $4d$)&lt;&#x2F;li&gt;
+&lt;li&gt;$n$ = sequence length&lt;&#x2F;li&gt;
+&lt;li&gt;$L$ = number of decoder blocks&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;step-1-input-token-embeddings&quot;&gt;Step 1: Input Token Embeddings&lt;&#x2F;h3&gt;
+&lt;p&gt;$$x_i = E[t_i] + p_i, \quad E \in \mathbb{R}^{V \times d}, \quad p_i \in \mathbb{R}^d$$&lt;&#x2F;p&gt;
+&lt;p&gt;where $t_i$ is the token index and $p_i$ is the positional encoding.&lt;&#x2F;p&gt;
+&lt;p&gt;Let $X^{(0)} = [x_1, \dots, x_n] \in \mathbb{R}^{d \times n}$ be the initial input to the transformer blocks.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;steps-2-6-decoder-block-repeated-l-times&quot;&gt;Steps 2-6: Decoder Block (repeated L times)&lt;&#x2F;h3&gt;
+&lt;p&gt;For block $\ell = 1, \dots, L$, with input $X^{(\ell-1)} \in \mathbb{R}^{d \times n}$:&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;Multi-Head Masked Attention&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Queries, keys, and values for head $h$:&lt;&#x2F;p&gt;
+&lt;p&gt;$$Q^{(h)}(x_i) = (W_h^{Q})^T x_i, \quad K^{(h)}(x_i) = (W_h^{K})^T x_i, \quad V^{(h)}(x_i) = (W_h^{V})^T x_i$$&lt;&#x2F;p&gt;
+&lt;p&gt;where $W_h^{Q}, W_h^{K}, W_h^{V} \in \mathbb{R}^{d \times k}$.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;Masked Attention Weights&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;$$\alpha_{i,j}^{(h)} = softmax_j \left(\frac{Q^{(h)}(x_i) \cdot K^{(h)}(x_j)}{\sqrt{k}} + M_{i,j}\right)$$&lt;&#x2F;p&gt;
+&lt;p&gt;where the causal mask $M_{i,j} = 0$ if $j \leq i$, and $M_{i,j} = -\infty$ if $j &amp;gt; i$.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;Output for Each Head&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;$$u_i^{(h)} = \sum_{j=1}^{i} \alpha_{i,j}^{(h)} V^{(h)}(x_j) \in \mathbb{R}^{k}$$&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;Concatenated Output&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;$$u_i&#x27; = \sum_{h=1}^{H} (W_h^{O})^T u_i^{(h)}, \quad W_h^{O} \in \mathbb{R}^{k \times d}$$&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;Residual + LayerNorm&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;$$u_i = \text{LayerNorm}(x_i + u_i&#x27;; \gamma_1, \beta_1)$$&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;steps-7-8-feed-forward-network&quot;&gt;Steps 7-8: Feed-Forward Network&lt;&#x2F;h3&gt;
+&lt;p&gt;For each position $i$:&lt;&#x2F;p&gt;
+&lt;p&gt;$$z_i&#x27; = (W_2)^T \text{ReLU}((W_1)^T u_i), \quad W_1 \in \mathbb{R}^{d \times m}, , W_2 \in \mathbb{R}^{m \times d}$$&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;Residual + LayerNorm (Block Output)&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;$$z_i = \text{LayerNorm}(u_i + z_i&#x27;; \gamma_2, \beta_2)$$&lt;&#x2F;p&gt;
+&lt;p&gt;Let $X^{(\ell)} = [z_1, \dots, z_n]$. This becomes the input to block $\ell + 1$.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;steps-9-10-output-logits-and-probabilities&quot;&gt;Steps 9-10: Output Logits and Probabilities&lt;&#x2F;h3&gt;
+&lt;p&gt;After $L$ blocks, let $Z = X^{(L)}$ be the final representations.&lt;&#x2F;p&gt;
+&lt;p&gt;$$\text{logits}_i = E z_i + b, \quad E \in \mathbb{R}^{V \times d}, , b \in \mathbb{R}^V$$&lt;&#x2F;p&gt;
+&lt;p&gt;where $E$ is often tied with input embeddings.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;Prediction Probabilities&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;$$P(t_{i+1} | t_1, \dots, t_i) = \text{softmax}(\text{logits}_i)$$&lt;&#x2F;p&gt;
+&lt;p&gt;The output at position $i$ predicts the next token $t_{i+1}$, using only information from tokens $t_1, \dots, t_i$ due to causal masking.&lt;&#x2F;p&gt;
+&lt;&#x2F;details&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;&lt;strong&gt;References:&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;johnthickstun.com&#x2F;docs&#x2F;transformers.pdf&quot;&gt;Transformer Notes&lt;&#x2F;a&gt; by John Thickstun&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;arxiv.org&#x2F;abs&#x2F;1706.03762&quot;&gt;Attention Is All You Need&lt;&#x2F;a&gt; (Vaswani et al., 2017)&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;hr &#x2F;&gt;
+&lt;section class=&quot;footnotes&quot;&gt;
+&lt;ol class=&quot;footnotes-list&quot;&gt;
+&lt;li id=&quot;fn-1&quot;&gt;
+&lt;p&gt;Compaction does happen, but infrequently. &lt;a href=&quot;#fr-1-1&quot;&gt;↩&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li id=&quot;fn-2&quot;&gt;
+&lt;p&gt;The diagram shows the original encoder-decoder architecture. Modern LLMs like GPT and Claude are &lt;em&gt;decoder-only&lt;&#x2F;em&gt;: they omit the left side (encoder) and the middle &quot;Multi-Head Attention&quot; that attends to encoder outputs. &lt;a href=&quot;#fr-2-1&quot;&gt;↩&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;&#x2F;section&gt;
+</content>
+        <summary type="html">Why removing context from an LLM conversation forces full recomputation</summary>
+        </entry><entry xml:lang="en">
+        <title>Russell&#x27;s Paradox</title>
+        <published>2026-01-06T00:00:00+00:00</published>
+        <updated>2026-01-06T00:00:00+00:00</updated>
+        <author>
+            <name>Vincent</name>
+        </author>
+        <link rel="alternate" href="https://vinidlidoo.github.io/blog/russells-paradox/" type="text/html"/>
+        <id>https://vinidlidoo.github.io/blog/russells-paradox/</id>
+        
+            <content type="html">&lt;p&gt;Listening to &lt;a href=&quot;https:&#x2F;&#x2F;youtu.be&#x2F;14OPT6CcsH4?t=2967&amp;amp;si=_qnWStDudzUB_o_D&quot;&gt;Lex Fridman&#x27;s podcast #488&lt;&#x2F;a&gt; on infinity and Gödel&#x27;s incompleteness sent me down a rabbit hole on Russell&#x27;s Paradox—a deceptively simple contradiction that broke naive set theory in 1901.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;the-paradox&quot;&gt;The Paradox&lt;&#x2F;h2&gt;
+&lt;p&gt;Define a set $R$ containing all sets that don&#x27;t contain themselves:&lt;&#x2F;p&gt;
+&lt;p&gt;$$R = \lbrace x : x \notin x\rbrace$$&lt;&#x2F;p&gt;
+&lt;p&gt;This is &lt;strong&gt;set-builder notation&lt;&#x2F;strong&gt;. Reading it piece by piece:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;$\lbrace \ \rbrace$ — &quot;the set of&quot;&lt;&#x2F;li&gt;
+&lt;li&gt;$x$ — a variable representing any set&lt;&#x2F;li&gt;
+&lt;li&gt;$:$ — &quot;such that&quot; (sometimes written as $|$)&lt;&#x2F;li&gt;
+&lt;li&gt;$x \notin x$ — &quot;$x$ is not an element of itself&quot;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;So the whole expression reads: &quot;The set of all $x$ such that $x$ is not a member of itself.&quot;&lt;&#x2F;p&gt;
+&lt;p&gt;Does $R$ contain itself? There are only two possibilities:&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;Case 1: Suppose $R \in R$ (R contains itself)&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;If $R$ is a member of itself, then $R$ must satisfy the membership criterion. But the criterion is &quot;does not contain itself.&quot; So if $R \in R$, then $R \notin R$. Contradiction.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;Case 2: Suppose $R \notin R$ (R does not contain itself)&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;If $R$ is not a member of itself, then $R$ satisfies exactly the property we used to define $R$—it&#x27;s a set that doesn&#x27;t contain itself. So $R$ qualifies for membership in $R$, meaning $R \in R$. Contradiction.&lt;&#x2F;p&gt;
+&lt;p&gt;Both cases lead to contradiction.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;what-went-wrong&quot;&gt;What Went Wrong&lt;&#x2F;h2&gt;
+&lt;p&gt;The problem is &lt;strong&gt;unrestricted comprehension&lt;&#x2F;strong&gt;—the assumption that any property defines a valid set. &quot;The set of all $x$ such that...&quot; feels like it should always work, but Russell showed it doesn&#x27;t.&lt;&#x2F;p&gt;
+&lt;p&gt;Modern set theory (ZFC) fixes this by &lt;strong&gt;building sets in stages&lt;&#x2F;strong&gt;. You can&#x27;t conjure a set from thin air—you must construct it from sets that already exist. This is called the &lt;strong&gt;cumulative hierarchy&lt;&#x2F;strong&gt;:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;$V_0 = \emptyset$&lt;&#x2F;li&gt;
+&lt;li&gt;$V_{\alpha+1} = \mathcal{P}(V_\alpha)$&lt;&#x2F;li&gt;
+&lt;li&gt;$V_\lambda = \bigcup_{\alpha &amp;lt; \lambda} V_\alpha$ for limit ordinals $\lambda$&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;Let&#x27;s see what each rule means, then why this construction dissolves Russell&#x27;s paradox.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;rule-1-start-with-nothing&quot;&gt;Rule 1: Start with nothing&lt;&#x2F;h3&gt;
+&lt;p&gt;$V_0 = \emptyset$, the empty set.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;rule-2-take-the-power-set&quot;&gt;Rule 2: Take the power set&lt;&#x2F;h3&gt;
+&lt;p&gt;$V_{\alpha+1} = \mathcal{P}(V_\alpha)$&lt;&#x2F;p&gt;
+&lt;p&gt;The &lt;strong&gt;power set&lt;&#x2F;strong&gt; $\mathcal{P}(A)$ is the set of all subsets of $A$. To build it, consider each element of $A$ and decide: include it or not. With $n$ elements, you get $2^n$ subsets.&lt;&#x2F;p&gt;
+&lt;details&gt;
+&lt;summary&gt;How to construct the power set of {a, b}&lt;&#x2F;summary&gt;
+&lt;p&gt;If $A = \lbrace a, b \rbrace$, the subsets are:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;Include nothing: $\emptyset$&lt;&#x2F;li&gt;
+&lt;li&gt;Include just $a$: $\lbrace a \rbrace$&lt;&#x2F;li&gt;
+&lt;li&gt;Include just $b$: $\lbrace b \rbrace$&lt;&#x2F;li&gt;
+&lt;li&gt;Include both: $\lbrace a, b \rbrace$&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;So $\mathcal{P}(\lbrace a, b \rbrace) = \lbrace \emptyset, \lbrace a \rbrace, \lbrace b \rbrace, \lbrace a, b \rbrace \rbrace$ — four subsets, since $2^2 = 4$.&lt;&#x2F;p&gt;
+&lt;&#x2F;details&gt;
+&lt;p&gt;Now let&#x27;s build the first few stages:&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;$V_1 = \mathcal{P}(V_0) = \mathcal{P}(\emptyset)$&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;What are the subsets of the empty set? There&#x27;s only one: the empty set itself (you &quot;include nothing&quot;). So $V_1 = \lbrace \emptyset \rbrace$. This is a set with one element.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;$V_2 = \mathcal{P}(V_1) = \mathcal{P}(\lbrace \emptyset \rbrace)$&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;$V_1$ has one element: $\emptyset$. For each element, include or exclude:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;Exclude $\emptyset$: gives us $\emptyset$&lt;&#x2F;li&gt;
+&lt;li&gt;Include $\emptyset$: gives us $\lbrace \emptyset \rbrace$&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;So $V_2 = \lbrace \emptyset, \lbrace \emptyset \rbrace \rbrace$ — two elements, since $2^1 = 2$.&lt;&#x2F;p&gt;
+&lt;p&gt;Note that $\emptyset$ and $\lbrace \emptyset \rbrace$ are different: one is an empty box, the other is a box containing an empty box.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;$V_3 = \mathcal{P}(V_2) = \mathcal{P}(\lbrace \emptyset, \lbrace \emptyset \rbrace \rbrace)$&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;$V_2$ has two elements. Include or exclude each:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;Include nothing: $\emptyset$&lt;&#x2F;li&gt;
+&lt;li&gt;Include just $\emptyset$: $\lbrace \emptyset \rbrace$&lt;&#x2F;li&gt;
+&lt;li&gt;Include just $\lbrace \emptyset \rbrace$: $\lbrace \lbrace \emptyset \rbrace \rbrace$&lt;&#x2F;li&gt;
+&lt;li&gt;Include both: $\lbrace \emptyset, \lbrace \emptyset \rbrace \rbrace$&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;So $V_3 = \lbrace \emptyset, \lbrace \emptyset \rbrace, \lbrace \lbrace \emptyset \rbrace \rbrace, \lbrace \emptyset, \lbrace \emptyset \rbrace \rbrace \rbrace$ — four elements, since $2^2 = 4$.&lt;&#x2F;p&gt;
+&lt;p&gt;Now we&#x27;re getting somewhere. We have sets containing other sets, sets with multiple elements, and nested structures. $V_4$ has $2^4 = 16$ elements, $V_5$ has $2^{16} = 65536$, and the growth explodes from there.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;Why does this matter?&lt;&#x2F;strong&gt; These &quot;empty boxes&quot; aren&#x27;t abstract curiosities—they &lt;em&gt;encode&lt;&#x2F;em&gt; actual mathematics. The standard definition of natural numbers in set theory:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;$0 = \emptyset$&lt;&#x2F;li&gt;
+&lt;li&gt;$1 = \lbrace \emptyset \rbrace$&lt;&#x2F;li&gt;
+&lt;li&gt;$2 = \lbrace \emptyset, \lbrace \emptyset \rbrace \rbrace$&lt;&#x2F;li&gt;
+&lt;li&gt;$3 = \lbrace \emptyset, \lbrace \emptyset \rbrace, \lbrace \emptyset, \lbrace \emptyset \rbrace \rbrace \rbrace$&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;Each number $n$ is the set containing all smaller numbers. From natural numbers, you construct integers (as pairs), rationals (as pairs of integers), reals (as sets of rationals), functions (as sets of pairs), and everything else. All of mathematics reduces to sets built from $\emptyset$.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;rule-3-continue-past-infinity&quot;&gt;Rule 3: Continue past infinity&lt;&#x2F;h3&gt;
+&lt;p&gt;$V_\lambda = \bigcup_{\alpha &amp;lt; \lambda} V_\alpha$&lt;&#x2F;p&gt;
+&lt;p&gt;After $V_0, V_1, V_2, \ldots$ we&#x27;ve built infinitely many stages. But we&#x27;re not done—Rule 2 says &quot;take the power set of the previous stage,&quot; and infinity has no immediate predecessor. There&#x27;s no $V_{n}$ where $n+1 = \infty$.&lt;&#x2F;p&gt;
+&lt;p&gt;So at infinity, we gather everything built so far:&lt;&#x2F;p&gt;
+&lt;p&gt;$$V_\omega = V_0 \cup V_1 \cup V_2 \cup \ldots$$&lt;&#x2F;p&gt;
+&lt;p&gt;Here $\omega$ is the first infinite ordinal—the name for &quot;after all finite stages.&quot; Now Rule 2 works again: $V_{\omega+1} = \mathcal{P}(V_\omega)$, $V_{\omega+2} = \mathcal{P}(V_{\omega+1})$, and so on.&lt;&#x2F;p&gt;
+&lt;p&gt;The hierarchy extends forever, with more gathering steps at higher infinities. The technical details don&#x27;t matter here—what matters is that &lt;strong&gt;the hierarchy never ends&lt;&#x2F;strong&gt;.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;why-this-dissolves-the-paradox&quot;&gt;Why This Dissolves the Paradox&lt;&#x2F;h2&gt;
+&lt;p&gt;The crucial property: &lt;strong&gt;a set can only contain elements from earlier stages&lt;&#x2F;strong&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;A set at stage $\alpha$ is built from sets at stages $&amp;lt; \alpha$. This makes self-membership impossible—for $x \in x$ to hold, $x$ would need to exist at a stage earlier than itself.&lt;&#x2F;p&gt;
+&lt;p&gt;Now consider Russell&#x27;s $R = \lbrace x : x \notin x \rbrace$. In the cumulative hierarchy, &lt;em&gt;every&lt;&#x2F;em&gt; set satisfies $x \notin x$—no set contains itself. So $R$ would have to contain &lt;em&gt;all&lt;&#x2F;em&gt; sets.&lt;&#x2F;p&gt;
+&lt;p&gt;But &quot;the set of all sets&quot; doesn&#x27;t exist. There&#x27;s no stage where all sets are available—the hierarchy extends forever. You can only form sets from what&#x27;s already been built, and &quot;everything&quot; is never finished being built.&lt;&#x2F;p&gt;
+&lt;p&gt;The paradox dissolves because $R$ can&#x27;t be constructed in the first place.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;takeaway&quot;&gt;Takeaway&lt;&#x2F;h2&gt;
+&lt;p&gt;Russell&#x27;s paradox shows that naive set theory—where any property defines a set—is inconsistent. The fix isn&#x27;t a patch; it&#x27;s a complete rebuild. Modern mathematics constructs sets in stages, from the ground up, and this staged construction makes the paradoxical set impossible to form.&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+</content>
+        <summary type="html">A fundamental contradiction that shook the foundations of mathematics</summary>
+        </entry>
+</feed>

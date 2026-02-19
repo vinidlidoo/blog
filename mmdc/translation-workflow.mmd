@@ -1,0 +1,36 @@
+---
+config:
+  theme: base
+  themeVariables:
+    primaryColor: '#ffffff'
+    primaryTextColor: '#000000'
+    primaryBorderColor: '#333333'
+    lineColor: '#333333'
+    secondaryColor: '#f0f0f0'
+    tertiaryColor: '#e0e0e0'
+    background: '#ffffff'
+---
+stateDiagram-v2
+ classDef agent fill:#e8f4e8,stroke:#2d6a2d
+ classDef scriptOutput fill:#fff3e0,stroke:#e65100
+ classDef data fill:#e3f2fd,stroke:#1565c0
+
+ state "main agent" as a1
+ state output <<choice>>
+ state "edit agent" as a2
+ state "{fr.md, ja.md}" as l
+ [*] --> a1 : skill entry
+ a1 --> output: run script
+ output --> NEW
+ output --> SYNC
+ output --> ABORT
+ NEW --> a2 : full translate
+ SYNC --> a2 : diff translate
+ a2 --> [*] : fix translate
+ ABORT --> [*]
+ a2 --> l
+ l --> a1
+
+ class a1,a2 agent
+ class NEW,SYNC,ABORT scriptOutput
+ class l data

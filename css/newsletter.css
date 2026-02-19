@@ -1,0 +1,62 @@
+.embeddable-buttondown-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  margin-block: 1.5rem;
+  padding: 1.25rem 1.5rem;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--primary-color) 8%, transparent);
+  /* Match the content column of the posts grid (8fr of 1fr+8fr, offset by date column) */
+  margin-inline-start: 13.5rem;
+}
+
+.embeddable-buttondown-form label {
+  flex-basis: 100%;
+  margin-bottom: 0.25rem;
+  color: var(--text-color);
+  font-size: 0.95rem;
+}
+
+.embeddable-buttondown-form input[type="email"] {
+  flex: 1;
+  min-width: 200px;
+  border: 1px solid var(--divider-color);
+  border-radius: 6px;
+  background-color: var(--background-color);
+  padding: 0.6rem 0.85rem;
+  color: var(--text-color);
+  font-size: 1rem;
+}
+
+.embeddable-buttondown-form input[type="email"]:focus {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 1px;
+}
+
+.embeddable-buttondown-form input[type="submit"] {
+  border: none;
+  border-radius: 6px;
+  background-color: var(--primary-color);
+  padding: 0.6rem 1.25rem;
+  color: var(--background-color);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.embeddable-buttondown-form input[type="submit"]:hover {
+  opacity: 0.85;
+}
+
+/* When posts collapse to single column */
+@media (max-width: 1100px) {
+  .embeddable-buttondown-form {
+    margin-inline-start: 0;
+  }
+}
+
+/* Center on post pages */
+article .embeddable-buttondown-form {
+  margin-inline: auto;
+}
